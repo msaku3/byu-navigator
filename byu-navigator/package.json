@@ -1,0 +1,7 @@
+{
+  "name": "byu-navigator-prototype",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {"start": "node --env-file=.env server.js"},
+  "engines": {"node": ">=22"}
+}
