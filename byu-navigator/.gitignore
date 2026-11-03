@@ -1,0 +1,10 @@
+# Local configuration files
+.env
+.env.*
+!.env.example
+
+# Installed dependencies
+node_modules/
+
+# Mac system files
+.DS_Store
