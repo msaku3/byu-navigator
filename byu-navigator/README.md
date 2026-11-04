@@ -34,7 +34,7 @@ If you see a permissions error, check table grants and RLS policies in Supabase.
 
 ## Sign-in limitation
 
-Create account saves student details only. Its password field is checked for length but is neither transmitted nor saved. Sign-in still opens a sample profile; it does not authenticate a user or retrieve the saved student. A real account system requires a separate Supabase Auth implementation. Refreshing clears the in-memory profile.
+Create account saves student details only. Its password field is checked for length but is neither transmitted nor saved. Sign-in checks the student table and restores the matching profile. The browser stores that profile and the current page in local storage so refreshing keeps the user on that page; signing out clears the saved profile. This prototype does not use Supabase Auth, and the local profile is not a secure authentication session. A real account system requires a separate Supabase Auth implementation.
 
 ## Test on iPhone
 
