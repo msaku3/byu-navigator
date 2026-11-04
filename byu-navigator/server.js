@@ -34,6 +34,46 @@ async function db(table, query, row) {
   }
   return r.status === 204 ? null : r.json();
 }
+async function createAuthAccount(email, password) {
+  const url = new URL('/auth/v1/signup', upstream);
+
+  const headers = {
+    apikey: key,
+    'Content-Type': 'application/json'
+  };
+
+  // Legacy anon keys use this extra header.
+  if (!key.startsWith('sb_publishable_')) {
+    headers.Authorization = 'Bearer ' + key;
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ email, password }),
+    signal: AbortSignal.timeout(15000)
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    let message = 'Could not create the account. Check your Auth settings.';
+
+    if (response.status === 429) {
+      message = 'Too many attempts. Please wait before trying again.';
+    } else if (result.error_code === 'email_address_not_authorized') {
+      message = 'Email delivery is not configured for this address.';
+    } else if (result.error_code === 'weak_password') {
+      message = 'Choose a stronger password.';
+    }
+
+    const error = new Error(message);
+    error.status = response.status === 429 ? 429 : 400;
+    throw error;
+  }
+
+  return result;
+}
 function json(res, status, value) {
   res.writeHead(status, {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'});
   res.end(JSON.stringify(value));
