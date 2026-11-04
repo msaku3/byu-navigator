@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>BYU International Student Guide</title>
+<title>BYU Navigator – Prototype</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --royal:#002e5d; --ink:#12263f; --muted:#51647c; --sky:#dbe9f7; --sky-2:#eef4fb;
@@ -44,13 +43,24 @@ a{color:var(--accent)}
 button{font:inherit;cursor:pointer}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
+/* top bar */
+.top{display:flex;align-items:center;gap:1rem;padding:.7rem clamp(1rem,4vw,2.5rem);background:var(--card);border-bottom:1px solid var(--line);position:sticky;top:env(safe-area-inset-top,0px);z-index:20}
+.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-head);font-weight:700;color:var(--royal);font-size:1.15rem;background:none;border:0;padding:0}
+.brand-mark{width:34px;height:34px;border-radius:9px;background:var(--royal);display:grid;place-items:center}
+.brand small{font-family:var(--font-body);font-weight:400;color:var(--muted);font-size:.8rem;margin-left:.2rem}
+.top-right{display:flex;align-items:center;gap:.5rem;margin-left:auto}
+nav{display:flex;gap:.25rem;flex-wrap:wrap}
+nav button{background:none;border:0;padding:.5rem .8rem;border-radius:999px;color:var(--ink);font-weight:600}
+nav button:hover{background:var(--sky-2)}
+nav button[aria-current="page"]{background:var(--sky);color:var(--royal)}
+body.signed-out nav{display:none}
+
 /* layout */
 main{max-width:1120px;margin:0 auto;padding:clamp(1.2rem,3vw,2.5rem) clamp(1rem,4vw,2rem) 6rem}
 .screen{display:none}.screen.active{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.7rem 1.2rem;font-weight:600;border:2px solid var(--royal);background:var(--royal);color:#fff;text-decoration:none}
-:root .btn { color: #fff; }
-:root .btn.ghost { color: var(--royal); }
+:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#06182b}
 .btn.ghost{background:transparent;color:var(--royal)}
 .btn.small{padding:.4rem .8rem;font-size:.92rem;border-radius:10px}
 .btn:hover{filter:brightness(1.08)}
@@ -59,7 +69,7 @@ main{max-width:1120px;margin:0 auto;padding:clamp(1.2rem,3vw,2.5rem) clamp(1rem,
 .tag.done{background:var(--green-bg);color:var(--green)}
 .screen-note{color:var(--muted);font-size:.92rem;border-left:3px solid var(--line);padding-left:.8rem;margin:1.5rem 0 0}
 
-/* welcome */
+/* 1 welcome */
 .welcome{display:grid;grid-template-columns:1.1fr .9fr;gap:2.5rem;align-items:center;min-height:70vh}
 .welcome .lead{font-size:1.2rem;color:var(--muted)}
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
@@ -81,10 +91,10 @@ input,select,textarea{font:inherit;padding:.65rem .8rem;border-radius:10px;borde
 .error.show{display:block}
 .proto{background:var(--sky-2);border:1px dashed var(--accent);padding:.6rem .9rem;border-radius:10px;font-size:.92rem;color:var(--muted);max-width:560px}
 
-/* home */
+/* 3 home */
 .home-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
 .avatar{width:64px;height:64px;border-radius:50%;background:var(--royal);color:#fff;display:grid;place-items:center;font-family:var(--font-head);font-weight:700;font-size:1.4rem}
-:root[data-theme="dark"] .avatar,:root:not([data-theme="light"]) .avatar{color:#fff}
+:root[data-theme="dark"] .avatar,:root:not([data-theme="light"]) .avatar{color:#06182b}
 dl.facts{margin:1rem 0 0;display:grid;gap:.6rem}
 dl.facts div{display:flex;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.5rem}
 dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
@@ -102,13 +112,14 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .quick a{display:block;padding:.8rem;border-radius:12px;background:var(--sky-2);text-decoration:none;color:var(--royal);font-weight:600}
 .stack{display:grid;gap:1.5rem}
 
-/* journey */
+/* 4 journey */
 .timeline{list-style:none;margin:1.5rem 0 0;padding:0;position:relative}
 .timeline::before{content:"";position:absolute;left:23px;top:10px;bottom:10px;width:3px;background:var(--line)}
 .stage{position:relative;padding-left:70px;margin-bottom:1rem}
 .node{position:absolute;left:0;top:10px;width:48px;height:48px;border-radius:50%;background:var(--card);border:3px solid var(--line);display:grid;place-items:center;font-family:var(--font-head);font-weight:700;color:var(--muted)}
 .stage.done .node{background:var(--green-bg);border-color:var(--green);color:var(--green)}
 .stage.current .node{background:var(--royal);border-color:var(--royal);color:#fff;box-shadow:0 0 0 6px var(--sky)}
+:root[data-theme="dark"] .stage.current .node{color:#06182b}
 .stage-head{width:100%;display:flex;align-items:center;gap:.8rem;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.9rem 1.1rem;color:var(--ink)}
 .stage-head .t{flex:1;font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--royal)}
 .stage-head[aria-expanded="true"]{border-color:var(--accent)}
@@ -117,7 +128,7 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .stage-body ul{padding-left:1.2rem;margin:.3rem 0 1rem}
 .stage-body .acts{display:flex;gap:.6rem;flex-wrap:wrap}
 
-/* profile */
+/* 5 profile */
 .profile-grid{display:grid;grid-template-columns:340px 1fr;gap:1.5rem;align-items:start}
 .course-list{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
 .course-list li{display:flex;justify-content:space-between;gap:1rem;padding:.7rem .9rem;background:var(--sky-2);border-radius:10px}
@@ -127,7 +138,7 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .change-form{display:none;margin-top:1rem}
 .change-form.open{display:grid;gap:.8rem}
 
-/* hub */
+/* 6 hub */
 .hub-wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:1.5rem;align-items:start}
 .mindmap{width:100%;height:auto;background:var(--card);border:1px solid var(--line);border-radius:16px}
 .mindmap .edge{stroke:var(--line);stroke-width:3;fill:none}
@@ -138,8 +149,10 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .mindmap g.n.sel circle{fill:var(--royal);stroke:var(--royal)}
 .mindmap g.n text{fill:var(--royal);font:700 15px var(--font-head);text-anchor:middle}
 .mindmap g.n.sel text{fill:#fff}
+:root[data-theme="dark"] .mindmap g.n.sel text{fill:#06182b}
 .mindmap .center circle{fill:var(--royal)}
 .mindmap .center text{fill:#fff;font:700 20px var(--font-head);text-anchor:middle}
+:root[data-theme="dark"] .mindmap .center text{fill:#06182b}
 .links{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:.5rem}
 .links a{display:flex;justify-content:space-between;gap:1rem;padding:.7rem .9rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;font-weight:600}
 .links a:hover{background:var(--sky-2)}
@@ -157,14 +170,17 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 
 /* chatbot */
 .chat-fab{position:fixed;right:1.2rem;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));z-index:35;display:flex;align-items:center;gap:.5rem;border:0;background:var(--accent);color:#fff;border-radius:999px;padding:.8rem 1.2rem;font-weight:600;box-shadow:0 8px 24px -8px rgba(0,46,93,.55)}
+:root[data-theme="dark"] .chat-fab{color:#06182b}
 .chat{position:fixed;right:1.2rem;bottom:calc(5rem + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 2rem));height:min(520px,70vh);z-index:36;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px -16px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden}
 .chat.open{display:flex}
 .chat header{padding:.8rem 1rem;background:var(--royal);color:#fff;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-head);font-weight:700}
+:root[data-theme="dark"] .chat header{color:#06182b}
 .chat header button{background:none;border:0;color:inherit;font-size:1.3rem}
 .msgs{flex:1;overflow:auto;padding:1rem;display:grid;gap:.6rem;align-content:start}
 .msg{padding:.6rem .85rem;border-radius:14px;max-width:88%;font-size:.97rem}
 .msg.bot{background:var(--sky-2);justify-self:start}
 .msg.me{background:var(--royal);color:#fff;justify-self:end}
+:root[data-theme="dark"] .msg.me{color:#06182b}
 .msg .go{display:inline-block;margin-top:.4rem}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap;padding:0 1rem .6rem}
 .chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:.3rem .7rem;font-size:.88rem}
@@ -178,106 +194,39 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 @media (max-width:860px){
   .welcome,.home-grid,.profile-grid,.hub-wrap{grid-template-columns:1fr}
   .welcome{min-height:0}
-  .byu-masthead { flex-wrap:wrap; gap:.4rem 1rem; padding:10px 1rem; }
-  .byu-account-actions { flex:1 1 100%; justify-content:flex-end; }
-  .nav-row { min-height:58px; width:100%; overflow-x:auto; }
-  .byu-navigation .byu-nav-item { padding:.8rem .85rem; font-size:.85rem; }
+  .brand small{display:none}
+  .top{flex-wrap:wrap}
+  .top-right{width:100%;margin-left:0}
+  nav{flex:1;min-width:0;overflow-x:auto;flex-wrap:nowrap}
+  nav button{white-space:nowrap}
 }
 @media (max-width:520px){
   .choices,.form .row{grid-template-columns:1fr}
-  .byu-masthead { min-height:0; }
-  .byu-service-name { max-width:calc(100% - 110px); }
-  .nav-row { gap:0; }
-  .byu-navigation .byu-nav-item { padding:.75rem .7rem; }
-  .nav-row .lang-btn { margin-left:0; }
 }
-
-.btn, input, select, textarea { min-height: 44px; }
-.btn { white-space: normal; text-align: center; }
-:where(button, a, input, select, textarea, [tabindex]):focus-visible {
-  outline: 3px solid #005fcc;
-  outline-offset: 4px;
-  box-shadow: 0 0 0 2px #fff;
-}
-.quick, #appointment-form > div { gap: 0.75rem; }
-.btn:disabled {
-  opacity: 1;
-  background: #e2e8f0;
-  border-color: #64748b;
-  color: #334155;
-  cursor: not-allowed;
-}
-
-/* BYU Styling Header */
-:root {
-  color-scheme: light;
-  --royal: #002e5d;
-  --ink: #17191c;
-  --muted: #60656b;
-  --sky: #d7eafd;
-  --sky-2: #f3f6f9;
-  --paper: #ffffff;
-  --card: #ffffff;
-  --line: #d9dde2;
-  --accent: #0057b8;
-  --shadow: 0 4px 18px rgba(0, 33, 71, .08);
-  --font-head: Arial, "Helvetica Neue", sans-serif;
-  --font-body: Arial, "Helvetica Neue", sans-serif;
-}
-.byu-masthead {
-  min-height:104px; display:flex; align-items:center; gap:clamp(1rem,2vw,2.4rem);
-  padding:10px clamp(1rem,1.7vw,2.2rem); color:#fff; background:#002e5d;
-}
-.byu-wordmark {
-  flex:0 0 9vw; max-width:145px; min-width:96px; min-height:78px;
-  border:0; border-right:1px solid rgba(255,255,255,.35); border-radius:0;
-  background:transparent; color:#fff; font:700 clamp(2rem,2.7vw,3rem)/1 Georgia,"Times New Roman",serif;
-  letter-spacing:.04em; text-align:left;
-}
-.byu-service-name { flex:1 1 auto; color:#fff; font-size:clamp(1.4rem,2vw,2rem); line-height:1.2; font-weight:600; }
-.byu-account-actions { display:flex; align-items:center; justify-content:flex-end; gap:.65rem; margin-left:auto; color:#fff; }
-.byu-account-name,.byu-signout { color:#fff; font-size:clamp(.9rem,1.2vw,1.15rem); white-space:nowrap; }
-.byu-account-icon { width:30px; height:30px; flex:none; }
-.byu-signout { border:0; border-radius:0; background:transparent; padding:.45rem .2rem; cursor:pointer; }
-body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
-.byu-navigation { display:block; background:#fff; color:#002e5d; box-shadow:0 2px 5px rgba(0,0,0,.12); position:relative; z-index:10; }
-.nav-row { width:min(100%,1200px); min-height:66px; margin:0 auto; padding:0 12px; display:flex; align-items:center; justify-content:flex-start; gap:.6rem; }
-.nav-row + .nav-row { border-top:1px solid #edf0f2; }
-.byu-navigation .byu-nav-item {
-  position:relative; display:inline-flex; align-items:center; min-height:100%; padding:1rem 1.2rem;
-  border:0; border-radius:0; background:transparent; color:#002e5d;
-  font-family:Arial,"Helvetica Neue",sans-serif; font-size:1rem; font-weight:600; text-transform:uppercase; white-space:nowrap;
-}
-.byu-navigation .byu-nav-item:hover { background:#f4f6f8; }
-.byu-navigation .byu-nav-item[aria-current="page"]::before { position:absolute; right:0; bottom:0; left:0; height:4px; background:#002e5d; content:""; }
-.nav-row .lang-btn { margin-left:auto; border-radius:0; border-color:transparent; color:#002e5d; }
-.nav-row .lang-btn:hover,.nav-row .lang-btn[aria-expanded="true"] { background:#f3f6f9; }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
+
 </head>
 <body class="signed-out">
 
-<header class="byu-masthead">
-  <button class="byu-wordmark" data-go="welcome" aria-label="BYU International Student Guide home">BYU</button>
-  <div class="byu-service-name">BYU International Student Guide</div>
-  <div class="byu-account-actions account-only">
-    <span class="byu-account-name"><span class="js-first"></span></span>
-    <svg class="byu-account-icon" viewBox="0 0 32 32" aria-hidden="true">
-      <circle cx="16" cy="16" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
-      <circle cx="16" cy="11" r="4.5" fill="currentColor"/>
-      <path d="M7.5 25c1.8-5 5-7 8.5-7s6.7 2 8.5 7" fill="currentColor"/>
-    </svg>
-    <button class="byu-signout" id="signout" data-i18n="signout">Sign Out</button>
+<header class="top">
+  <button class="brand" data-go="welcome" aria-label="BYU Navigator home">
+    <span class="brand-mark" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M3 16c3-9 6 0 8-6s4-5 6-8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/><circle cx="17" cy="2.8" r="1.8" fill="#fff"/></svg>
+    </span>
+    BYU Navigator <small>prototype</small>
+  </button>
+  <div class="top-right">
+  <nav aria-label="Main">
+    <button data-go="home" data-i18n="nav_home">Home</button>
+    <button data-go="journey" data-i18n="nav_journey">Journey map</button>
+    <button data-go="profile" data-i18n="nav_profile">Profile</button>
+    <button data-go="hub" data-i18n="nav_resources">Resource hub</button>
+    <button id="signout" data-i18n="signout">Sign out</button>
+  </nav>
+  <button class="lang-btn" id="lang-tab" aria-expanded="false" aria-controls="lang-panel"><span aria-hidden="true">🌐</span> <span data-i18n="lang_h">Language</span></button>
   </div>
 </header>
-<nav class="byu-navigation" aria-label="Main">
-  <div class="nav-row">
-    <button class="byu-nav-item" data-go="home" data-i18n="nav_home">Home</button>
-    <button class="byu-nav-item" data-go="journey" data-i18n="nav_journey">Journey map</button>
-    <button class="byu-nav-item" data-go="profile" data-i18n="nav_profile">Profile</button>
-    <button class="byu-nav-item" data-go="hub" data-i18n="nav_resources">Resource hub</button>
-    <button class="lang-btn" id="lang-tab" aria-expanded="false" aria-controls="lang-panel"><span aria-hidden="true">🌐</span> <span data-i18n="lang_h">Language</span></button>
-  </div>
-</nav>
 
 <main id="main">
 
@@ -292,15 +241,10 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <button class="choice" data-go="setup"><strong data-i18n="signup">Create account</strong><span data-i18n="new_here">I'm new here</span></button>
       </div>
       <form class="signin-form card form" id="signin-form">
-        <label for="si-net">NetID
-          <input id="si-net" autocomplete="username" placeholder="e.g. cougar42" required>
-        </label>
-        <label for="si-pw"><span data-i18n="password">Password</span>
-          <input id="si-pw" type="password" autocomplete="current-password" required>
-        </label>
-        <p id="signin-err" role="alert" class="error"></p>
+        <label>NetID <input id="si-net" autocomplete="username" placeholder="e.g. cougar42"></label>
+        <label><span data-i18n="password">Password</span> <input id="si-pw" type="password" autocomplete="current-password"></label>
         <button class="btn" type="submit" data-i18n="signin">Sign in</button>
-        <p class="hint">Use your BYU International Student Guide account credentials.</p>
+        <p class="hint" style="margin:0">Prototype: any values work and open the home page with a sample profile.</p>
       </form>
     </div>
     <svg class="path-art" viewBox="0 0 400 360" role="img" aria-label="A winding path with six waypoints, from applying to graduating">
@@ -310,7 +254,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <circle cx="40" cy="320" r="13"/><circle cx="160" cy="225" r="13"/><circle cx="290" cy="170" r="13"/>
         <circle cx="150" cy="95" r="13"/><circle cx="262" cy="108" r="13"/><circle cx="350" cy="30" r="13"/>
       </g>
-      <g fill="var(--royal)" font-family="Arial, sans-serif" font-weight="700" font-size="15">
+      <g fill="var(--royal)" font-family="Bricolage Grotesque,sans-serif" font-weight="700" font-size="15">
         <text x="62" y="346">Apply</text><text x="178" y="252">Housing</text><text x="200" y="152">Classes</text>
         <text x="40" y="82">Taxes</text><text x="272" y="140">Work</text><text x="290" y="22">Graduate</text>
       </g>
@@ -328,22 +272,19 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       <label><span data-i18n="last">Last name</span><input id="f-last" required autocomplete="family-name"></label>
     </div>
     <label><span data-i18n="netid">Desired NetID</span><input id="f-net" required autocapitalize="none" autocomplete="username"><span class="hint">Letters and numbers only, 4–12 characters.</span></label>
-    <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="4" autocomplete="new-password"><span class="hint">At least 4 characters.</span></label>
+    <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="8" autocomplete="new-password"><span class="hint">At least 8 characters.</span></label>
     <div class="row">
       <label><span data-i18n="nation">Nationality</span>
         <input id="f-nat" type="text" required autocomplete="country-name" placeholder="e.g., Panama">
       </label>
       <label><span data-i18n="major">Planned major</span>
-        <select id="f-major" required>
-          <option value="">Loading majors...</option>
-        </select>
-        <span class="hint">Select your planned major from the dropdown.</span>
+        <input id="f-major" type="text" required autocomplete="off" placeholder="Type your planned major">
+        <span class="hint">Enter your major in your own words.</span>
       </label>
     </div>
     <div class="error" id="setup-err" role="alert"></div>
-    <p id="signup-status" role="status" aria-live="polite"></p>
     <button class="btn" type="submit" data-i18n="continue">Create account</button>
-    <div class="proto">Saves your student details and password to your Supabase database. Does not create an official BYU account.</div>
+    <div class="proto">Prototype: this saves your student details to the project database. It does not create a real BYU account or NetID. Your password is used only for this form check and is never sent to Supabase.</div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
 </section>
@@ -365,41 +306,6 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       <p style="margin:1rem 0 0"><button class="btn ghost small" data-go="profile" data-i18n="nav_profile">Profile</button></p>
     </aside>
     <div class="stack">
-      <section class="card" aria-labelledby="appointment-heading">
-        <h2 id="appointment-heading">International advising appointment</h2>
-        <p id="appointment-summary" role="status">No upcoming appointments.</p>
-        <button class="btn" id="schedule-appointment-btn" type="button">Schedule appointment</button>
-        <div id="appointment-form-container" hidden>
-          <form id="appointment-form" class="form">
-            <label for="appointment-advisor">Advisor
-              <select id="appointment-advisor" required>
-                <option value="">Choose a demo advisor</option>
-                <option value="advisor-1">Demo Advisor A</option>
-                <option value="advisor-2">Demo Advisor B</option>
-              </select>
-            </label>
-            <label for="appointment-slot">Available appointment
-              <select id="appointment-slot" required disabled>
-                <option value="">Choose an advisor first</option>
-              </select>
-            </label>
-            <p class="hint">Sample availability. Times use your device’s time zone.</p>
-            <label for="appointment-topic">Appointment topic
-              <select id="appointment-topic" required>
-                <option value="">Choose a topic</option>
-                <option value="arrival">Arrival and settling in</option>
-                <option value="resources">Finding campus resources</option>
-                <option value="academic">Academic planning</option>
-              </select>
-            </label>
-            <p id="appointment-form-error" role="alert" class="error"></p>
-            <div>
-              <button class="btn" type="submit">Book demo appointment</button>
-              <button class="btn ghost" id="cancel-appointment-form-btn" type="button">Cancel</button>
-            </div>
-          </form>
-        </div>
-      </section>
       <section class="card" aria-labelledby="al-h">
         <h2 id="al-h" data-i18n="alerts">Alerts and action items</h2>
         <ul class="alerts" id="alerts"></ul>
@@ -486,7 +392,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <!-- Chatbot -->
 <button class="chat-fab" id="chat-fab" aria-expanded="false" aria-controls="chat">💬 <span data-i18n="ask">Ask the assistant</span></button>
 <section class="chat" id="chat" aria-label="Assistant chat">
-  <header>BYU International Student Guide assistant <button id="chat-close" aria-label="Close chat">×</button></header>
+  <header>BYU Navigator assistant <button id="chat-close" aria-label="Close chat">×</button></header>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="chips" id="chips"></div>
   <p class="chat-note">I can't give legal or immigration advice, and I don't replace academic advising.</p>
@@ -498,7 +404,6 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <script>
 (function(){
 "use strict";
-
 /* ---------- data ---------- */
 var I18N={
  nav_home:{es:"Inicio",zh:"首页",pt:"Início"},
@@ -507,7 +412,7 @@ var I18N={
  nav_resources:{es:"Centro de recursos",zh:"资源中心",pt:"Central de recursos"},
  signout:{es:"Cerrar sesión",zh:"退出登录",pt:"Sair"},
  w_title:{es:"Tu camino en BYU, en un solo lugar.",zh:"您的 BYU 之路，一站式了解。",pt:"Seu caminho na BYU, em um só lugar."},
- w_sub:{es:"Te ayudamos a recorrer la solicitud y la vida estudiantil de BYU, paso a paso.",zh:"一步步带您了解 BYU 的申请流程和学生生活。",pt:"Ajudamos você a navegar pela inscrição e pela vida estudantil na BYU, passo a paso."},
+ w_sub:{es:"Te ayudamos a recorrer la solicitud y la vida estudiantil de BYU, paso a paso.",zh:"一步步带您了解 BYU 的申请流程和学生生活。",pt:"Ajudamos você a navegar pela inscrição e pela vida estudantil na BYU, passo a passo."},
  signin:{es:"Iniciar sesión",zh:"登录",pt:"Entrar"},
  signup:{es:"Crear cuenta",zh:"创建账户",pt:"Criar conta"},
  have_acct:{es:"Ya tengo una cuenta",zh:"我已有账户",pt:"Já tenho uma conta"},
@@ -580,202 +485,92 @@ var COURSES={
  "Undeclared":[["First-year writing","General education"],["Quantitative reasoning","General education"],["Intro to a field you're exploring","Elective"]]
 };
 
-/* ---------- Supabase Config ---------- */
-const SUPABASE_URL = "https://xeldikaeoxbiwtqhabsw.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_kws05stP8txREy3GONIOuQ_rMTYx8ZY";
+/* ---------- state ---------- */
+var user=null, stage=0, openStage=null, selHub=null;
 
-const TABLES = { student: "student", major: "major" };
-const COLS = {
-  studentId: "studentid", netId: "netid", firstName: "firstname",
-  lastName: "lastname", nationality: "nationality", majorId: "majorid",
-  password: "password", majorIdInMajor: "majorid", majorName: "majorname"
-};
-
-var supabaseClient = null;
-if (window.supabase) {
-  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+// Database requests go through our Node server. No Supabase key is sent to the browser.
+var availableMajors = [];
+async function api(path, options){
+  var response = await fetch(path, options);
+  var data = await response.json();
+  if(!response.ok) throw new Error(data.error || "Request failed.");
+  return data;
 }
 
-/* ---------- State ---------- */
-var user = null, stage = 0, openStage = null, selHub = null;
-
-var $ = function(s,r){return (r||document).querySelector(s)};
-var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+var $=function(s,r){return (r||document).querySelector(s)};
+var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function toast(m){var e=$("#toast");e.textContent=m;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("show")},2800)}
 function intl(){return user && user.nat!=="United States"}
 
-/* ---------- Navigation ---------- */
+/* ---------- navigation ---------- */
 var current="welcome";
 function go(name){
   if(name!=="welcome"&&name!=="setup"&&!user){ name="welcome"; }
   current=name;
   $$(".screen").forEach(function(s){s.classList.toggle("active",s.id==="s-"+name)});
-  $$(".byu-nav-item").forEach(function(b){ if(b.dataset.go===name) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current")});
+  $$("nav button[data-go]").forEach(function(b){ if(b.dataset.go===name) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current")});
   document.body.classList.toggle("signed-out",!user);
   render(); window.scrollTo(0,0); updateChips();
 }
-
 document.addEventListener("click",function(e){
   var b=e.target.closest("[data-go]"); if(!b) return;
   var n=b.dataset.go; if(n==="welcome"&&user) n="home"; go(n);
 });
 
-/* ---------- Welcome / Auth ---------- */
+/* ---------- welcome / setup ---------- */
 $("#choose-signin").addEventListener("click",function(){
   var f=$("#signin-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#si-net").focus();
 });
-
-$("#signin-form").addEventListener("submit", async function(e) {
+$("#signin-form").addEventListener("submit",function(e){
   e.preventDefault();
-  var net = $("#si-net").value.trim();
-  var pw = $("#si-pw").value.trim();
-  var err = $("#signin-err");
-
-  err.classList.remove("show");
-  if (!net || !pw) {
-    err.textContent = "Please enter both NetID and password.";
-    err.classList.add("show");
-    return;
-  }
-
-  try {
-    var res = await supabaseClient
-      .from(TABLES.student)
-      .select("*")
-      .eq(COLS.netId, net)
-      .eq(COLS.password, pw);
-
-    if (res.error) throw res.error;
-    if (!res.data || res.data.length === 0) {
-      err.textContent = "Invalid NetID or password.";
-      err.classList.add("show");
-      return;
-    }
-
-    var s = res.data[0];
-    var majorName = "Undeclared";
-
-    if (s[COLS.majorId]) {
-      var mRes = await supabaseClient
-        .from(TABLES.major)
-        .select(COLS.majorName)
-        .eq(COLS.majorIdInMajor, s[COLS.majorId])
-        .maybeSingle();
-      if (mRes.data) majorName = mRes.data[COLS.majorName];
-    }
-
-    user = {
-      first: s[COLS.firstName] || "Student",
-      last: s[COLS.lastName] || "",
-      net: s[COLS.netId],
-      nat: s[COLS.nationality] || "Unknown",
-      major: majorName
-    };
-    stage = s.current_stage || 0;
-
-    $("#si-pw").value = "";
-    go("home");
-    toast("Welcome back, " + user.first + "!");
-  } catch (error) {
-    err.textContent = error.message || "Could not sign in.";
-    err.classList.add("show");
-  }
+  if(!user){ user={first:"Sample",last:"Student",net:$("#si-net").value||"cougar42",nat:"Brazil",major:"Computer Science"}; }
+  go("home");
 });
-
-$("#setup-form").addEventListener("submit", async function(e) {
+$("#setup-form").addEventListener("submit",async function(e){
   e.preventDefault();
-  var v = function(id) { return $(id).value.trim(); };
-  var err = $("#setup-err");
-  var msg = "";
+  var v=function(id){return $(id).value.trim()}, err=$("#setup-err"), msg="";
+  if(!v("#f-first")||!v("#f-last")) msg="Enter your first and last name.";
+  else if(!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg="NetID must be 4–12 letters or numbers, with no spaces.";
+  else if($("#f-pw").value.length<8) msg="Password must be at least 8 characters.";
+  else if(!v("#f-nat")) msg="Select your nationality.";
+  else if(!v("#f-major")) msg="Select a planned major.";
 
-  if (!v("#f-first") || !v("#f-last")) msg = "Enter your first and last name.";
-  else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg = "NetID must be 4–12 letters or numbers.";
-  else if ($("#f-pw").value.length < 4) msg = "Password must be at least 4 characters.";
-  else if (!v("#f-nat")) msg = "Enter your nationality.";
-  else if (!v("#f-major")) msg = "Select a planned major from the drop-down menu.";
+  err.textContent=msg; err.classList.toggle("show",!!msg);
+  if(msg) return;
 
-  err.textContent = msg;
-  err.classList.toggle("show", !!msg);
-  if (msg) return;
-
-  var button = $("#setup-form button[type=submit]");
-  button.disabled = true;
-  button.textContent = "Creating account…";
-
-  var majorSelect = $("#f-major");
-  var majorId = Number(majorSelect.value);
-  var majorName = majorSelect.options[majorSelect.selectedIndex].text;
-
-  var studentRow = {};
-  studentRow[COLS.netId] = v("#f-net");
-  studentRow[COLS.firstName] = v("#f-first");
-  studentRow[COLS.lastName] = v("#f-last");
-  studentRow[COLS.nationality] = v("#f-nat");
-  studentRow[COLS.majorId] = majorId;
-  studentRow[COLS.password] = $("#f-pw").value;
-  studentRow["current_stage"] = 0;
-
+  var submitButton=$("#setup-form button[type=submit]");
+  submitButton.disabled=true; submitButton.textContent="Saving…";
   try {
-    var result = await supabaseClient.from(TABLES.student).insert(studentRow);
-    if (result.error) throw result.error;
-
-    user = { first: v("#f-first"), last: v("#f-last"), net: v("#f-net"), nat: v("#f-nat"), major: majorName };
-    $("#f-pw").value = "";
-    stage = 0;
-    go("home");
-    toast("Student account created successfully!");
-  } catch (error) {
-    err.textContent = "Could not save: " + (error.message || "Database error");
-    err.classList.add("show");
-  } finally {
-    button.disabled = false;
-    button.textContent = "Create account";
-  }
-});
-
-/* Dropdown Loader from Supabase */
-async function loadMajorOptions() {
-  var select = document.getElementById("f-major");
-  var status = document.getElementById("setup-db-status");
-  if (!select || !supabaseClient) return;
-
-  try {
-    var res = await supabaseClient.from("major").select("*");
-    if (res.error) throw res.error;
-    var majors = res.data || [];
-
-    if (majors.length === 0) {
-      select.innerHTML = '<option value="">No majors found in database</option>';
-      if (status) status.textContent = "Major table is empty.";
-      return;
-    }
-
-    var html = '<option value="">Select a major...</option>';
-    majors.forEach(function(m) {
-      var id = m.majorid !== undefined ? m.majorid : m.major_id;
-      var name = m.majorname || m.major_name || m.name;
-      html += '<option value="' + id + '">' + name + '</option>';
+    var saved=await api("/api/students", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({first:v("#f-first"),last:v("#f-last"),net:v("#f-net"),nat:v("#f-nat"),major:v("#f-major")})
     });
+    var majorName=saved.major;
+    user={first:v("#f-first"),last:v("#f-last"),net:v("#f-net"),nat:v("#f-nat"),major:majorName};
+    $("#f-pw").value="";
+    stage=0; go("home");
+    toast("Student details saved. No real BYU account or NetID was created.");
+  } catch(error) {
+    var message=error.message||"Unknown database error.";
+    err.textContent="Could not save: "+message; err.classList.add("show");
+  } finally {
+    submitButton.disabled=false; submitButton.textContent="Create account";
+  }
+});
 
-    select.innerHTML = html;
-    if (status) status.textContent = "Connected to Supabase. Loaded " + majors.length + " majors.";
-  } catch (err) {
-    select.innerHTML = '<option value="">Error loading majors</option>';
-    if (status) status.textContent = "Error: " + (err.message || "Could not read major table.");
+async function loadMajorOptions(){
+  var status=$("#setup-db-status");
+  try {
+    availableMajors=await api("/api/majors");
+    status.textContent="Connected. Type any major; a new major is added to the Major table when you submit.";
+  } catch(error) {
+    status.textContent="Could not read existing majors: "+(error.message||"Check the Major table name, columns, and read policy.");
   }
 }
+$("#signout").addEventListener("click",function(){user=null;$("#setup-form").reset();go("welcome")});
 
-$("#signout").addEventListener("click", function() {
-  user = null;
-  stage = 0;
-  $("#setup-form").reset();
-  $("#signin-form").reset();
-  go("welcome");
-  toast("Signed out.");
-});
-
-/* ---------- Renderers ---------- */
+/* ---------- renderers ---------- */
 function render(){
   if(user){
     $$(".js-first").forEach(function(e){e.textContent=user.first});
@@ -791,7 +586,6 @@ function render(){
   if(current==="profile") renderProfile();
   if(current==="hub") renderHub();
 }
-
 function renderHome(){
   var a=[];
   if(intl()) a.push({u:1,t:"Confirm your housing plan",d:"Housing options can fill up. Review your choices.",go:"journey",l:"See housing step"});
@@ -809,11 +603,9 @@ function renderHome(){
   $("#strip-label").innerHTML="<strong>"+esc(t("here","You're here"))+":</strong> "+esc(t("s"+stage,STAGES[stage].en));
   $("#quick").innerHTML=HUB.slice(0,4).map(function(h){return '<a href="#" data-hub="'+h.k+'">'+esc(t(h.k,h.en))+'</a>'}).join("");
 }
-
 document.addEventListener("click",function(e){
   var h=e.target.closest("[data-hub]"); if(!h) return; e.preventDefault(); selHub=h.dataset.hub; go("hub");
 });
-
 function renderJourney(){
   $("#timeline").innerHTML=STAGES.map(function(s,i){
     var st=i<stage?"done":i===stage?"current":"ahead";
@@ -827,19 +619,16 @@ function renderJourney(){
      +'</div></div></li>';
   }).join("");
 }
-
 document.addEventListener("click",function(e){
   var s=e.target.closest("[data-stage]");
   if(s){var i=+s.dataset.stage; openStage=openStage===i?null:i; renderJourney(); return;}
   var m=e.target.closest("[data-setstage]");
   if(m){stage=+m.dataset.setstage; renderJourney(); toast("Current stage updated.");}
 });
-
 function renderProfile(){
   var c=COURSES[user.major]||COURSES["Undeclared"];
   $("#courses").innerHTML=c.map(function(x){return '<li>'+esc(x[0])+'<span>'+esc(x[1])+'</span></li>'}).join("");
 }
-
 $("#open-change").addEventListener("click",function(){
   var f=$("#change-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#chg-text").focus();
 });
@@ -848,7 +637,7 @@ $("#change-form").addEventListener("submit",function(e){
   toast("Request sent (prototype). An advisor would review it.");
 });
 
-/* Mind Map Hub */
+/* mind map */
 function renderHub(){
   var svg=$("#mindmap"), cx=380, cy=290, rx=285, ry=215, out="";
   var n=HUB.length;
@@ -872,11 +661,13 @@ function renderHub(){
    +'<ul class="links">'+h.links.map(function(l){return '<li><a target="_blank" rel="noopener" href="'+l[1]+'"><span>'+esc(l[0])+'</span><small>'+esc(l[2])+'</small></a></li>'}).join("")+'</ul>'
    +(h.from!==null?'<p style="margin-top:1rem"><button class="btn ghost small" data-go="journey">Back to journey map</button></p>':'');
 }
-
 function pickNode(k){ selHub=k; renderHub(); }
 $("#mindmap").addEventListener("click",function(e){var g=e.target.closest("[data-node]"); if(g) pickNode(g.dataset.node)});
+$("#mindmap").addEventListener("keydown",function(e){
+  if(e.key!=="Enter"&&e.key!==" ") return; var g=e.target.closest("[data-node]"); if(g){e.preventDefault();pickNode(g.dataset.node); var again=$('[data-node="'+g.dataset.node+'"]'); if(again) again.focus();}
+});
 
-/* Languages */
+/* ---------- language ---------- */
 function applyLang(){
   document.documentElement.lang=lang;
   $$("[data-i18n]").forEach(function(el){
@@ -892,17 +683,16 @@ function langPanel(open){ $("#lang-panel").classList.toggle("open",open); $("#la
 $("#lang-tab").addEventListener("click",function(){langPanel(!$("#lang-panel").classList.contains("open"))});
 $("#lang-close").addEventListener("click",function(){langPanel(false);$("#lang-tab").focus()});
 
-/* Assistant Chat */
+/* ---------- chatbot ---------- */
 var PAGE_HELP={
  welcome:"This is the welcome page. Sign in if you already have an account, or create one to get started.",
- setup:"This page mirrors BYU's account setup. Pick the major you plan to study.",
- home:"Your home page shows your profile, alerts that need attention, your place on the journey map, and quick links.",
- journey:"The journey map walks through six areas, from applying to graduating.",
- profile:"This page shows your NetID, major, and classes generally required.",
- hub:"The resource hub is an interactive mind map."
+ setup:"This page mirrors BYU's account setup. Pick the major you plan to study. Nothing here creates a real NetID.",
+ home:"Your home page shows your profile, alerts that need attention, your place on the journey map, and quick links to resources.",
+ journey:"The journey map walks through six areas, from applying to graduating. Select any area for steps and official links. You can mark your current stage.",
+ profile:"This page shows your NetID, major, and the classes generally required. To register, add, or drop classes, use MyMap.",
+ hub:"The resource hub is a map. Pick a branch such as Housing or Taxes to see official sites and offices."
 };
-var CHIPS={welcome:["What is this site?"],setup:["What is a NetID?"],home:["What should I do first?","Where do I find housing?"],journey:["Explain this page"],profile:["How do I change my major?"],hub:["Explain this page"]};
-
+var CHIPS={welcome:["What is this site?"],setup:["What is a NetID?"],home:["What should I do first?","Where do I find housing?"],journey:["Explain this page","Where do I register for classes?"],profile:["How do I change my major?","Where do I register for classes?"],hub:["Explain this page","Who helps with taxes?"]};
 function bot(text,link){
   var m=document.createElement("div"); m.className="msg bot"; m.innerHTML=esc(text);
   if(link){ var a=document.createElement("button"); a.className="btn ghost small go"; a.textContent=link.l; a.addEventListener("click",function(){ if(link.hub) selHub=link.hub; if(link.url){window.open(link.url,"_blank","noopener")} else go(link.go); }); m.appendChild(document.createElement("br")); m.appendChild(a); }
@@ -911,73 +701,36 @@ function bot(text,link){
 function me(text){var m=document.createElement("div");m.className="msg me";m.textContent=text;$("#msgs").appendChild(m);$("#msgs").scrollTop=1e6}
 function answer(q){
   var s=q.toLowerCase();
-  if(/visa|immigra|i-20|sevis|status/.test(s)) return ["I can't give legal or immigration advice. International Services is the official office for these questions.",{l:"Open International Services",url:"https://internationalservices.byu.edu"}];
-  if(/housing|apartment|live|dorm/.test(s)) return ["Housing is step 2 on your journey.",{l:"Open Housing branch",go:"hub",hub:"c_housing"}];
-  if(/regist|class|course|mymap/.test(s)) return ["Register, add, or drop classes in MyMap.",{l:"Open MyMap",url:"https://mymap.byu.edu"}];
-  return ["For a reliable answer, try the main BYU website or contact the relevant BYU office.",{l:"Open byu.edu",url:"https://www.byu.edu"}];
+  if(/visa|immigra|i-20|sevis|status|legal|lawyer|deport|sponsor/.test(s))
+    return ["I can't give legal or immigration advice. International Services is the official office for these questions.",{l:"Open International Services",url:"https://internationalservices.byu.edu"}];
+  if(/graduat|advis|degree plan|requirement/.test(s))
+    return ["Academic advisors can confirm your requirements and graduation plan. I can't replace advising, but I can point you to the right place.",{l:"Open journey: graduation",go:"journey"}];
+  if(/major/.test(s)) return ["You can't edit your major directly here. Use “Request a change” on your profile page, and confirm with your advisor.",{l:"Go to profile",go:"profile"}];
+  if(/housing|apartment|live|dorm/.test(s)) return ["Housing is step 2 on your journey. The official site has options and contract details.",{l:"Open Housing branch",go:"hub",hub:"c_housing"}];
+  if(/regist|class|course|add|drop|mymap/.test(s)) return ["Register, add, or drop classes in MyMap. This site only shows information.",{l:"Open MyMap",url:"https://mymap.byu.edu"}];
+  if(/tax/.test(s)) return ["International Services shares tax information for international students. Check with them before you file.",{l:"Open Taxes branch",go:"hub",hub:"c_tax"}];
+  if(/job|work|employ|intern|career/.test(s)) return ["Career Services helps with jobs and internships. For rules about whether you may work, ask International Services.",{l:"Open Employment branch",go:"hub",hub:"c_emp"}];
+  if(/first|start|where do i begin/.test(s)) return ["Start with the items marked “Needs attention” on your home page, then open the journey map to see your next step.",{l:"Go to home",go:"home"}];
+  if(/page|this site|explain|what is/.test(s)) return [PAGE_HELP[current],null];
+  if(/netid/.test(s)) return ["A NetID is your BYU username. In this prototype, no real NetID is created.",null];
+  if(/hello|hi\b|hey/.test(s)) return ["Hi! Ask me about this page, or where to find housing, classes, taxes, or jobs.",null];
+  return ["I'm not sure about that, and I don't want to guess. For a reliable answer, try the main BYU website or contact the relevant BYU office.",{l:"Open byu.edu",url:"https://www.byu.edu"}];
 }
 function ask(q){ me(q); var r=answer(q); setTimeout(function(){bot(r[0],r[1])},250); }
-function updateChips(){ $("#chips").innerHTML=(CHIPS[current]||[]).map(function(c){return '<button type="button">'+esc(c)+'</button>'}).join(""); }
+function updateChips(){
+  $("#chips").innerHTML=(CHIPS[current]||[]).map(function(c){return '<button type="button">'+esc(c)+'</button>'}).join("");
+}
 $("#chips").addEventListener("click",function(e){var b=e.target.closest("button"); if(b) ask(b.textContent)});
 $("#chat-form").addEventListener("submit",function(e){e.preventDefault();var v=$("#chat-in").value.trim(); if(!v) return; $("#chat-in").value=""; ask(v)});
-function chat(open){ $("#chat").classList.toggle("open",open); $("#chat-fab").setAttribute("aria-expanded",open); if(open){ if(!$("#msgs").children.length) bot("Hi! How can I help you today?"); $("#chat-in").focus(); } }
+function chat(open){
+  $("#chat").classList.toggle("open",open); $("#chat-fab").setAttribute("aria-expanded",open);
+  if(open){ if(!$("#msgs").children.length) bot("Hi, I'm the BYU Navigator assistant. I can explain this page and point you to official resources. I can't give legal or immigration advice."); $("#chat-in").focus(); }
+}
 $("#chat-fab").addEventListener("click",function(){chat(!$("#chat").classList.contains("open"))});
 $("#chat-close").addEventListener("click",function(){chat(false);$("#chat-fab").focus()});
+document.addEventListener("keydown",function(e){ if(e.key==="Escape"){chat(false);langPanel(false)} });
 
-/* Appointment Scheduler */
-$("#schedule-appointment-btn").addEventListener("click", function() {
-  $("#appointment-form-container").hidden = false;
-  $("#schedule-appointment-btn").hidden = true;
-});
-$("#cancel-appointment-form-btn").addEventListener("click", function() {
-  $("#appointment-form-container").hidden = true;
-  $("#appointment-form").reset();
-  $("#schedule-appointment-btn").hidden = false;
-});
-
-var demoAppointmentSlots = {};
-["advisor-1", "advisor-2"].forEach(function(advisorId, index) {
-  demoAppointmentSlots[advisorId] = [10, 14].map(function(hour) {
-    var date = new Date();
-    date.setDate(date.getDate() + 1);
-    date.setHours(hour, index * 30, 0, 0);
-    return { id: advisorId + "-" + date.getTime(), label: date.toLocaleString([], { weekday: "long", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) };
-  });
-});
-
-$("#appointment-advisor").addEventListener("change", function() {
-  var slots = demoAppointmentSlots[this.value] || [];
-  var dropdown = $("#appointment-slot");
-  dropdown.innerHTML = "";
-  var placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = slots.length ? "Choose a time" : "Choose an advisor first";
-  dropdown.appendChild(placeholder);
-  slots.forEach(function(slot) {
-    var option = document.createElement("option"); option.value = slot.id; option.textContent = slot.label; dropdown.appendChild(option);
-  });
-  dropdown.disabled = slots.length === 0;
-});
-
-$("#appointment-form").addEventListener("submit", function(e) {
-  e.preventDefault();
-  var advisorDropdown = $("#appointment-advisor");
-  var slotDropdown = $("#appointment-slot");
-  var topicDropdown = $("#appointment-topic");
-  var slots = demoAppointmentSlots[advisorDropdown.value] || [];
-  var selectedSlot = slots.find(function(slot) { return slot.id === slotDropdown.value; });
-
-  if (!advisorDropdown.value || !selectedSlot || !topicDropdown.value) return;
-
-  $("#appointment-summary").textContent = "Demo appointment with " + advisorDropdown.options[advisorDropdown.selectedIndex].textContent + " on " + selectedSlot.label + ". Topic: " + topicDropdown.options[topicDropdown.selectedIndex].textContent;
-  $("#appointment-form-container").hidden = true;
-  $("#schedule-appointment-btn").textContent = "Change appointment";
-  $("#schedule-appointment-btn").hidden = false;
-});
-
-applyLang();
-updateChips();
-loadMajorOptions();
+applyLang(); updateChips(); loadMajorOptions();
 })();
 </script>
 </body>
