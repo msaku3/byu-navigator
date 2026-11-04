@@ -60,7 +60,14 @@ main{max-width:1120px;margin:0 auto;padding:clamp(1.2rem,3vw,2.5rem) clamp(1rem,
 .screen{display:none}.screen.active{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.7rem 1.2rem;font-weight:600;border:2px solid var(--royal);background:var(--royal);color:#fff;text-decoration:none}
-:root[data-theme="dark"] .btn,:root:not([data-theme="light"]) .btn{color:#06182b}
+/* Keep filled buttons readable in every theme. */
+:root .btn {
+  color: #fff;
+}
+/* Outlined buttons keep their theme's blue text. */
+:root .btn.ghost {
+  color: var(--royal);
+}
 .btn.ghost{background:transparent;color:var(--royal)}
 .btn.small{padding:.4rem .8rem;font-size:.92rem;border-radius:10px}
 .btn:hover{filter:brightness(1.08)}
@@ -94,7 +101,7 @@ input,select,textarea{font:inherit;padding:.65rem .8rem;border-radius:10px;borde
 /* 3 home */
 .home-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
 .avatar{width:64px;height:64px;border-radius:50%;background:var(--royal);color:#fff;display:grid;place-items:center;font-family:var(--font-head);font-weight:700;font-size:1.4rem}
-:root[data-theme="dark"] .avatar,:root:not([data-theme="light"]) .avatar{color:#06182b}
+:root[data-theme="dark"] .avatar,:root:not([data-theme="light"]) .avatar{color:#fff}
 dl.facts{margin:1rem 0 0;display:grid;gap:.6rem}
 dl.facts div{display:flex;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.5rem}
 dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
@@ -204,6 +211,44 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
   .choices,.form .row{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+/* Give buttons and form controls comfortable target sizes. */
+.btn,
+input,
+select,
+textarea {
+  min-height: 44px;
+}
+
+.btn {
+  white-space: normal;
+  text-align: center;
+}
+
+/* Make keyboard focus visible on interactive elements. */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 2px #fff;
+}
+
+/* Use spacing to distinguish each action. */
+.quick,
+#appointment-form > div {
+  gap: 0.75rem;
+}
+
+/* Keep text labels on disabled buttons readable. */
+.btn:disabled {
+  opacity: 1;
+  background: #e2e8f0;
+  border-color: #64748b;
+  color: #334155;
+  cursor: not-allowed;
+}
+/* White initials on the dark-blue profile avatar. */
+:root .avatar {
+  color: #fff;
+}
 </style>
 
 </head>
