@@ -240,12 +240,39 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
         <button class="choice" id="choose-signin"><strong data-i18n="signin">Sign in</strong><span data-i18n="have_acct">I already have an account</span></button>
         <button class="choice" data-go="setup"><strong data-i18n="signup">Create account</strong><span data-i18n="new_here">I'm new here</span></button>
       </div>
-      <form class="signin-form card form" id="signin-form">
-        <label>NetID <input id="si-net" autocomplete="username" placeholder="e.g. cougar42"></label>
-        <label><span data-i18n="password">Password</span> <input id="si-pw" type="password" autocomplete="current-password"></label>
-        <button class="btn" type="submit" data-i18n="signin">Sign in</button>
-        <p class="hint" style="margin:0">Prototype: any values work and open the home page with a sample profile.</p>
-      </form>
+     <form class="signin-form card form" id="signin-form">
+      <label for="si-email">
+        Email address
+      <input
+        id="si-email"
+        type="email"
+        autocomplete="username"
+        placeholder="you@example.com"
+        required
+      >
+      </label>
+
+      <label for="si-pw">
+        Password
+        <input
+        id="si-pw"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
+      </label>
+
+    <p id="signin-err" role="alert"></p>
+
+    <button class="btn" type="submit">
+      Sign in
+    </button>
+
+    <p class="hint">
+      Use your BYU Navigator email and password.
+      This is separate from your official BYU account.
+    </p>
+    </form>
     </div>
     <svg class="path-art" viewBox="0 0 400 360" role="img" aria-label="A winding path with six waypoints, from applying to graduating">
       <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170 S 90 150, 150 95 S 330 90, 350 30" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
@@ -293,8 +320,11 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
       </label>
     </div>
     <div class="error" id="setup-err" role="alert"></div>
+    <p id="signup-status" role="status" aria-live="polite"></p>
     <button class="btn" type="submit" data-i18n="continue">Create account</button>
-    <div class="proto">Prototype: this saves your student details to the project database. It does not create a real BYU account or NetID. Your password is used only for this form check and is never sent to Supabase.</div>
+    <div class="proto">This creates a BYU Navigator account, not an official BYU account.
+    Your email and password are sent to Supabase Auth for authentication. Do not use your BYU password.
+    </div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
 </section>
@@ -532,44 +562,108 @@ document.addEventListener("click",function(e){
 $("#choose-signin").addEventListener("click",function(){
   var f=$("#signin-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#si-net").focus();
 });
-$("#signin-form").addEventListener("submit",function(e){
+$("#signin-form").addEventListener("submit", async function(e) {
   e.preventDefault();
-  if(!user){ user={first:"Sample",last:"Student",net:$("#si-net").value||"cougar42",nat:"Brazil",major:"Computer Science"}; }
-  go("home");
-});
-$("#setup-form").addEventListener("submit",async function(e){
-  e.preventDefault();
-  var v=function(id){return $(id).value.trim()}, err=$("#setup-err"), msg="";
-  if(!v("#f-first")||!v("#f-last")) msg="Enter your first and last name.";
-  else if(!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg="NetID must be 4–12 letters or numbers, with no spaces.";
-  else if(!v("#f-email"))
-    msg="Enter your email address.";
-  else if(!$("#f-email").validity.valid)
-    msg="Enter a valid email address.";
-  else if($("#f-pw").value.length<8) msg="Password must be at least 8 characters.";
-  else if(!v("#f-nat")) msg="Select your nationality.";
-  else if(!v("#f-major")) msg="Select a planned major.";
 
-  err.textContent=msg; err.classList.toggle("show",!!msg);
-  if(msg) return;
+  var email = $("#si-email").value.trim();
+  var password = $("#si-pw").value;
+  var err = $("#signin-err");
+  var button = $("#signin-form button[type=submit]");
 
-  var submitButton=$("#setup-form button[type=submit]");
-  submitButton.disabled=true; submitButton.textContent="Saving…";
+  err.textContent = "";
+
+  if (!email || !$("#si-email").validity.valid || !password) {
+    err.textContent = "Enter a valid email address and your password.";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Signing in…";
+
   try {
-    var saved=await api("/api/students", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({first:v("#f-first"),last:v("#f-last"),net:v("#f-net"),nat:v("#f-nat"),major:v("#f-major")})
+    var result = await api("/api/signin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        password: password
+      })
     });
-    var majorName=saved.major;
-    user={first:v("#f-first"),last:v("#f-last"),net:v("#f-net"),nat:v("#f-nat"),major:majorName};
-    $("#f-pw").value="";
-    stage=0; go("home");
-    toast("Student details saved. No real BYU account or NetID was created.");
-  } catch(error) {
-    var message=error.message||"Unknown database error.";
-    err.textContent="Could not save: "+message; err.classList.add("show");
+
+    // Temporary display values until student profiles are connected.
+    user = {
+      id: result.user.id,
+      email: result.user.email,
+      first: "Navigator",
+      last: "User",
+      net: "Not connected",
+      nat: "Not connected",
+      major: "Not connected"
+    };
+
+    $("#si-pw").value = "";
+    go("home");
+    toast("Signed in successfully.");
+  } catch (error) {
+    err.textContent = error.message || "Could not sign in.";
   } finally {
-    submitButton.disabled=false; submitButton.textContent="Create account";
+    button.disabled = false;
+    button.textContent = "Sign in";
+  }
+});
+$("#setup-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  var v = function(id) {
+    return $(id).value.trim();
+  };
+
+  var err = $("#setup-err");
+  var status = $("#signup-status");
+  var msg = "";
+
+  status.textContent = "";
+
+  if (!v("#f-first") || !v("#f-last")) {
+    msg = "Enter your first and last name.";
+  } else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) {
+    msg = "NetID must be 4–12 letters or numbers.";
+  } else if (!v("#f-email") || !$("#f-email").validity.valid) {
+    msg = "Enter a valid email address.";
+  } else if ($("#f-pw").value.length < 8) {
+    msg = "Password must be at least 8 characters.";
+  } else if (!v("#f-nat")) {
+    msg = "Enter your nationality.";
+  } else if (!v("#f-major")) {
+    msg = "Enter your planned major.";
+  }
+
+  err.textContent = msg;
+  err.classList.toggle("show", !!msg);
+  if (msg) return;
+
+  var button = $("#setup-form button[type=submit]");
+  button.disabled = true;
+  button.textContent = "Creating account…";
+
+  try {
+    var result = await api("/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: v("#f-email"),
+        password: $("#f-pw").value
+      })
+    });
+
+    $("#f-pw").value = "";
+    status.textContent = result.message;
+  } catch (error) {
+    err.textContent = error.message || "Could not submit signup.";
+    err.classList.add("show");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Create account";
   }
 });
 
@@ -582,7 +676,25 @@ async function loadMajorOptions(){
     status.textContent="Could not read existing majors: "+(error.message||"Check the Major table name, columns, and read policy.");
   }
 }
-$("#signout").addEventListener("click",function(){user=null;$("#setup-form").reset();go("welcome")});
+$("#signout").addEventListener("click", async function() {
+  var button = $("#signout");
+  button.disabled = true;
+
+  try {
+    await api("/api/signout", { method: "POST" });
+
+    user = null;
+    $("#setup-form").reset();
+    $("#signin-form").reset();
+
+    go("welcome");
+    toast("Signed out.");
+  } catch (error) {
+    toast(error.message || "Could not sign out. Please try again.");
+  } finally {
+    button.disabled = false;
+  }
+});
 
 /* ---------- renderers ---------- */
 function render(){
@@ -743,8 +855,28 @@ function chat(open){
 $("#chat-fab").addEventListener("click",function(){chat(!$("#chat").classList.contains("open"))});
 $("#chat-close").addEventListener("click",function(){chat(false);$("#chat-fab").focus()});
 document.addEventListener("keydown",function(e){ if(e.key==="Escape"){chat(false);langPanel(false)} });
+async function restoreSession() {
+  try {
+    var result = await api("/api/session");
 
-applyLang(); updateChips(); loadMajorOptions();
+    if (!result.user) return;
+
+    user = {
+      id: result.user.id,
+      email: result.user.email,
+      first: "Navigator",
+      last: "User",
+      net: "Not connected",
+      nat: "Not connected",
+      major: "Not connected"
+    };
+
+    go("home");
+  } catch (error) {
+    toast(error.message || "Could not check your session.");
+  }
+}
+applyLang(); updateChips(); loadMajorOptions(); restoreSession();
 })();
 </script>
 </body>

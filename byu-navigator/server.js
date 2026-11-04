@@ -74,6 +74,54 @@ async function createAuthAccount(email, password) {
 
   return result;
 }
+async function signInAuthAccount(email, password) {
+  const url = new URL('/auth/v1/token', upstream);
+  url.searchParams.set('grant_type', 'password');
+
+  const headers = {
+    apikey: key,
+    'Content-Type': 'application/json'
+  };
+
+  if (!key.startsWith('sb_publishable_')) {
+    headers.Authorization = 'Bearer ' + key;
+  }
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ email, password }),
+    signal: AbortSignal.timeout(15000)
+  });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    let message = 'Could not sign in. Please try again.';
+    let status = 502;
+
+    if (response.status === 429) {
+      message = 'Too many attempts. Please wait before trying again.';
+      status = 429;
+    } else if (result.error_code === 'email_not_confirmed') {
+      message = 'Confirm your email before signing in.';
+      status = 401;
+    } else if (
+      response.status === 400 ||
+      response.status === 401 ||
+      response.status === 422
+    ) {
+      message = 'Check your email and password.';
+      status = 401;
+    }
+
+    const error = new Error(message);
+    error.status = status;
+    throw error;
+  }
+
+  return result;
+}
 function json(res, status, value) {
   res.writeHead(status, {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'});
   res.end(JSON.stringify(value));
@@ -99,6 +147,193 @@ const server = http.createServer(async (req, res) => {
       const rows = await db('major', {select:majorIdColumn + ',majorname', order:'majorname'});
       return json(res, 200, rows.map(row => ({id: row[majorIdColumn], majorname: row.majorname})));
     }
+  if (req.method === 'POST' && url.pathname === '/api/signout') {
+  const protocol = req.socket.encrypted ? 'https://' : 'http://';
+  const expectedOrigin = protocol + req.headers.host;
+
+  if (req.headers.origin && req.headers.origin !== expectedOrigin) {
+    return json(res, 403, {
+      error: 'Sign out from the Navigator website.'
+    });
+  }
+
+  const secure = req.socket.encrypted ? '; Secure' : '';
+
+  res.setHeader(
+    'Set-Cookie',
+    'navigator_session=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0' +
+    secure
+  );
+  res.setHeader('Cache-Control', 'no-store');
+
+  return json(res, 200, { message: 'Signed out.' });
+}
+if (req.method === 'GET' && url.pathname === '/api/session') {
+  res.setHeader('Cache-Control', 'no-store');
+
+  const cookie = (req.headers.cookie || '')
+    .split(';')
+    .map(part => part.trim())
+    .find(part => part.startsWith('navigator_session='));
+
+  if (!cookie) {
+    return json(res, 200, { user: null });
+  }
+
+  let token;
+
+  try {
+    token = decodeURIComponent(
+      cookie.slice('navigator_session='.length)
+    );
+  } catch {
+    return json(res, 200, { user: null });
+  }
+
+  const response = await fetch(
+    new URL('/auth/v1/user', upstream),
+    {
+      headers: {
+        apikey: key,
+        Authorization: 'Bearer ' + token
+      },
+      signal: AbortSignal.timeout(15000)
+    }
+  );
+
+  if (response.status === 401 || response.status === 403) {
+    return json(res, 200, { user: null });
+  }
+
+  if (!response.ok) {
+    return json(res, 502, {
+      error: 'Could not check your session. Please try refreshing.'
+    });
+  }
+
+  const authUser = await response.json();
+
+  return json(res, 200, {
+    user: {
+      id: authUser.id,
+      email: authUser.email
+    }
+  });
+}
+  if (req.method === 'POST' && url.pathname === '/api/signin') {
+  const protocol = req.socket.encrypted ? 'https://' : 'http://';
+  const expectedOrigin = protocol + req.headers.host;
+
+  if (req.headers.origin && req.headers.origin !== expectedOrigin) {
+    return json(res, 403, {
+      error: 'Sign in from the Navigator website.'
+    });
+  }
+
+  if (!req.headers['content-type']?.startsWith('application/json')) {
+    return json(res, 415, { error: 'Send JSON.' });
+  }
+
+  const input = await body(req);
+
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return json(res, 400, { error: 'Invalid sign-in data.' });
+  }
+
+  const email =
+    typeof input.email === 'string' ? input.email.trim() : '';
+  const password = input.password;
+
+  if (
+    !email ||
+    email.length > 254 ||
+    typeof password !== 'string' ||
+    !password
+  ) {
+    return json(res, 400, {
+      error: 'Enter your email and password.'
+    });
+  }
+
+  const result = await signInAuthAccount(email, password);
+
+  if (!result.access_token || !result.user) {
+    return json(res, 502, {
+      error: 'Could not establish a sign-in session.'
+    });
+  }
+
+  const maxAge = Math.max(
+    0,
+    Math.floor(Number(result.expires_in) || 0)
+  );
+
+  const secure = req.socket.encrypted ? '; Secure' : '';
+
+  res.setHeader(
+    'Set-Cookie',
+    'navigator_session=' + encodeURIComponent(result.access_token) +
+    '; HttpOnly; SameSite=Lax; Path=/; Max-Age=' + maxAge + secure
+  );
+
+  res.setHeader('Cache-Control', 'no-store');
+
+  return json(res, 200, {
+    user: {
+      id: result.user.id,
+      email: result.user.email
+    }
+  });
+}
+    if (req.method === 'POST' && url.pathname === '/api/signup') {
+  // Local-development origin check, matching your existing route.
+  if (
+    req.headers.origin &&
+    req.headers.origin !== 'http://' + req.headers.host
+  ) {
+    return json(res, 403, {
+      error: 'Submit this form from the Navigator website.'
+    });
+  }
+
+  if (!req.headers['content-type']?.startsWith('application/json')) {
+    return json(res, 415, { error: 'Send JSON.' });
+  }
+
+  const input = await body(req);
+
+  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+    return json(res, 400, { error: 'Invalid signup data.' });
+  }
+
+  const email =
+    typeof input.email === 'string' ? input.email.trim() : '';
+
+  const password = input.password;
+
+  if (
+    email.length > 254 ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+  ) {
+    return json(res, 400, {
+      error: 'Enter a valid email address.'
+    });
+  }
+
+  if (typeof password !== 'string' || password.length < 8) {
+    return json(res, 400, {
+      error: 'Password must be at least 8 characters.'
+    });
+  }
+
+  await createAuthAccount(email, password);
+
+  return json(res, 200, {
+    message:
+      'Signup request received. Check your email for a confirmation link. ' +
+      'If you already have an account, try signing in.'
+  });
+}
     if (req.method === 'POST' && url.pathname === '/api/students') {
       // Reject browser requests from a different origin; no CORS access is enabled.
       if (req.headers.origin && req.headers.origin !== 'http://' + req.headers.host) return json(res, 403, {error:'Submit this form from the Navigator website.'});
