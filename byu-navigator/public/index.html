@@ -272,6 +272,16 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
       <label><span data-i18n="last">Last name</span><input id="f-last" required autocomplete="family-name"></label>
     </div>
     <label><span data-i18n="netid">Desired NetID</span><input id="f-net" required autocapitalize="none" autocomplete="username"><span class="hint">Letters and numbers only, 4–12 characters.</span></label>
+    <label for="f-email">
+      Email address
+      <input
+      id="f-email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      placeholder="you@example.com"
+      required>
+    </label>
     <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="8" autocomplete="new-password"><span class="hint">At least 8 characters.</span></label>
     <div class="row">
       <label><span data-i18n="nation">Nationality</span>
@@ -532,6 +542,10 @@ $("#setup-form").addEventListener("submit",async function(e){
   var v=function(id){return $(id).value.trim()}, err=$("#setup-err"), msg="";
   if(!v("#f-first")||!v("#f-last")) msg="Enter your first and last name.";
   else if(!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg="NetID must be 4–12 letters or numbers, with no spaces.";
+  else if(!v("#f-email"))
+    msg="Enter your email address.";
+  else if(!$("#f-email").validity.valid)
+    msg="Enter a valid email address.";
   else if($("#f-pw").value.length<8) msg="Password must be at least 8 characters.";
   else if(!v("#f-nat")) msg="Select your nationality.";
   else if(!v("#f-major")) msg="Select a planned major.";
