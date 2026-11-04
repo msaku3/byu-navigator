@@ -306,6 +306,71 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
       <p style="margin:1rem 0 0"><button class="btn ghost small" data-go="profile" data-i18n="nav_profile">Profile</button></p>
     </aside>
     <div class="stack">
+      <section class="card" aria-labelledby="appointment-heading">
+    <h2 id="appointment-heading">International advising appointment</h2>
+
+    <p id="appointment-summary" role="status">
+    No upcoming appointments.
+    </p>
+
+    <button
+    class="btn"
+    id="schedule-appointment-btn"
+    type="button"
+    >
+    Schedule appointment
+    </button>
+    <div id="appointment-form-container" hidden>
+  <form id="appointment-form" class="form">
+    <label for="appointment-advisor">
+      Advisor
+      <select id="appointment-advisor" required>
+        <option value="">Choose a demo advisor</option>
+        <option value="advisor-1">Demo Advisor A</option>
+        <option value="advisor-2">Demo Advisor B</option>
+      </select>
+    </label>
+
+    <label for="appointment-slot">
+      Available appointment
+      <select id="appointment-slot" required disabled>
+        <option value="">Choose an advisor first</option>
+      </select>
+    </label>
+    <p class="hint">
+    Sample availability. Times use your device’s time zone.
+    </p>
+    <label for="appointment-topic">
+      Appointment topic
+      <select id="appointment-topic" required>
+        <option value="">Choose a topic</option>
+        <option value="arrival">Arrival and settling in</option>
+        <option value="resources">Finding campus resources</option>
+        <option value="academic">Academic planning</option>
+      </select>
+    </label>
+
+    <p id="appointment-form-error" role="alert"></p>
+
+    <div>
+      <button class="btn" type="submit">
+        Book demo appointment
+      </button>
+
+      <button
+        class="btn ghost"
+        id="cancel-appointment-form-btn"
+        type="button"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+    <p class="hint">
+    Demo only. Bookings do not reserve an appointment with BYU.
+    </p>
+  </section>
       <section class="card" aria-labelledby="al-h">
         <h2 id="al-h" data-i18n="alerts">Alerts and action items</h2>
         <ul class="alerts" id="alerts"></ul>
@@ -729,7 +794,110 @@ function chat(open){
 $("#chat-fab").addEventListener("click",function(){chat(!$("#chat").classList.contains("open"))});
 $("#chat-close").addEventListener("click",function(){chat(false);$("#chat-fab").focus()});
 document.addEventListener("keydown",function(e){ if(e.key==="Escape"){chat(false);langPanel(false)} });
+/* ---------- appointment form ---------- */
 
+$("#schedule-appointment-btn").addEventListener("click", function() {
+  $("#appointment-form-container").hidden = false;
+  $("#schedule-appointment-btn").hidden = true;
+  $("#appointment-advisor").focus();
+});
+
+$("#cancel-appointment-form-btn").addEventListener("click", function() {
+  $("#appointment-form-container").hidden = true;
+  $("#appointment-form").reset();
+
+  $("#appointment-slot").innerHTML =
+    '<option value="">Choose an advisor first</option>';
+  $("#appointment-slot").disabled = true;
+
+  $("#appointment-form-error").textContent = "";
+  $("#schedule-appointment-btn").hidden = false;
+  $("#schedule-appointment-btn").focus();
+});
+// Generate sample availability for the UI demonstration.
+var demoAppointmentSlots = {};
+
+["advisor-1", "advisor-2"].forEach(function(advisorId, index) {
+  demoAppointmentSlots[advisorId] = [10, 14].map(function(hour) {
+    var date = new Date();
+    date.setDate(date.getDate() + 1);
+    date.setHours(hour, index * 30, 0, 0);
+
+    return {
+      id: advisorId + "-" + date.getTime(),
+      startsAt: date.toISOString(),
+      label: date.toLocaleString([], {
+        weekday: "long",
+        month: "short",
+        day: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      })
+    };
+  });
+});
+
+$("#appointment-advisor").addEventListener("change", function() {
+  var slots = demoAppointmentSlots[this.value] || [];
+  var dropdown = $("#appointment-slot");
+
+  dropdown.innerHTML = "";
+
+  var placeholder = document.createElement("option");
+  placeholder.value = "";
+  placeholder.textContent = slots.length
+    ? "Choose a time"
+    : "Choose an advisor first";
+  dropdown.appendChild(placeholder);
+
+  slots.forEach(function(slot) {
+    var option = document.createElement("option");
+    option.value = slot.id;
+    option.textContent = slot.label;
+    dropdown.appendChild(option);
+  });
+
+  dropdown.disabled = slots.length === 0;
+  $("#appointment-form-error").textContent = "";
+});
+$("#appointment-form").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  var advisorDropdown = $("#appointment-advisor");
+  var slotDropdown = $("#appointment-slot");
+  var topicDropdown = $("#appointment-topic");
+  var error = $("#appointment-form-error");
+
+  var slots = demoAppointmentSlots[advisorDropdown.value] || [];
+  var selectedSlot = slots.find(function(slot) {
+    return slot.id === slotDropdown.value;
+  });
+
+  if (!advisorDropdown.value || !selectedSlot || !topicDropdown.value) {
+    error.textContent = "Choose an advisor, time, and topic.";
+    return;
+  }
+
+  var advisorName =
+    advisorDropdown.options[advisorDropdown.selectedIndex].textContent;
+
+  var topicName =
+    topicDropdown.options[topicDropdown.selectedIndex].textContent;
+
+  $("#appointment-summary").textContent =
+    "Demo appointment with " + advisorName +
+    " on " + selectedSlot.label +
+    ". Topic: " + topicName +
+    ". Preview only—not saved yet.";
+
+  error.textContent = "";
+  $("#appointment-form-container").hidden = true;
+
+  var button = $("#schedule-appointment-btn");
+  button.textContent = "Change demo appointment";
+  button.hidden = false;
+  button.focus();
+});
 applyLang(); updateChips(); loadMajorOptions();
 })();
 </script>
