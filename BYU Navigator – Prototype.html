@@ -223,7 +223,7 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
     <button data-go="journey" data-i18n="nav_journey">Journey map</button>
     <button data-go="profile" data-i18n="nav_profile">Profile</button>
     <button data-go="hub" data-i18n="nav_resources">Resource hub</button>
-    <button id="signout" data-i18n="signout">Sign out</button>
+    <button id="signout" data-go="welcome" data-i18n="signout" style="position: relative; z-index: 9999; cursor: pointer;">Sign out</button>
   </nav>
   <button class="lang-btn" id="lang-tab" aria-expanded="false" aria-controls="lang-panel"><span aria-hidden="true">🌐</span> <span data-i18n="lang_h">Language</span></button>
   </div>
@@ -273,19 +273,21 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
       <label><span data-i18n="last">Last name</span><input id="f-last" required autocomplete="family-name"></label>
     </div>
     <label><span data-i18n="netid">Desired NetID</span><input id="f-net" required autocapitalize="none" autocomplete="username"><span class="hint">Letters and numbers only, 4–12 characters.</span></label>
-    <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="8" autocomplete="new-password"><span class="hint">At least 8 characters.</span></label>
+    <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="4" autocomplete="new-password"><span class="hint">At least 4 characters.</span></label>
     <div class="row">
       <label><span data-i18n="nation">Nationality</span>
         <input id="f-nat" type="text" required autocomplete="country-name" placeholder="e.g., Panama">
       </label>
       <label><span data-i18n="major">Planned major</span>
-        <input id="f-major" type="text" required autocomplete="off" placeholder="Type your planned major">
-        <span class="hint">Enter your major in your own words.</span>
+        <select id="f-major" required>
+          <option value="">Loading majors...</option>
+        </select>
+        <span class="hint">Select your planned major from the dropdown.</span>
       </label>
     </div>
     <div class="error" id="setup-err" role="alert"></div>
     <button class="btn" type="submit" data-i18n="continue">Create account</button>
-    <div class="proto">Prototype: this saves your student details to the project database. It does not create a real BYU account or NetID. Your password is used only for this form check and is never sent to Supabase.</div>
+    <div class="proto">Prototype: saves your student details and password to your Supabase project database. Does not create a real BYU account.</div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
 </section>
@@ -489,14 +491,15 @@ var COURSES={
 /* ---------- state ---------- */
 var user=null, stage=0, openStage=null, selHub=null;
 
-// Supabase setup: paste the project URL and publishable key from Project Settings.
-// Never put a Supabase secret/service-role key in this browser file.
-const SUPABASE_URL = "YOUR_PROJECT_URL";
-const SUPABASE_PUBLISHABLE_KEY = "YOUR_PUBLISHABLE_KEY";
+// Supabase setup: paste your real URL and publishable key here
+const SUPABASE_URL = "https://xeldikaeoxbiwtqhabsw.supabase.co"; // <-- Paste real URL here
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_kws05stP8txREy3GONIOuQ_rMTYx8ZY"; // <-- Paste real anon key here
+
 const TABLES = { student: "student", major: "major" };
 const COLS = {
   studentId: "studentid", netId: "netid", firstName: "firstname",
   lastName: "lastname", nationality: "nationality", majorId: "majorid",
+  password: "password",
   majorIdInMajor: "majorid", majorName: "majorname", department: "department"
 };
 var supabaseClient = null;
@@ -524,96 +527,215 @@ function go(name){
   render(); window.scrollTo(0,0); updateChips();
 }
 document.addEventListener("click",function(e){
-  var b=e.target.closest("[data-go]"); if(!b) return;
-  var n=b.dataset.go; if(n==="welcome"&&user) n="home"; go(n);
+  var b=e.target.closest("[data-go], #signout"); 
+  if(!b) return;
+
+  if (b.id === "signout") {
+    e.preventDefault();
+    user = null;
+    stage = 0;
+    if ($("#setup-form")) $("#setup-form").reset();
+    if ($("#signin-form")) $("#signin-form").reset();
+    var err = $("#setup-err");
+    if (err) err.classList.remove("show");
+    toast("Signed out successfully.");
+    go("welcome");
+    return;
+  }
+
+  var n=b.dataset.go; 
+  if(n==="welcome"&&user) n="home"; 
+  go(n);
 });
 
 /* ---------- welcome / setup ---------- */
-$("#choose-signin").addEventListener("click",function(){
-  var f=$("#signin-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#si-net").focus();
+$("#choose-signin").addEventListener("click", function(){
+  var f = $("#signin-form"); 
+  if (f) f.classList.toggle("open"); 
+  if (f && f.classList.contains("open") && $("#si-net")) $("#si-net").focus();
 });
-$("#signin-form").addEventListener("submit",function(e){
-  e.preventDefault();
-  if(!user){ user={first:"Sample",last:"Student",net:$("#si-net").value||"cougar42",nat:"Brazil",major:"Computer Science"}; }
-  go("home");
-});
-$("#setup-form").addEventListener("submit",async function(e){
-  e.preventDefault();
-  var v=function(id){return $(id).value.trim()}, err=$("#setup-err"), msg="";
-  if(!v("#f-first")||!v("#f-last")) msg="Enter your first and last name.";
-  else if(!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg="NetID must be 4–12 letters or numbers, with no spaces.";
-  else if($("#f-pw").value.length<8) msg="Password must be at least 8 characters.";
-  else if(!v("#f-nat")) msg="Select your nationality.";
-  else if(!v("#f-major")) msg="Select a planned major.";
-  else if(!supabaseClient) msg="Supabase is not connected yet. Add your project URL and publishable key in the code.";
-  err.textContent=msg; err.classList.toggle("show",!!msg);
-  if(msg) return;
 
-  var typedMajor=v("#f-major");
-  var selectedMajor=availableMajors.find(function(m){
-    return String(m[COLS.majorName]).trim().toLowerCase()===typedMajor.toLowerCase();
-  });
-  var operation="major";
-  var submitButton=$("#setup-form button[type=submit]");
-  submitButton.disabled=true; submitButton.textContent="Saving…";
+$("#signin-form").addEventListener("submit", async function(e){
+  e.preventDefault();
+  
+  var netInput = $("#si-net");
+  var pwInput = $("#si-pw");
+
+  var net = netInput ? netInput.value.trim() : "";
+  var pw = pwInput ? pwInput.value.trim() : "";
+
+  if (!net || !pw) { 
+    toast("Please enter both NetID and password."); 
+    return; 
+  }
+
   try {
-    if(!selectedMajor){
-      var newMajor={};
-      newMajor[COLS.majorName]=typedMajor;
-      if(COLS.department) newMajor[COLS.department]="";
-      var majorResult=await supabaseClient.from(TABLES.major)
-        .insert(newMajor).select(COLS.majorIdInMajor+","+COLS.majorName).single();
-      if(majorResult.error) throw majorResult.error;
-      selectedMajor=majorResult.data;
-      availableMajors.push(selectedMajor);
+    // Query Supabase for student matching NetID and Password
+    var res = await supabaseClient
+      .from(TABLES.student)
+      .select("*")
+      .eq(COLS.netId, net)
+      .eq(COLS.password, pw);
+
+    if (res.error) throw res.error;
+
+    if (!res.data || res.data.length === 0) {
+      toast("Invalid NetID or password.");
+      return;
     }
 
-    var majorId=selectedMajor[COLS.majorIdInMajor];
-    if(typeof majorId==="string" && /^-?\d+$/.test(majorId)) majorId=Number(majorId);
-    var studentRow={};
-    studentRow[COLS.netId]=v("#f-net");
-    studentRow[COLS.firstName]=v("#f-first");
-    studentRow[COLS.lastName]=v("#f-last");
-    studentRow[COLS.nationality]=v("#f-nat");
-    studentRow[COLS.majorId]=majorId;
-    // Deliberately do not add the password or StudentID to this row.
+    var s = res.data[0];
+    var majorName = "Unknown Major";
 
-    operation="student";
-    var result=await supabaseClient.from(TABLES.student).insert(studentRow);
-    if(result.error) throw result.error;
-    var majorName=selectedMajor[COLS.majorName];
-    user={first:v("#f-first"),last:v("#f-last"),net:v("#f-net"),nat:v("#f-nat"),major:majorName};
-    $("#f-pw").value="";
-    stage=0; go("home");
-    toast("Student details saved. No real BYU account or NetID was created.");
-  } catch(error) {
-    var message=error.message||"Unknown database error.";
-    if(error.code==="23505" && operation==="student") message="That NetID is already in use. Choose another one.";
-    else if(error.code==="42501") message=operation==="major" ? "Supabase denied adding this major. Check the Major table's insert policy (RLS)." : "Supabase denied saving the student. Check the Student table's insert policy (RLS).";
-    else if(/null value|not-null/i.test(message) && /password/i.test(message)) message="The database Password column is required. Make it nullable or remove it; this app never sends passwords.";
-    err.textContent="Could not save: "+message; err.classList.add("show");
-  } finally {
-    submitButton.disabled=false; submitButton.textContent="Create account";
+    // Fetch major name if majorId exists
+    if (s[COLS.majorId]) {
+      var mRes = await supabaseClient
+        .from(TABLES.major)
+        .select(COLS.majorName)
+        .eq(COLS.majorIdInMajor, s[COLS.majorId])
+        .maybeSingle();
+      if (mRes.data) majorName = mRes.data[COLS.majorName];
+    }
+
+    // Set logged-in state
+    user = {
+      first: s[COLS.firstName] || "Student",
+      last: s[COLS.lastName] || "",
+      net: s[COLS.netId],
+      nat: s[COLS.nationality] || "Unknown",
+      major: majorName
+    };
+
+    stage = s.current_stage || 0;
+
+    toast("Welcome back, " + user.first + "!");
+    if (typeof renderJourney === "function") renderJourney();
+    if (typeof loadUserAppointments === "function") loadUserAppointments(user.net);
+    
+    go("home");
+  } catch(err) {
+    console.error("Sign-in error details:", err);
+    toast("Sign-in failed. Please check your credentials.");
   }
 });
 
-async function loadMajorOptions(){
-  var status=$("#setup-db-status");
-  if(!supabaseClient){
-    status.textContent=window.supabase ? "Not connected yet. Add the project URL and publishable key in the Supabase settings section of this file." : "Supabase library did not load. Check your internet connection, then refresh.";
+$("#setup-form").addEventListener("submit", async function(e){
+  e.preventDefault();
+  var v = function(id){ return $(id).value.trim(); }, err = $("#setup-err"), msg = "";
+  
+  if (!v("#f-first") || !v("#f-last")) msg = "Enter your first and last name.";
+  else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg = "NetID must be 4–12 letters or numbers, with no spaces.";
+  else if ($("#f-pw").value.length < 4) msg = "Password must be at least 4 characters.";
+  else if (!v("#f-nat")) msg = "Select your nationality.";
+  else if (!v("#f-major")) msg = "Select a planned major.";
+  else if (!supabaseClient) msg = "Supabase is not connected yet. Add your project URL and publishable key in the code.";
+  
+  err.textContent = msg; 
+  err.classList.toggle("show", !!msg);
+  if (msg) return;
+
+  var submitButton = $("#setup-form button[type=submit]");
+  submitButton.disabled = true; 
+  submitButton.textContent = "Saving…";
+
+  // 1. Get selected major ID & Name straight from the dropdown
+  var majorSelect = $("#f-major");
+  var majorId = Number(majorSelect.value);
+  var majorName = majorSelect.options[majorSelect.selectedIndex] ? majorSelect.options[majorSelect.selectedIndex].text : "";
+
+  if (!majorId) {
+    err.textContent = "Please select a valid major from the dropdown.";
+    err.classList.add("show");
+    submitButton.disabled = false;
+    submitButton.textContent = "Create account";
     return;
   }
+
+  // 2. Build student row including the password column
+  var studentRow = {};
+  studentRow[COLS.netId] = v("#f-net");
+  studentRow[COLS.firstName] = v("#f-first");
+  studentRow[COLS.lastName] = v("#f-last");
+  studentRow[COLS.nationality] = v("#f-nat");
+  studentRow[COLS.majorId] = majorId;
+  studentRow[COLS.password] = $("#f-pw").value; // Saves password to Supabase
+  studentRow["current_stage"] = 0;
+
+  var operation = "student";
+
   try {
-    var result=await supabaseClient.from(TABLES.major)
-      .select(COLS.majorIdInMajor+","+COLS.majorName).order(COLS.majorName);
-    if(result.error) throw result.error;
-    availableMajors=result.data||[];
-    status.textContent="Connected. Type any major; a new major is added to the Major table when you submit.";
+    var result = await supabaseClient.from(TABLES.student).insert(studentRow);
+    if (result.error) throw result.error;
+
+    user = { first: v("#f-first"), last: v("#f-last"), net: v("#f-net"), nat: v("#f-nat"), major: majorName };
+    $("#f-pw").value = "";
+    stage = 0; 
+    
+    if (typeof renderJourney === "function") renderJourney();
+    if (typeof loadUserAppointments === "function") loadUserAppointments(user.net);
+    
+    go("home");
+    toast("Student account created successfully!");
   } catch(error) {
-    status.textContent="Could not read existing majors: "+(error.message||"Check the Major table name, columns, and read policy.");
+    var message = error.message || "Unknown database error.";
+    if (error.code === "23505" && operation === "student") message = "That NetID is already in use. Choose another one.";
+    else if (error.code === "42501") message = "Supabase denied saving the student. Check the Student table's insert policy (RLS).";
+    err.textContent = "Could not save: " + message; 
+    err.classList.add("show");
+  } finally {
+    submitButton.disabled = false; 
+    submitButton.textContent = "Create account";
+  }
+});
+
+async function loadMajorOptions() {
+  var select = document.getElementById("f-major");
+  var status = document.getElementById("setup-db-status");
+
+  if (!select) return;
+
+  if (typeof supabaseClient === "undefined" || !supabaseClient) {
+    if (status) status.textContent = "Supabase client not initialized yet.";
+    return;
+  }
+
+  try {
+    // Select all columns from major table
+    var res = await supabaseClient
+      .from('major')
+      .select('*');
+
+    if (res.error) throw res.error;
+
+    var majors = res.data || [];
+
+    if (majors.length === 0) {
+      select.innerHTML = '<option value="">No majors found in database</option>';
+      if (status) status.textContent = "Major table is empty.";
+      return;
+    }
+
+    // Build option elements dynamically from Supabase rows
+    var html = '<option value="">Select a major...</option>';
+    majors.forEach(function(m) {
+      // Handles lowercase 'majorid'/'majorname' or camelCase 'majorId'/'majorName'
+      var id = m.majorid !== undefined ? m.majorid : m.major_id;
+      var name = m.majorname || m.major_name || m.name;
+      html += '<option value="' + id + '">' + name + '</option>';
+    });
+
+    select.innerHTML = html;
+    if (status) status.textContent = "Connected to Supabase. Loaded " + majors.length + " majors.";
+  } catch (err) {
+    console.error("Error pulling majors from Supabase:", err);
+    select.innerHTML = '<option value="">Error loading majors from database</option>';
+    if (status) status.textContent = "Error: " + (err.message || "Could not read Major table.");
   }
 }
-$("#signout").addEventListener("click",function(){user=null;$("#setup-form").reset();go("welcome")});
+
+// Fire when script loads and check again after DOM is ready
+loadMajorOptions();
+document.addEventListener("DOMContentLoaded", loadMajorOptions);
 
 /* ---------- renderers ---------- */
 function render(){
@@ -777,6 +899,7 @@ document.addEventListener("keydown",function(e){ if(e.key==="Escape"){chat(false
 
 applyLang(); updateChips(); loadMajorOptions();
 })();
+
 </script>
 </body>
 </html>
