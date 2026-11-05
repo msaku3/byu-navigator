@@ -598,6 +598,26 @@ if (window.supabase) {
 
 /* ---------- State ---------- */
 var user = null, stage = 0, openStage = null, selHub = null;
+var SESSION_KEY = "byu-navigator-session";
+
+function saveSession(){
+  if(!user){ localStorage.removeItem(SESSION_KEY); return; }
+  localStorage.setItem(SESSION_KEY, JSON.stringify({user:user,stage:stage,current:current}));
+}
+
+function restoreSession(){
+  try {
+    var saved = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
+    if(!saved || !saved.user || !saved.user.first || !saved.user.net) return false;
+    user = saved.user;
+    stage = Number.isFinite(saved.stage) ? saved.stage : 0;
+    current = ["home","journey","profile","hub"].indexOf(saved.current) >= 0 ? saved.current : "home";
+    return true;
+  } catch(error) {
+    localStorage.removeItem(SESSION_KEY);
+    return false;
+  }
+}
 
 var $ = function(s,r){return (r||document).querySelector(s)};
 var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
@@ -610,6 +630,7 @@ var current="welcome";
 function go(name){
   if(name!=="welcome"&&name!=="setup"&&!user){ name="welcome"; }
   current=name;
+  saveSession();
   $$(".screen").forEach(function(s){s.classList.toggle("active",s.id==="s-"+name)});
   $$(".byu-nav-item").forEach(function(b){ if(b.dataset.go===name) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current")});
   document.body.classList.toggle("signed-out",!user);
@@ -673,6 +694,7 @@ $("#signin-form").addEventListener("submit", async function(e) {
       major: majorName
     };
     stage = s.current_stage || 0;
+    saveSession();
 
     $("#si-pw").value = "";
     go("home");
@@ -769,6 +791,7 @@ async function loadMajorOptions() {
 $("#signout").addEventListener("click", function() {
   user = null;
   stage = 0;
+  localStorage.removeItem(SESSION_KEY);
   $("#setup-form").reset();
   $("#signin-form").reset();
   go("welcome");
@@ -978,6 +1001,7 @@ $("#appointment-form").addEventListener("submit", function(e) {
 applyLang();
 updateChips();
 loadMajorOptions();
+go(restoreSession() ? current : "welcome");
 })();
 </script>
 </body>

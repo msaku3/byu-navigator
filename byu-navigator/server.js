@@ -52,7 +52,7 @@ const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
       const html = await fs.readFile(path.join(__dirname, 'public/index.html'));
-      res.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'X-Content-Type-Options':'nosniff'});
+      res.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-cache, must-revalidate', 'X-Content-Type-Options':'nosniff'});
       return res.end(html);
     }
     if (req.method === 'GET' && url.pathname === '/api/majors') {
