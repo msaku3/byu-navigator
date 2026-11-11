@@ -489,7 +489,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <ul class="course-list" id="courses"></ul>
         <p class="hint" style="margin-top:.8rem">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
         <div class="callout">
-          <p><strong>Need to register, add, or drop a class?</strong> Use MyMap or another official BYU system. This page only displays information.</p>
+          <p>Course selections here are saved for Demo Term as a simulation.<strong>To officially register, add, or drop a BYU class, use MyMap.</strong></p>
           <a class="btn small" href="https://mymap.byu.edu" target="_blank" rel="noopener">Open MyMap</a>
         </div>
       </section>
@@ -1062,79 +1062,171 @@ document.addEventListener("click",function(e){
 async function renderProfile() {
   var list = $("#courses");
 
-  if (!user || !user.majorid) {
+  function showMessage(text) {
     list.textContent = "";
-    var missing = document.createElement("li");
-    missing.textContent = "No planned major is linked to your profile.";
-    list.appendChild(missing);
+    var item = document.createElement("li");
+    item.textContent = text;
+    list.appendChild(item);
+  }
+
+  if (!user || !user.studentid || !user.majorid) {
+    showMessage("Sign in with a linked student profile to view courses.");
     return;
   }
 
-  var majorId = user.majorid;
   var studentId = user.studentid;
+  var majorId = user.majorid;
+  var term = "Demo Term";
 
-  list.textContent = "";
-  var loading = document.createElement("li");
-  loading.textContent = "Loading sample courses…";
-  list.appendChild(loading);
+  function sameStudent() {
+    return user &&
+      user.studentid === studentId &&
+      user.majorid === majorId;
+  }
+
+  showMessage("Loading sample courses…");
 
   try {
-    var result = await supabaseClient
-      .from("major_course")
-      .select("course:courseid(id,course_code,course_name,credits)")
-      .eq("majorid", majorId);
+    var results = await Promise.all([
+      supabaseClient
+        .from("major_course")
+        .select("course:courseid(id,course_code,course_name,credits)")
+        .eq("majorid", majorId),
 
-    if (result.error) throw result.error;
+      supabaseClient
+        .from("enrollment")
+        .select("courseid")
+        .eq("studentid", studentId)
+        .eq("term", term)
+    ]);
 
-    // Ignore results if the student signed out or changed.
-    if (
-      !user ||
-      user.studentid !== studentId ||
-      user.majorid !== majorId
-    ) return;
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    if (!sameStudent()) return;
 
-    var courses = (result.data || [])
+    var courses = (results[0].data || [])
       .map(function(row) { return row.course; })
       .filter(Boolean)
       .sort(function(a, b) {
         return a.course_code.localeCompare(b.course_code);
       });
 
+    var registered = new Set(
+      (results[1].data || []).map(function(row) {
+        return String(row.courseid);
+      })
+    );
+
     list.textContent = "";
 
     if (!courses.length) {
-      var empty = document.createElement("li");
-      empty.textContent = "No sample courses are available for this major yet.";
-      list.appendChild(empty);
+      showMessage("No sample courses are available for this major yet.");
       return;
     }
 
     courses.forEach(function(course) {
       var item = document.createElement("li");
-      item.appendChild(document.createTextNode(
-        course.course_code + " — " + course.course_name
-      ));
+      item.style.flexWrap = "wrap";
+      item.style.gap = ".75rem";
+
+      var description = document.createElement("div");
+      description.textContent =
+        course.course_code + " — " + course.course_name;
 
       var credits = document.createElement("span");
       credits.textContent =
-        course.credits + (Number(course.credits) === 1 ? " credit" : " credits");
+        course.credits +
+        (Number(course.credits) === 1 ? " credit" : " credits");
 
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn small";
+
+      function markRegistered() {
+        button.disabled = true;
+        button.textContent = "Registered — demo";
+      }
+
+      if (registered.has(String(course.id))) {
+        markRegistered();
+      } else {
+        button.textContent = "Register (simulation)";
+      }
+
+      var feedback = document.createElement("p");
+      feedback.className = "hint";
+      feedback.setAttribute("role", "status");
+      feedback.style.flexBasis = "100%";
+      feedback.style.margin = "0";
+
+      button.addEventListener("click", async function() {
+        if (!sameStudent()) return;
+
+        button.disabled = true;
+        button.textContent = "Saving…";
+        feedback.textContent = "";
+
+        try {
+          var saved = await supabaseClient
+            .from("enrollment")
+            .insert({
+              studentid: studentId,
+              courseid: course.id,
+              term: term
+            })
+            .select("enrollmentid,courseid")
+            .single();
+
+          if (saved.error) {
+            // Another tab may have registered this course already.
+            if (saved.error.code === "23505") {
+              var existing = await supabaseClient
+                .from("enrollment")
+                .select("enrollmentid")
+                .eq("studentid", studentId)
+                .eq("courseid", course.id)
+                .eq("term", term)
+                .maybeSingle();
+
+              if (existing.error) throw existing.error;
+              if (!existing.data) throw saved.error;
+            } else {
+              throw saved.error;
+            }
+          }
+
+          if (!sameStudent()) return;
+
+          registered.add(String(course.id));
+          markRegistered();
+          feedback.textContent =
+            "Saved for " + term + ". This is not official BYU registration.";
+
+        } catch (error) {
+          if (!sameStudent()) return;
+
+          button.disabled = false;
+          button.textContent = "Register (simulation)";
+          feedback.textContent =
+            "Could not register: " +
+            (error.message || "Please try again.");
+        }
+      });
+
+      item.appendChild(description);
       item.appendChild(credits);
+      item.appendChild(button);
+      item.appendChild(feedback);
       list.appendChild(item);
     });
 
   } catch (error) {
-    if (
-      !user ||
-      user.studentid !== studentId ||
-      user.majorid !== majorId
-    ) return;
+    if (!sameStudent()) return;
 
-    list.textContent = "";
-    var message = document.createElement("li");
-    message.textContent =
-      "Could not load courses: " + (error.message || "Please try again.");
-    list.appendChild(message);
+    showMessage(
+      "Could not load courses: " +
+      (error.message || "Please try again.")
+    );
   }
 }
 
