@@ -292,8 +292,16 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <button class="choice" data-go="setup"><strong data-i18n="signup">Create account</strong><span data-i18n="new_here">I'm new here</span></button>
       </div>
       <form class="signin-form card form" id="signin-form">
-        <label for="si-net">NetID
-          <input id="si-net" autocomplete="username" placeholder="e.g. cougar42" required>
+        <label for="si-email">
+          Email address
+          <input
+            id="si-email"
+            name="email"
+            type="email"
+            autocomplete="username"
+            placeholder="you@example.com"
+            required
+          >
         </label>
         <label for="si-pw"><span data-i18n="password">Password</span>
           <input id="si-pw" type="password" autocomplete="current-password" required>
@@ -328,7 +336,30 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       <label><span data-i18n="last">Last name</span><input id="f-last" required autocomplete="family-name"></label>
     </div>
     <label><span data-i18n="netid">Desired NetID</span><input id="f-net" required autocapitalize="none" autocomplete="username"><span class="hint">Letters and numbers only, 4–12 characters.</span></label>
-    <label><span data-i18n="password">Password</span><input id="f-pw" type="password" required minlength="4" autocomplete="new-password"><span class="hint">At least 4 characters.</span></label>
+    <label for="f-email">
+      Email address
+      <input
+        id="f-email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        placeholder="you@example.com"
+        required
+      >
+    </label>
+  <label>
+    <span data-i18n="password">Password</span>
+    <input
+      id="f-pw"
+      type="password"
+      required
+      minlength="8"
+      autocomplete="new-password"
+    >
+    <span class="hint">
+      At least 8 characters. Do not use your BYU password.
+    </span>
+</label>
     <div class="row">
       <label><span data-i18n="nation">Nationality</span>
         <input id="f-nat" type="text" required autocomplete="country-name" placeholder="e.g., Panama">
@@ -343,7 +374,11 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     <div class="error" id="setup-err" role="alert"></div>
     <p id="signup-status" role="status" aria-live="polite"></p>
     <button class="btn" type="submit" data-i18n="continue">Create account</button>
-    <div class="proto">Saves your student details and password to your Supabase database. Does not create an official BYU account.</div>
+    <div class="proto">
+      Creates a BYU Navigator login through Supabase Auth.
+      This does not create an official BYU account.
+      Do not use your BYU password.
+    </div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
 </section>
@@ -450,7 +485,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     </div>
     <div class="stack">
       <section class="card">
-        <h2>Classes generally required for <span class="js-major"></span></h2>
+        <h2>Sample courses for <span class="js-major"></span></h2>
         <ul class="course-list" id="courses"></ul>
         <p class="hint" style="margin-top:.8rem">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
         <div class="callout">
@@ -605,16 +640,78 @@ function saveSession(){
   localStorage.setItem(SESSION_KEY, JSON.stringify({user:user,stage:stage,current:current}));
 }
 
-function restoreSession(){
+async function restoreSession() {
+  // Stop using the old local profile as proof of sign-in.
+  localStorage.removeItem(SESSION_KEY);
+  user = null;
+  stage = 0;
+  current = "welcome";
+
   try {
-    var saved = JSON.parse(localStorage.getItem(SESSION_KEY) || "null");
-    if(!saved || !saved.user || !saved.user.first || !saved.user.net) return false;
-    user = saved.user;
-    stage = Number.isFinite(saved.stage) ? saved.stage : 0;
-    current = ["home","journey","profile","hub"].indexOf(saved.current) >= 0 ? saved.current : "home";
+    var sessionResult = await supabaseClient.auth.getSession();
+    if (sessionResult.error) throw sessionResult.error;
+    if (!sessionResult.data.session) return false;
+
+    // Verify the account with Supabase Auth.
+    var account = await supabaseClient.auth.getUser();
+    if (account.error) throw account.error;
+
+    var authUser = account.data.user;
+    if (!authUser) return false;
+
+    var profile = await supabaseClient
+      .from(TABLES.student)
+      .select(
+        "studentid,auth_user_id,netid,firstname,lastname," +
+        "nationality,majorid,current_stage"
+      )
+      .eq("auth_user_id", authUser.id)
+      .maybeSingle();
+
+    if (profile.error) throw profile.error;
+
+    if (!profile.data) {
+      toast("Please sign in to finish setting up your profile.");
+      return false;
+    }
+
+    var s = profile.data;
+    var majorName = "Undeclared";
+
+    if (s.majorid) {
+      var major = await supabaseClient
+        .from(TABLES.major)
+        .select(COLS.majorName)
+        .eq(COLS.majorIdInMajor, s.majorid)
+        .maybeSingle();
+
+      if (major.error) throw major.error;
+
+      if (major.data) {
+        majorName = major.data[COLS.majorName];
+      }
+    }
+
+    user = {
+      studentid: s.studentid,
+      auth_user_id: authUser.id,
+      first: s.firstname || "Student",
+      last: s.lastname || "",
+      net: s.netid || "",
+      nat: s.nationality || "Unknown",
+      major: majorName,
+      majorid: s.majorid
+    };
+
+    stage = Number(s.current_stage) || 0;
+    current = "home";
     return true;
-  } catch(error) {
-    localStorage.removeItem(SESSION_KEY);
+
+  } catch (error) {
+    user = null;
+    stage = 0;
+    current = "welcome";
+    toast(error.message || "Could not restore your login.");
     return false;
   }
 }
@@ -649,73 +746,159 @@ $("#choose-signin").addEventListener("click",function(){
 
 $("#signin-form").addEventListener("submit", async function(e) {
   e.preventDefault();
-  var net = $("#si-net").value.trim();
-  var pw = $("#si-pw").value.trim();
-  var err = $("#signin-err");
 
+  var email = $("#si-email").value.trim();
+  var password = $("#si-pw").value;
+  var err = $("#signin-err");
+  var button = $("#signin-form button[type=submit]");
+
+  err.textContent = "";
   err.classList.remove("show");
-  if (!net || !pw) {
-    err.textContent = "Please enter both NetID and password.";
+
+  if (!email || !$("#si-email").validity.valid || !password) {
+    err.textContent = "Enter a valid email and your password.";
     err.classList.add("show");
     return;
   }
 
-  try {
-    var res = await supabaseClient
-      .from(TABLES.student)
-      .select("*")
-      .eq(COLS.netId, net)
-      .eq(COLS.password, pw);
+  button.disabled = true;
+  button.textContent = "Signing in…";
 
-    if (res.error) throw res.error;
-    if (!res.data || res.data.length === 0) {
-      err.textContent = "Invalid NetID or password.";
-      err.classList.add("show");
-      return;
+  try {
+    // Authenticate with Supabase Auth.
+    var login = await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+
+    if (login.error) throw login.error;
+
+    var authUser = login.data.user;
+    var fields =
+      "studentid,auth_user_id,netid,firstname,lastname," +
+      "nationality,majorid,current_stage";
+
+    // Find this Auth account's student profile.
+    var profile = await supabaseClient
+      .from(TABLES.student)
+      .select(fields)
+      .eq("auth_user_id", authUser.id)
+      .maybeSingle();
+
+    if (profile.error) throw profile.error;
+
+    var s = profile.data;
+
+    // New signups have their profile details in Auth metadata.
+    if (!s) {
+      var details = authUser.user_metadata || {};
+
+      if (
+        !details.firstname ||
+        !details.lastname ||
+        !details.netid ||
+        !details.nationality ||
+        !details.majorid
+      ) {
+        throw new Error(
+          "Your login exists, but its student profile is not linked. " +
+          "Contact the project team."
+        );
+      }
+
+      var created = await supabaseClient
+        .from(TABLES.student)
+        .insert({
+          auth_user_id: authUser.id,
+          netid: details.netid,
+          firstname: details.firstname,
+          lastname: details.lastname,
+          nationality: details.nationality,
+          majorid: String(details.majorid),
+          current_stage: 0
+        })
+        .select(fields)
+        .single();
+
+      if (created.error) throw created.error;
+      s = created.data;
     }
 
-    var s = res.data[0];
     var majorName = "Undeclared";
 
-    if (s[COLS.majorId]) {
-      var mRes = await supabaseClient
+    if (s.majorid) {
+      var major = await supabaseClient
         .from(TABLES.major)
         .select(COLS.majorName)
-        .eq(COLS.majorIdInMajor, s[COLS.majorId])
+        .eq(COLS.majorIdInMajor, s.majorid)
         .maybeSingle();
-      if (mRes.data) majorName = mRes.data[COLS.majorName];
+
+      if (major.error) throw major.error;
+
+      if (major.data) {
+        majorName = major.data[COLS.majorName];
+      }
     }
 
-    user = {
-      first: s[COLS.firstName] || "Student",
-      last: s[COLS.lastName] || "",
-      net: s[COLS.netId],
-      nat: s[COLS.nationality] || "Unknown",
-      major: majorName
+       user = {
+      studentid: s.studentid,
+      auth_user_id: authUser.id,
+      first: s.firstname || "Student",
+      last: s.lastname || "",
+      net: s.netid || "",
+      nat: s.nationality || "Unknown",
+      major: majorName,
+      majorid: s.majorid
     };
-    stage = s.current_stage || 0;
-    saveSession();
+
+    stage = Number(s.current_stage) || 0;
 
     $("#si-pw").value = "";
     go("home");
     toast("Welcome back, " + user.first + "!");
+
   } catch (error) {
+    // Avoid leaving a partial login if profile loading fails.
+    await supabaseClient.auth.signOut().catch(function() {});
+
+    user = null;
+    saveSession();
+
     err.textContent = error.message || "Could not sign in.";
     err.classList.add("show");
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign in";
   }
 });
 
 $("#setup-form").addEventListener("submit", async function(e) {
   e.preventDefault();
+
   var v = function(id) { return $(id).value.trim(); };
   var err = $("#setup-err");
+  var status = $("#signup-status");
   var msg = "";
 
-  if (!v("#f-first") || !v("#f-last")) msg = "Enter your first and last name.";
-  else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) msg = "NetID must be 4–12 letters or numbers.";
-  else if ($("#f-pw").value.length < 4) msg = "Password must be at least 4 characters.";
-  else if (!v("#f-nat")) msg = "Enter your nationality.";
-  else if (!v("#f-major")) msg = "Select a planned major from the drop-down menu.";
+  status.textContent = "";
+
+  if (!v("#f-first") || !v("#f-last")) {
+    msg = "Enter your first and last name.";
+  } else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) {
+    msg = "NetID must be 4–12 letters or numbers.";
+  } else if (!v("#f-email") || !$("#f-email").validity.valid) {
+    msg = "Enter a valid email address.";
+  } else if ($("#f-pw").value.length < 8) {
+    msg = "Password must be at least 8 characters.";
+  } else if (!v("#f-nat")) {
+    msg = "Enter your nationality.";
+  } else if (
+    !v("#f-major") ||
+    !Number.isSafeInteger(Number(v("#f-major")))
+  ) {
+    msg = "Select a planned major.";
+  }
 
   err.textContent = msg;
   err.classList.toggle("show", !!msg);
@@ -725,30 +908,33 @@ $("#setup-form").addEventListener("submit", async function(e) {
   button.disabled = true;
   button.textContent = "Creating account…";
 
-  var majorSelect = $("#f-major");
-  var majorId = Number(majorSelect.value);
-  var majorName = majorSelect.options[majorSelect.selectedIndex].text;
-
-  var studentRow = {};
-  studentRow[COLS.netId] = v("#f-net");
-  studentRow[COLS.firstName] = v("#f-first");
-  studentRow[COLS.lastName] = v("#f-last");
-  studentRow[COLS.nationality] = v("#f-nat");
-  studentRow[COLS.majorId] = majorId;
-  studentRow[COLS.password] = $("#f-pw").value;
-  studentRow["current_stage"] = 0;
-
   try {
-    var result = await supabaseClient.from(TABLES.student).insert(studentRow);
+    var result = await supabaseClient.auth.signUp({
+      email: v("#f-email"),
+      password: $("#f-pw").value,
+      options: {
+        data: {
+          firstname: v("#f-first"),
+          lastname: v("#f-last"),
+          netid: v("#f-net"),
+          nationality: v("#f-nat"),
+          majorid: Number(v("#f-major"))
+        }
+      }
+    });
+
     if (result.error) throw result.error;
 
-    user = { first: v("#f-first"), last: v("#f-last"), net: v("#f-net"), nat: v("#f-nat"), major: majorName };
     $("#f-pw").value = "";
-    stage = 0;
-    go("home");
-    toast("Student account created successfully!");
+
+    status.textContent = result.data.session
+      ? "Account signup completed. Profile setup and sign-in integration are still being connected."
+      : "Signup request received. Check your email for a confirmation link. If you already have an account, use Sign in once integration is complete.";
+
   } catch (error) {
-    err.textContent = "Could not save: " + (error.message || "Database error");
+    err.textContent =
+      "Could not create account: " +
+      (error.message || "Please try again.");
     err.classList.add("show");
   } finally {
     button.disabled = false;
@@ -788,14 +974,29 @@ async function loadMajorOptions() {
   }
 }
 
-$("#signout").addEventListener("click", function() {
-  user = null;
-  stage = 0;
-  localStorage.removeItem(SESSION_KEY);
-  $("#setup-form").reset();
-  $("#signin-form").reset();
-  go("welcome");
-  toast("Signed out.");
+$("#signout").addEventListener("click", async function() {
+  var button = $("#signout");
+  button.disabled = true;
+
+  try {
+    var result = await supabaseClient.auth.signOut();
+    if (result.error) throw result.error;
+
+    user = null;
+    stage = 0;
+
+    localStorage.removeItem(SESSION_KEY);
+    $("#setup-form").reset();
+    $("#signin-form").reset();
+
+    go("welcome");
+    toast("Signed out.");
+
+  } catch (error) {
+    toast(error.message || "Could not sign out. Please try again.");
+  } finally {
+    button.disabled = false;
+  }
 });
 
 /* ---------- Renderers ---------- */
@@ -858,9 +1059,83 @@ document.addEventListener("click",function(e){
   if(m){stage=+m.dataset.setstage; renderJourney(); toast("Current stage updated.");}
 });
 
-function renderProfile(){
-  var c=COURSES[user.major]||COURSES["Undeclared"];
-  $("#courses").innerHTML=c.map(function(x){return '<li>'+esc(x[0])+'<span>'+esc(x[1])+'</span></li>'}).join("");
+async function renderProfile() {
+  var list = $("#courses");
+
+  if (!user || !user.majorid) {
+    list.textContent = "";
+    var missing = document.createElement("li");
+    missing.textContent = "No planned major is linked to your profile.";
+    list.appendChild(missing);
+    return;
+  }
+
+  var majorId = user.majorid;
+  var studentId = user.studentid;
+
+  list.textContent = "";
+  var loading = document.createElement("li");
+  loading.textContent = "Loading sample courses…";
+  list.appendChild(loading);
+
+  try {
+    var result = await supabaseClient
+      .from("major_course")
+      .select("course:courseid(id,course_code,course_name,credits)")
+      .eq("majorid", majorId);
+
+    if (result.error) throw result.error;
+
+    // Ignore results if the student signed out or changed.
+    if (
+      !user ||
+      user.studentid !== studentId ||
+      user.majorid !== majorId
+    ) return;
+
+    var courses = (result.data || [])
+      .map(function(row) { return row.course; })
+      .filter(Boolean)
+      .sort(function(a, b) {
+        return a.course_code.localeCompare(b.course_code);
+      });
+
+    list.textContent = "";
+
+    if (!courses.length) {
+      var empty = document.createElement("li");
+      empty.textContent = "No sample courses are available for this major yet.";
+      list.appendChild(empty);
+      return;
+    }
+
+    courses.forEach(function(course) {
+      var item = document.createElement("li");
+      item.appendChild(document.createTextNode(
+        course.course_code + " — " + course.course_name
+      ));
+
+      var credits = document.createElement("span");
+      credits.textContent =
+        course.credits + (Number(course.credits) === 1 ? " credit" : " credits");
+
+      item.appendChild(credits);
+      list.appendChild(item);
+    });
+
+  } catch (error) {
+    if (
+      !user ||
+      user.studentid !== studentId ||
+      user.majorid !== majorId
+    ) return;
+
+    list.textContent = "";
+    var message = document.createElement("li");
+    message.textContent =
+      "Could not load courses: " + (error.message || "Please try again.");
+    list.appendChild(message);
+  }
 }
 
 $("#open-change").addEventListener("click",function(){
@@ -1001,7 +1276,15 @@ $("#appointment-form").addEventListener("submit", function(e) {
 applyLang();
 updateChips();
 loadMajorOptions();
-go(restoreSession() ? current : "welcome");
+
+async function startApp() {
+  go("welcome");
+
+  var restored = await restoreSession();
+  go(restored ? "home" : "welcome");
+}
+
+startApp();
 })();
 </script>
 </body>
