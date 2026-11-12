@@ -252,12 +252,18 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 .byu-navigation .byu-nav-item[aria-current="page"]::before { position:absolute; right:0; bottom:0; left:0; height:4px; background:#002e5d; content:""; }
 .nav-row .lang-btn { margin-left:auto; border-radius:0; border-color:transparent; color:#002e5d; }
 .nav-row .lang-btn:hover,.nav-row .lang-btn[aria-expanded="true"] { background:#f3f6f9; }
+/* Translation integration: preserve layout for long labels and RTL. */
+.translation-note{max-width:1000px;margin:2rem auto 1rem;padding:.85rem 1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;line-height:1.5}
+.course-list li{flex-wrap:wrap;gap:.75rem}
+.course-list .btn{white-space:normal}
+:root[dir="rtl"] .timeline{direction:rtl}
+:root[dir="rtl"] .facts dd{text-align:start}
 </style>
 </head>
 <body class="signed-out">
 
 <header class="byu-masthead">
-  <button class="byu-wordmark" data-go="welcome" aria-label="BYU International Student Guide home">BYU</button>
+  <button class="byu-wordmark" data-go="welcome" aria-label="BYU International Student Guide home" data-i18n-aria="aria_home">BYU</button>
   <div class="byu-service-name">BYU International Student Guide</div>
   <div class="byu-account-actions account-only">
     <span class="byu-account-name"><span class="js-first"></span></span>
@@ -269,7 +275,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     <button class="byu-signout" id="signout" data-i18n="signout">Sign Out</button>
   </div>
 </header>
-<nav class="byu-navigation" aria-label="Main">
+<nav class="byu-navigation" aria-label="Main" data-i18n-aria="aria_main">
   <div class="nav-row">
     <button class="byu-nav-item" data-go="home" data-i18n="nav_home">Home</button>
     <button class="byu-nav-item" data-go="journey" data-i18n="nav_journey">Journey map</button>
@@ -293,7 +299,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       </div>
       <form class="signin-form card form" id="signin-form">
         <label for="si-email">
-          Email address
+          <span data-i18n="email_label">Email address</span>
           <input
             id="si-email"
             name="email"
@@ -308,10 +314,10 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         </label>
         <p id="signin-err" role="alert" class="error"></p>
         <button class="btn" type="submit" data-i18n="signin">Sign in</button>
-        <p class="hint">Use your BYU International Student Guide account credentials.</p>
+        <p class="hint" data-i18n="signin_hint">Use your BYU International Student Guide account credentials.</p>
       </form>
     </div>
-    <svg class="path-art" viewBox="0 0 400 360" role="img" aria-label="A winding path with six waypoints, from applying to graduating">
+    <svg class="path-art" viewBox="0 0 400 360" role="img" aria-label="A winding path with six waypoints, from applying to graduating" data-i18n-aria="path_art">
       <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170 S 90 150, 150 95 S 330 90, 350 30" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
       <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>
       <g fill="var(--card)" stroke="var(--royal)" stroke-width="4">
@@ -319,8 +325,8 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <circle cx="150" cy="95" r="13"/><circle cx="262" cy="108" r="13"/><circle cx="350" cy="30" r="13"/>
       </g>
       <g fill="var(--royal)" font-family="Arial, sans-serif" font-weight="700" font-size="15">
-        <text x="62" y="346">Apply</text><text x="178" y="252">Housing</text><text x="200" y="152">Classes</text>
-        <text x="40" y="82">Taxes</text><text x="272" y="140">Work</text><text x="290" y="22">Graduate</text>
+        <text x="62" y="346" data-i18n="svg_apply">Apply</text><text x="178" y="252" data-i18n="svg_housing">Housing</text><text x="200" y="152" data-i18n="svg_classes">Classes</text>
+        <text x="40" y="82" data-i18n="svg_taxes">Taxes</text><text x="272" y="140" data-i18n="svg_work">Work</text><text x="290" y="22" data-i18n="svg_graduate">Graduate</text>
       </g>
     </svg>
   </div>
@@ -329,7 +335,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <!-- SCREEN 2 -->
 <section class="screen" id="s-setup" aria-labelledby="su-h">
   <h2 id="su-h" data-i18n="setup_title">Set up your account</h2>
-  <p>This mirrors BYU's account setup. Enter your details to continue.</p>
+  <p data-i18n="setup_intro">This is a demonstration of account setup and does not create an official BYU account. Enter your details to continue.</p>
   <form class="form" id="setup-form" novalidate>
     <div class="row">
       <label><span data-i18n="first">First name</span><input id="f-first" required autocomplete="given-name"></label>
@@ -337,7 +343,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     </div>
     <label><span data-i18n="netid">Desired NetID</span><input id="f-net" required autocapitalize="none" autocomplete="username"><span class="hint">Letters and numbers only, 4–12 characters.</span></label>
     <label for="f-email">
-      Email address
+      <span data-i18n="email_label">Email address</span>
       <input
         id="f-email"
         name="email"
@@ -356,29 +362,113 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       minlength="8"
       autocomplete="new-password"
     >
-    <span class="hint">
-      At least 8 characters. Do not use your BYU password.
-    </span>
+    <span class="hint" data-i18n="password_auth_hint">At least 8 characters. Do not use your BYU password.</span>
 </label>
     <div class="row">
       <label><span data-i18n="nation">Nationality</span>
-        <input id="f-nat" type="text" required autocomplete="country-name" placeholder="e.g., Panama">
+        <select id="f-nat" required autocomplete="country-name">
+          <option value="" data-i18n="nation_prompt">Select your nationality</option>
+          <option value="Angola">Angola</option>
+          <option value="Argentina">Argentina</option>
+          <option value="Armenia">Armenia</option>
+          <option value="Australia">Australia</option>
+          <option value="Belgium">Belgium</option>
+          <option value="Bolivia">Bolivia</option>
+          <option value="Brazil">Brazil</option>
+          <option value="Bulgaria">Bulgaria</option>
+          <option value="Canada">Canada</option>
+          <option value="Cape Verde">Cape Verde</option>
+          <option value="Chile">Chile</option>
+          <option value="China">China</option>
+          <option value="Colombia">Colombia</option>
+          <option value="Costa Rica">Costa Rica</option>
+          <option value="Côte d’Ivoire">Côte d’Ivoire</option>
+          <option value="Czechia">Czechia</option>
+          <option value="Democratic Republic of the Congo">Democratic Republic of the Congo</option>
+          <option value="Denmark">Denmark</option>
+          <option value="Dominican Republic">Dominican Republic</option>
+          <option value="Ecuador">Ecuador</option>
+          <option value="Egypt">Egypt</option>
+          <option value="El Salvador">El Salvador</option>
+          <option value="Estonia">Estonia</option>
+          <option value="Ethiopia">Ethiopia</option>
+          <option value="Fiji">Fiji</option>
+          <option value="Finland">Finland</option>
+          <option value="France">France</option>
+          <option value="French Polynesia">French Polynesia</option>
+          <option value="Germany">Germany</option>
+          <option value="Ghana">Ghana</option>
+          <option value="Guatemala">Guatemala</option>
+          <option value="Haiti">Haiti</option>
+          <option value="Honduras">Honduras</option>
+          <option value="Iceland">Iceland</option>
+          <option value="India">India</option>
+          <option value="Indonesia">Indonesia</option>
+          <option value="Italy">Italy</option>
+          <option value="Jamaica">Jamaica</option>
+          <option value="Japan">Japan</option>
+          <option value="Jordan">Jordan</option>
+          <option value="Kenya">Kenya</option>
+          <option value="Kiribati">Kiribati</option>
+          <option value="Kyrgyzstan">Kyrgyzstan</option>
+          <option value="Laos">Laos</option>
+          <option value="Madagascar">Madagascar</option>
+          <option value="Malaysia">Malaysia</option>
+          <option value="Mexico">Mexico</option>
+          <option value="Mongolia">Mongolia</option>
+          <option value="Morocco">Morocco</option>
+          <option value="Netherlands">Netherlands</option>
+          <option value="New Caledonia">New Caledonia</option>
+          <option value="New Zealand">New Zealand</option>
+          <option value="Nigeria">Nigeria</option>
+          <option value="Norway">Norway</option>
+          <option value="Palestine">Palestine</option>
+          <option value="Panama">Panama</option>
+          <option value="Peru">Peru</option>
+          <option value="Philippines">Philippines</option>
+          <option value="Poland">Poland</option>
+          <option value="Portugal">Portugal</option>
+          <option value="Romania">Romania</option>
+          <option value="Russia">Russia</option>
+          <option value="Rwanda">Rwanda</option>
+          <option value="Singapore">Singapore</option>
+          <option value="Slovenia">Slovenia</option>
+          <option value="South Africa">South Africa</option>
+          <option value="South Korea">South Korea</option>
+          <option value="Spain">Spain</option>
+          <option value="Sudan">Sudan</option>
+          <option value="Sweden">Sweden</option>
+          <option value="Switzerland">Switzerland</option>
+          <option value="Syria">Syria</option>
+          <option value="Taiwan">Taiwan</option>
+          <option value="Thailand">Thailand</option>
+          <option value="Turkey">Turkey</option>
+          <option value="Uganda">Uganda</option>
+          <option value="Ukraine">Ukraine</option>
+          <option value="United States">United States</option>
+          <option value="United Kingdom">United Kingdom</option>
+          <option value="Uruguay">Uruguay</option>
+          <option value="Venezuela">Venezuela</option>
+          <option value="Zambia">Zambia</option>
+          <option value="Zimbabwe">Zimbabwe</option>
+          <option value="Other">Other</option>
+        </select>
+        <span id="f-nat-other-wrap" hidden>
+          <span class="hint" data-i18n="other_hint">Please enter your nationality.</span>
+          <input id="f-nat-other" type="text" autocomplete="country-name" aria-label="Enter your nationality" data-i18n-aria="other_hint">
+        </span>
       </label>
       <label><span data-i18n="major">Planned major</span>
         <select id="f-major" required>
-          <option value="">Loading majors...</option>
+          <option value="" data-i18n="loading_majors" data-state="loading">Loading majors...</option>
         </select>
-        <span class="hint">Select your planned major from the dropdown.</span>
+        <span class="hint" data-i18n="major_hint">Select your planned major from the dropdown.</span>
       </label>
     </div>
     <div class="error" id="setup-err" role="alert"></div>
     <p id="signup-status" role="status" aria-live="polite"></p>
     <button class="btn" type="submit" data-i18n="continue">Create account</button>
-    <div class="proto">
-      Creates a BYU Navigator login through Supabase Auth.
-      This does not create an official BYU account.
-      Do not use your BYU password.
-    </div>
+    <div class="proto" data-i18n="auth_notice">Creates a BYU Navigator login through Supabase Auth. This does not create an official BYU account. Do not use your BYU password.</div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
 </section>
@@ -387,7 +477,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <section class="screen" id="s-home" aria-labelledby="h-h">
   <h1 id="h-h"><span data-i18n="home_title">Welcome back</span>, <span class="js-first"></span></h1>
   <div class="home-grid">
-    <aside class="card" aria-label="Profile overview">
+    <aside class="card" aria-label="Profile overview" data-i18n-aria="profile_overview">
       <div style="display:flex;gap:1rem;align-items:center">
         <div class="avatar js-initials" aria-hidden="true"></div>
         <div><h3 style="margin:0" class="js-fullname"></h3><span class="hint js-netid-line"></span></div>
@@ -401,36 +491,36 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     </aside>
     <div class="stack">
       <section class="card" aria-labelledby="appointment-heading">
-        <h2 id="appointment-heading">International advising appointment</h2>
-        <p id="appointment-summary" role="status">No upcoming appointments.</p>
-        <button class="btn" id="schedule-appointment-btn" type="button">Schedule appointment</button>
+        <h2 id="appointment-heading" data-i18n="appt_heading">International advising appointment</h2>
+        <p id="appointment-summary" role="status" >No upcoming appointments.</p>
+        <button class="btn" id="schedule-appointment-btn" type="button" data-i18n="appt_schedule">Schedule appointment</button>
         <div id="appointment-form-container" hidden>
           <form id="appointment-form" class="form">
-            <label for="appointment-advisor">Advisor
+            <label for="appointment-advisor"><span data-i18n="appt_advisor">Advisor</span>
               <select id="appointment-advisor" required>
-                <option value="">Choose a demo advisor</option>
-                <option value="advisor-1">Demo Advisor A</option>
-                <option value="advisor-2">Demo Advisor B</option>
+                <option value="" data-i18n="appt_choose_advisor">Choose a demo advisor</option>
+                <option value="advisor-1" data-i18n="appt_demo_a">Demo Advisor A</option>
+                <option value="advisor-2" data-i18n="appt_demo_b">Demo Advisor B</option>
               </select>
             </label>
-            <label for="appointment-slot">Available appointment
+            <label for="appointment-slot"><span data-i18n="appt_available">Available appointment</span>
               <select id="appointment-slot" required disabled>
-                <option value="">Choose an advisor first</option>
+                <option value="" data-i18n="appt_choose_first">Choose an advisor first</option>
               </select>
             </label>
-            <p class="hint">Sample availability. Times use your device’s time zone.</p>
-            <label for="appointment-topic">Appointment topic
+            <p class="hint" data-i18n="appt_sample">Sample availability. Times use your device’s time zone.</p>
+            <label for="appointment-topic"><span data-i18n="appt_topic">Appointment topic</span>
               <select id="appointment-topic" required>
-                <option value="">Choose a topic</option>
-                <option value="arrival">Arrival and settling in</option>
-                <option value="resources">Finding campus resources</option>
-                <option value="academic">Academic planning</option>
+                <option value="" data-i18n="appt_choose_topic">Choose a topic</option>
+                <option value="arrival" data-i18n="appt_arrival">Arrival and settling in</option>
+                <option value="resources" data-i18n="appt_resources">Finding campus resources</option>
+                <option value="academic" data-i18n="appt_academic">Academic planning</option>
               </select>
             </label>
             <p id="appointment-form-error" role="alert" class="error"></p>
             <div>
-              <button class="btn" type="submit">Book demo appointment</button>
-              <button class="btn ghost" id="cancel-appointment-form-btn" type="button">Cancel</button>
+              <button class="btn" type="submit" data-i18n="appt_book">Book demo appointment</button>
+              <button class="btn ghost" id="cancel-appointment-form-btn" type="button" data-i18n="cancel">Cancel</button>
             </div>
           </form>
         </div>
@@ -456,7 +546,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <!-- SCREEN 4 -->
 <section class="screen" id="s-journey" aria-labelledby="j-h">
   <h1 id="j-h" data-i18n="journey_h">Your journey</h1>
-  <p>Six areas, from before you apply through graduation. Everyone moves at a different pace, so use this as a guide to find your place and your next step. Select any area to see what to do and where to get help.</p>
+  <p data-i18n="journey_intro">Six areas, from before you apply through graduation. Everyone moves at a different pace, so use this as a guide to find your place and your next step. Select any area to see what to do and where to get help.</p>
   <ol class="timeline" id="timeline"></ol>
 </section>
 
@@ -476,20 +566,20 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       </dl>
       <p style="margin:1rem 0 .5rem"><button class="btn ghost small" id="open-change" data-i18n="request_change">Request a change</button></p>
       <form class="change-form" id="change-form">
-        <label>What would you like to change?
-          <select id="chg-what"><option>Major</option><option>Name</option><option>Other</option></select>
+        <label><span data-i18n="change_prompt">What would you like to change?</span>
+          <select id="chg-what"><option data-i18n="major">Major</option><option data-i18n="name">Name</option><option data-i18n="other">Other</option></select>
         </label>
-        <label>Details <textarea id="chg-text" rows="3" placeholder="e.g. I'd like to switch to Biology"></textarea></label>
-        <button class="btn small" type="submit">Send request</button>
+        <label><span data-i18n="details">Details</span> <textarea id="chg-text" rows="3" placeholder="e.g. I'd like to switch to Biology" data-i18n-placeholder="change_example"></textarea></label>
+        <button class="btn small" type="submit" data-i18n="send_request">Send request</button>
       </form>
     </div>
     <div class="stack">
       <section class="card">
-        <h2>Sample courses for <span class="js-major"></span></h2>
+        <h2><span data-i18n="sample_courses">Sample courses for</span> <span class="js-major"></span></h2>
         <ul class="course-list" id="courses"></ul>
-        <p class="hint" style="margin-top:.8rem">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
+        <p class="hint" style="margin-top:.8rem" data-i18n="course_note">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
         <div class="callout">
-          <p><strong>Need to register, add, or drop a class?</strong> Use MyMap or another official BYU system. This page only displays information.</p>
+          <p data-i18n="demo_notice">Course selections here are saved for Demo Term as a simulation. To officially register, add, or drop a BYU class, use MyMap.</p>
           <a class="btn small" href="https://mymap.byu.edu" target="_blank" rel="noopener">Open MyMap</a>
         </div>
       </section>
@@ -500,32 +590,32 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 <!-- SCREEN 6 -->
 <section class="screen" id="s-hub" aria-labelledby="hb-h">
   <h1 id="hb-h" data-i18n="nav_resources">Resource hub</h1>
-  <p>Choose a branch to see official websites and who to contact. Each branch matches a step on your journey map.</p>
+  <p data-i18n="hub_intro">Choose a branch to see official websites and who to contact. Each branch matches a step on your journey map.</p>
   <div class="hub-wrap">
     <svg class="mindmap" id="mindmap" viewBox="0 0 760 580" role="group" aria-label="Resource mind map"></svg>
     <div class="card" id="hub-detail" aria-live="polite"></div>
   </div>
 </section>
 
+<footer class="translation-note" data-i18n="translation_notice">Translations are provided to help you understand the guide. Some BYU terms, names, course titles, and content on linked official websites may remain in English. Confirm important academic or immigration information with the appropriate BYU office.</footer>
 </main>
 
 <!-- Language sidebar -->
-<aside class="lang-panel" id="lang-panel" aria-label="Language menu">
-  <button class="close" id="lang-close" aria-label="Close">×</button>
+<aside class="lang-panel" id="lang-panel" aria-label="Language menu" data-i18n-aria="language_menu">
+  <button class="close" id="lang-close" aria-label="Close" data-i18n-aria="close_panel">×</button>
   <h3 data-i18n="lang_h">Language</h3>
-  <p class="hint">BYU terms such as NetID and MyMap, and links to official sites, stay unchanged.</p>
+  <p class="hint" data-i18n="language_terms">BYU terms such as NetID and MyMap, and links to official sites, stay unchanged.</p>
   <ul id="lang-list"></ul>
-  <p class="hint">Prototype: main navigation, headings, and buttons are translated. Long descriptions stay in English until the full translation service is connected.</p>
 </aside>
 
 <!-- Chatbot -->
 <button class="chat-fab" id="chat-fab" aria-expanded="false" aria-controls="chat">💬 <span data-i18n="ask">Ask the assistant</span></button>
-<section class="chat" id="chat" aria-label="Assistant chat">
-  <header>BYU International Student Guide assistant <button id="chat-close" aria-label="Close chat">×</button></header>
+<section class="chat" id="chat" aria-label="Assistant chat" data-i18n-aria="chat_label">
+  <header><span data-i18n="chat_title">BYU International Student Guide assistant</span> <button id="chat-close" aria-label="Close chat" data-i18n-aria="close_chat">×</button></header>
   <div class="msgs" id="msgs" aria-live="polite"></div>
   <div class="chips" id="chips"></div>
-  <p class="chat-note">I can't give legal or immigration advice, and I don't replace academic advising.</p>
-  <form id="chat-form"><input id="chat-in" placeholder="Ask a question…" aria-label="Your question" autocomplete="off"><button class="btn small" type="submit">Send</button></form>
+  <p class="chat-note" data-i18n="chat_note">I can't give legal or immigration advice, and I don't replace academic advising.</p>
+  <form id="chat-form"><input id="chat-in" placeholder="Ask a question…" aria-label="Your question" autocomplete="off" data-i18n-placeholder="chat_placeholder" data-i18n-aria="chat_placeholder"><button class="btn small" type="submit" data-i18n="send">Send</button></form>
 </section>
 
 <div class="toast" id="toast" role="status"></div>
@@ -536,56 +626,257 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 
 /* ---------- data ---------- */
 var I18N={
- nav_home:{es:"Inicio",zh:"首页",pt:"Início"},
- nav_journey:{es:"Mapa del camino",zh:"旅程地图",pt:"Mapa da jornada"},
- nav_profile:{es:"Perfil",zh:"个人资料",pt:"Perfil"},
- nav_resources:{es:"Centro de recursos",zh:"资源中心",pt:"Central de recursos"},
- signout:{es:"Cerrar sesión",zh:"退出登录",pt:"Sair"},
- w_title:{es:"Tu camino en BYU, en un solo lugar.",zh:"您的 BYU 之路，一站式了解。",pt:"Seu caminho na BYU, em um só lugar."},
- w_sub:{es:"Te ayudamos a recorrer la solicitud y la vida estudiantil de BYU, paso a paso.",zh:"一步步带您了解 BYU 的申请流程和学生生活。",pt:"Ajudamos você a navegar pela inscrição e pela vida estudantil na BYU, passo a paso."},
- signin:{es:"Iniciar sesión",zh:"登录",pt:"Entrar"},
- signup:{es:"Crear cuenta",zh:"创建账户",pt:"Criar conta"},
- have_acct:{es:"Ya tengo una cuenta",zh:"我已有账户",pt:"Já tenho uma conta"},
- new_here:{es:"Soy nuevo aquí",zh:"我是新用户",pt:"Sou novo aqui"},
- setup_title:{es:"Configura tu cuenta",zh:"设置您的账户",pt:"Configure sua conta"},
- first:{es:"Nombre",zh:"名",pt:"Nome"},
- last:{es:"Apellido",zh:"姓",pt:"Sobrenome"},
- netid:{es:"NetID deseado",zh:"期望的 NetID",pt:"NetID desejado"},
- password:{es:"Contraseña",zh:"密码",pt:"Senha"},
- nation:{es:"Nacionalidad",zh:"国籍",pt:"Nacionalidade"},
- major:{es:"Carrera planeada",zh:"计划专业",pt:"Curso planejado"},
- "continue":{es:"Continuar",zh:"继续",pt:"Continuar"},
- home_title:{es:"Bienvenido de nuevo",zh:"欢迎回来",pt:"Bem-vindo de volta"},
- alerts:{es:"Alertas y tareas pendientes",zh:"提醒与待办事项",pt:"Alertas e tarefas"},
- journey_h:{es:"Tu camino",zh:"您的旅程",pt:"Sua jornada"},
- resources_h:{es:"Recursos",zh:"资源",pt:"Recursos"},
- profile_h:{es:"Perfil y estudios",zh:"个人资料与学业",pt:"Perfil e estudos"},
- ask:{es:"Pregunta al asistente",zh:"询问助手",pt:"Pergunte ao assistente"},
- open_map:{es:"Abrir mapa del camino",zh:"打开旅程地图",pt:"Abrir mapa da jornada"},
- official:{es:"Sitio oficial",zh:"官方网站",pt:"Site oficial"},
- lang_h:{es:"Idioma",zh:"语言",pt:"Idioma"},
- mark_here:{es:"Marcar como mi etapa actual",zh:"标记为我当前的阶段",pt:"Marcar como minha etapa atual"},
- here:{es:"Estás aquí",zh:"您在这里",pt:"Você está aqui"},
- done:{es:"Completado",zh:"已完成",pt:"Concluído"},
- ahead:{es:"Próximamente",zh:"即将到来",pt:"Em seguida"},
- request_change:{es:"Solicitar un cambio",zh:"申请更改",pt:"Solicitar alteração"},
- s0:{es:"Solicitar a BYU",zh:"申请 BYU",pt:"Inscrever-se na BYU"},
- s1:{es:"Encontrar vivienda",zh:"寻找住房",pt:"Encontrar moradia"},
- s2:{es:"Inscribirse en clases",zh:"选课注册",pt:"Matricular-se em disciplinas"},
- s3:{es:"Entender los impuestos",zh:"了解税务",pt:"Entender impostos"},
- s4:{es:"Recursos de empleo",zh:"就业资源",pt:"Recursos de emprego"},
- s5:{es:"Graduarse",zh:"毕业",pt:"Formatura"},
- c_housing:{es:"Vivienda",zh:"住房",pt:"Moradia"},
- c_reg:{es:"Registro",zh:"选课",pt:"Matrícula"},
- c_tax:{es:"Impuestos",zh:"税务",pt:"Impostos"},
- c_emp:{es:"Empleo",zh:"就业",pt:"Emprego"},
- c_imm:{es:"Apoyo migratorio",zh:"移民支持",pt:"Apoio imigratório"},
- c_off:{es:"Oficinas de BYU",zh:"BYU 办公室",pt:"Escritórios da BYU"},
- c_svc:{es:"Otros servicios",zh:"其他服务",pt:"Outros serviços"}
+ nav_home:{es:"Inicio",ko:"홈",zh:"首页",pt:"Início",ja:"ホーム",fr:"Accueil",tl:"Home",de:"Startseite",ru:"Главная",ar:"الرئيسية"},
+ nav_journey:{es:"Mapa del recorrido",ko:"여정 지도",zh:"旅程地图",pt:"Mapa da jornada",ja:"歩みのマップ",fr:"Parcours",tl:"Gabay sa paglalakbay",de:"Wegweiser",ru:"Карта пути",ar:"خريطة الرحلة"},
+ nav_profile:{es:"Perfil",ko:"프로필",zh:"个人资料",pt:"Perfil",ja:"プロフィール",fr:"Profil",tl:"Profile",de:"Profil",ru:"Профиль",ar:"الملف الشخصي"},
+ nav_resources:{es:"Centro de recursos",ko:"자료 안내",zh:"资源中心",pt:"Central de recursos",ja:"リソース案内",fr:"Centre de ressources",tl:"Mga mapagkukunan",de:"Ressourcenzentrum",ru:"Центр ресурсов",ar:"مركز الموارد"},
+ signout:{es:"Cerrar sesión",ko:"로그아웃",zh:"退出登录",pt:"Sair",ja:"ログアウト",fr:"Se déconnecter",tl:"Mag-sign out",de:"Abmelden",ru:"Выйти",ar:"تسجيل الخروج"},
+ w_title:{es:"Tu camino en BYU, en un solo lugar.",ko:"BYU 여정을 한곳에서 확인하세요.",zh:"在一个地方了解您在 BYU 的求学之路。",pt:"Sua jornada na BYU, em um só lugar.",ja:"BYUでの歩みを一か所で。",fr:"Votre parcours à BYU, au même endroit.",tl:"Nasa iisang lugar ang iyong landas sa BYU.",de:"Ihr Weg an der BYU – an einem Ort.",ru:"Ваш путь в BYU — в одном месте.",ar:"رحلتك في BYU، في مكان واحد."},
+ w_sub:{es:"Ayudamos a estudiantes internacionales a orientarse en la solicitud y la vida estudiantil de BYU, paso a paso.",ko:"국제 학생이 BYU 지원 절차와 학생 생활을 차근차근 이해하도록 돕습니다.",zh:"我们帮助国际学生一步一步了解 BYU 申请流程和学生生活。",pt:"Ajudamos estudantes internacionais a entender o processo de candidatura e a vida estudantil na BYU, passo a passo.",ja:"留学生がBYUへの出願や学生生活を一歩ずつ理解できるようサポートします。",fr:"Nous aidons les étudiants internationaux à comprendre, étape par étape, la candidature et la vie étudiante à BYU.",tl:"Tinutulungan namin ang mga international student na unawain ang aplikasyon at buhay-estudyante sa BYU, hakbang-hakbang.",de:"Wir helfen internationalen Studierenden, die Bewerbung und das Studentenleben an der BYU Schritt für Schritt zu verstehen.",ru:"Мы помогаем иностранным студентам шаг за шагом разобраться с поступлением и студенческой жизнью в BYU.",ar:"نساعد الطلاب الدوليين على فهم التقديم إلى BYU والحياة الطلابية فيها خطوةً بخطوة."},
+ signin:{es:"Iniciar sesión",ko:"로그인",zh:"登录",pt:"Entrar",ja:"ログイン",fr:"Se connecter",tl:"Mag-sign in",de:"Anmelden",ru:"Войти",ar:"تسجيل الدخول"},
+ signup:{es:"Crear cuenta",ko:"계정 만들기",zh:"创建账户",pt:"Criar conta",ja:"アカウントを作成",fr:"Créer un compte",tl:"Gumawa ng account",de:"Konto erstellen",ru:"Создать аккаунт",ar:"إنشاء حساب"},
+ have_acct:{es:"Ya tengo una cuenta",ko:"이미 계정이 있어요",zh:"我已有账户",pt:"Já tenho uma conta",ja:"すでにアカウントをお持ちの方",fr:"J’ai déjà un compte",tl:"May account na ako",de:"Ich habe bereits ein Konto",ru:"У меня уже есть аккаунт",ar:"لدي حساب بالفعل"},
+ new_here:{es:"Soy nuevo aquí",ko:"처음 방문했어요",zh:"我是新用户",pt:"Sou novo por aqui",ja:"初めて利用します",fr:"Je découvre le site",tl:"Bago ako rito",de:"Ich bin neu hier",ru:"Я здесь впервые",ar:"أنا جديد هنا"},
+ setup_title:{es:"Configura tu cuenta",ko:"계정 설정",zh:"设置您的账户",pt:"Configure sua conta",ja:"アカウントを設定",fr:"Configurez votre compte",tl:"I-set up ang iyong account",de:"Richten Sie Ihr Konto ein",ru:"Настройте аккаунт",ar:"إعداد حسابك"},
+ setup_intro:{es:"Esta página es una guía de demostración y no crea una cuenta oficial de BYU. Ingresa tus datos para continuar.",ko:"이 페이지는 안내용 예시이며 공식 BYU 계정을 만들지 않습니다. 계속하려면 정보를 입력하세요.",zh:"此页面是演示指南，不会创建 BYU 官方账户。请输入信息以继续。",pt:"Esta página é apenas um protótipo e não cria uma conta oficial da BYU. Informe seus dados para continuar.",ja:"このページは案内用のデモで、BYUの公式アカウントは作成されません。続けるには情報を入力してください。",fr:"Cette page est une démonstration et ne crée pas de compte BYU officiel. Saisissez vos renseignements pour continuer.",tl:"Gabay na prototype lamang ang pahinang ito at hindi ito lumilikha ng opisyal na BYU account. Ilagay ang iyong mga detalye upang magpatuloy.",de:"Diese Seite ist eine Demo und erstellt kein offizielles BYU-Konto. Geben Sie Ihre Angaben ein, um fortzufahren.",ru:"Эта страница — демонстрационный справочник, она не создает официальный аккаунт BYU. Введите данные, чтобы продолжить.",ar:"هذه الصفحة نموذج إرشادي ولا تنشئ حسابًا رسميًا لدى BYU. أدخل بياناتك للمتابعة."},
+ first:{es:"Nombre",ko:"이름",zh:"名字",pt:"Nome",ja:"名",fr:"Prénom",tl:"Pangalan",de:"Vorname",ru:"Имя",ar:"الاسم الأول"},
+ last:{es:"Apellido",ko:"성",zh:"姓氏",pt:"Sobrenome",ja:"姓",fr:"Nom de famille",tl:"Apelyido",de:"Nachname",ru:"Фамилия",ar:"اسم العائلة"},
+ netid:{es:"NetID deseado",ko:"희망 NetID",zh:"希望使用的 NetID",pt:"NetID desejado",ja:"希望するNetID",fr:"NetID souhaité",tl:"Nais na NetID",de:"Gewünschte NetID",ru:"Желаемый NetID",ar:"اسم NetID المطلوب"},
+ netid_hint:{es:"Solo letras y números, de 4 a 12 caracteres.",ko:"영문자와 숫자만 사용하세요(4~12자).",zh:"只能使用字母和数字，长度为 4–12 个字符。",pt:"Use apenas letras e números, de 4 a 12 caracteres.",ja:"英字と数字のみ、4～12文字です。",fr:"Lettres et chiffres uniquement, de 4 à 12 caractères.",tl:"Mga letra at numero lamang, 4–12 character.",de:"Nur Buchstaben und Zahlen, 4–12 Zeichen.",ru:"Только латинские буквы и цифры, от 4 до 12 символов.",ar:"استخدم الأحرف والأرقام فقط، من 4 إلى 12 حرفًا."},
+ password:{es:"Contraseña",ko:"비밀번호",zh:"密码",pt:"Senha",ja:"パスワード",fr:"Mot de passe",tl:"Password",de:"Passwort",ru:"Пароль",ar:"كلمة المرور"},
+ password_hint:{es:"Al menos 4 caracteres.",ko:"4자 이상 입력하세요.",zh:"至少 4 个字符。",pt:"Pelo menos 4 caracteres.",ja:"4文字以上です。",fr:"Au moins 4 caractères.",tl:"Hindi bababa sa 4 na character.",de:"Mindestens 4 Zeichen.",ru:"Не менее 4 символов.",ar:"أربعة أحرف على الأقل."},
+ nation:{es:"Nacionalidad",ko:"국적",zh:"国籍",pt:"Nacionalidade",ja:"国籍",fr:"Nationalité",tl:"Nasyonalidad",de:"Staatsangehörigkeit",ru:"Гражданство",ar:"الجنسية"},
+ nation_prompt:{es:"Selecciona tu nacionalidad",ko:"국적을 선택하세요",zh:"请选择您的国籍",pt:"Selecione sua nacionalidade",ja:"国籍を選択してください",fr:"Sélectionnez votre nationalité",tl:"Piliin ang iyong nasyonalidad",de:"Wählen Sie Ihre Staatsangehörigkeit",ru:"Выберите гражданство",ar:"اختر جنسيتك"},
+ other_hint:{es:"Escribe tu nacionalidad.",ko:"국적을 입력하세요.",zh:"请输入您的国籍。",pt:"Informe sua nacionalidade.",ja:"国籍を入力してください。",fr:"Saisissez votre nationalité.",tl:"Ilagay ang iyong nasyonalidad.",de:"Geben Sie Ihre Staatsangehörigkeit ein.",ru:"Укажите гражданство.",ar:"أدخل جنسيتك."},
+ major:{es:"Carrera prevista",ko:"희망 전공",zh:"计划专业",pt:"Curso pretendido",ja:"希望する専攻",fr:"Spécialité prévue",tl:"Planong major",de:"Geplantes Hauptfach",ru:"Планируемая специальность",ar:"التخصص المخطط له"},
+ major_hint:{es:"Selecciona tu carrera prevista en el menú.",ko:"메뉴에서 희망 전공을 선택하세요.",zh:"请从下拉菜单中选择计划专业。",pt:"Selecione seu curso pretendido no menu.",ja:"メニューから希望する専攻を選択してください。",fr:"Choisissez votre spécialité prévue dans le menu.",tl:"Piliin ang planong major mo sa menu.",de:"Wählen Sie Ihr geplantes Hauptfach im Menü aus.",ru:"Выберите специальность из списка.",ar:"اختر تخصصك المخطط له من القائمة."},
+ "continue":{es:"Continuar",ko:"계속",zh:"继续",pt:"Continuar",ja:"続ける",fr:"Continuer",tl:"Magpatuloy",de:"Weiter",ru:"Продолжить",ar:"متابعة"},
+ setup_notice:{es:"Los datos se guardan en la base de datos de demostración. Esto no crea una cuenta oficial de BYU.",ko:"정보는 데모 데이터베이스에 저장됩니다. 공식 BYU 계정은 생성되지 않습니다.",zh:"您的信息会保存到演示数据库中。这不会创建 BYU 官方账户。",pt:"Seus dados serão salvos no banco de dados do protótipo. Isso não cria uma conta oficial da BYU.",ja:"入力情報はデモ用データベースに保存されます。BYU公式アカウントは作成されません。",fr:"Vos renseignements sont enregistrés dans la base de données de démonstration. Aucun compte BYU officiel n’est créé.",tl:"Ise-save ang mga detalye sa prototype database. Hindi ito lumilikha ng opisyal na BYU account.",de:"Ihre Angaben werden in der Demo-Datenbank gespeichert. Es wird kein offizielles BYU-Konto erstellt.",ru:"Данные сохраняются в демонстрационной базе. Официальный аккаунт BYU не создается.",ar:"تُحفظ بياناتك في قاعدة بيانات تجريبية. ولا يُنشأ حساب رسمي لدى BYU."},
+ checking_db:{es:"Comprobando la conexión con la base de datos…",ko:"데이터베이스 연결 확인 중…",zh:"正在检查数据库连接…",pt:"Verificando a conexão com o banco de dados…",ja:"データベースへの接続を確認しています…",fr:"Vérification de la connexion à la base de données…",tl:"Sinusuri ang koneksyon sa database…",de:"Datenbankverbindung wird geprüft…",ru:"Проверка подключения к базе данных…",ar:"جارٍ التحقق من اتصال قاعدة البيانات…"},
+ home_title:{es:"Te damos la bienvenida",ko:"다시 오신 것을 환영합니다",zh:"欢迎回来",pt:"Boas-vindas",ja:"お帰りなさい",fr:"Bon retour",tl:"Maligayang pagbabalik",de:"Willkommen zurück",ru:"С возвращением",ar:"مرحبًا بعودتك"},
+ alerts:{es:"Alertas y tareas pendientes",ko:"알림 및 할 일",zh:"提醒与待办事项",pt:"Alertas e tarefas",ja:"お知らせと対応事項",fr:"Alertes et actions à effectuer",tl:"Mga alerto at dapat gawin",de:"Hinweise und Aufgaben",ru:"Уведомления и задачи",ar:"التنبيهات والمهام المطلوبة"},
+ journey_h:{es:"Tu recorrido",ko:"나의 여정",zh:"您的求学之路",pt:"Sua jornada",ja:"あなたの歩み",fr:"Votre parcours",tl:"Iyong paglalakbay",de:"Ihr Weg",ru:"Ваш путь",ar:"رحلتك"},
+ resources_h:{es:"Recursos",ko:"자료",zh:"资源",pt:"Recursos",ja:"リソース",fr:"Ressources",tl:"Mga mapagkukunan",de:"Ressourcen",ru:"Ресурсы",ar:"الموارد"},
+ profile_h:{es:"Perfil y estudios",ko:"프로필 및 학업",zh:"个人资料与学业",pt:"Perfil e estudos",ja:"プロフィールと学業",fr:"Profil et études",tl:"Profile at pag-aaral",de:"Profil und Studium",ru:"Профиль и учеба",ar:"الملف الشخصي والدراسة"},
+ ask:{es:"Preguntar al asistente",ko:"도우미에게 질문하기",zh:"询问助手",pt:"Pergunte ao assistente",ja:"アシスタントに質問",fr:"Demander à l’assistant",tl:"Magtanong sa assistant",de:"Assistent fragen",ru:"Задать вопрос помощнику",ar:"اسأل المساعد"},
+ open_map:{es:"Abrir mapa del recorrido",ko:"여정 지도 열기",zh:"打开旅程地图",pt:"Abrir mapa da jornada",ja:"歩みのマップを開く",fr:"Ouvrir le parcours",tl:"Buksan ang mapa ng paglalakbay",de:"Wegweiser öffnen",ru:"Открыть карту пути",ar:"فتح خريطة الرحلة"},
+ lang_h:{es:"Idioma",ko:"언어",zh:"语言",pt:"Idioma",ja:"言語",fr:"Langue",tl:"Wika",de:"Sprache",ru:"Язык",ar:"اللغة"},
+ mark_here:{es:"Marcar como mi etapa actual",ko:"현재 단계로 표시",zh:"设为我当前的阶段",pt:"Marcar como minha etapa atual",ja:"現在の段階として設定",fr:"Définir comme mon étape actuelle",tl:"Itakda bilang kasalukuyang yugto",de:"Als aktuelle Etappe festlegen",ru:"Отметить как текущий этап",ar:"تحديدها كمرحلتي الحالية"},
+ here:{es:"Estás aquí",ko:"현재 단계",zh:"您目前在这里",pt:"Você está aqui",ja:"現在の段階",fr:"Vous êtes ici",tl:"Nandito ka",de:"Sie sind hier",ru:"Вы здесь",ar:"أنت هنا"},
+ done:{es:"Completado",ko:"완료",zh:"已完成",pt:"Concluído",ja:"完了",fr:"Terminé",tl:"Tapos na",de:"Abgeschlossen",ru:"Выполнено",ar:"مكتمل"},
+ ahead:{es:"Próximamente",ko:"다음 단계",zh:"即将开始",pt:"A seguir",ja:"次の段階",fr:"À venir",tl:"Susunod",de:"Als Nächstes",ru:"Далее",ar:"لاحقًا"},
+ request_change:{es:"Solicitar un cambio",ko:"변경 요청",zh:"申请更改",pt:"Solicitar alteração",ja:"変更をリクエスト",fr:"Demander une modification",tl:"Humiling ng pagbabago",de:"Änderung beantragen",ru:"Запросить изменение",ar:"طلب تغيير"},
+ s0:{es:"Solicitar admisión a BYU",ko:"BYU 지원하기",zh:"申请 BYU",pt:"Candidatar-se à BYU",ja:"BYUに出願する",fr:"Candidater à BYU",tl:"Mag-apply sa BYU",de:"Bei BYU bewerben",ru:"Подать заявление в BYU",ar:"التقديم إلى BYU"},
+ s1:{es:"Encontrar vivienda",ko:"주거 찾기",zh:"寻找住房",pt:"Encontrar moradia",ja:"住まいを探す",fr:"Trouver un logement",tl:"Maghanap ng matitirhan",de:"Unterkunft finden",ru:"Найти жилье",ar:"العثور على سكن"},
+ s2:{es:"Inscribirse en clases",ko:"수업 등록",zh:"注册课程",pt:"Matricular-se nas aulas",ja:"授業に登録する",fr:"S’inscrire aux cours",tl:"Magparehistro sa mga klase",de:"Für Kurse anmelden",ru:"Записаться на занятия",ar:"التسجيل في المقررات"},
+ s3:{es:"Entender los impuestos",ko:"세금 이해하기",zh:"了解税务",pt:"Entender os impostos",ja:"税金について知る",fr:"Comprendre les impôts",tl:"Unawain ang mga buwis",de:"Steuern verstehen",ru:"Разобраться с налогами",ar:"فهم الضرائب"},
+ s4:{es:"Recursos de empleo",ko:"취업 자료",zh:"就业资源",pt:"Recursos de emprego",ja:"就職支援",fr:"Ressources pour l’emploi",tl:"Mga mapagkukunan sa trabaho",de:"Berufliche Ressourcen",ru:"Ресурсы по трудоустройству",ar:"موارد التوظيف"},
+ s5:{es:"Completar los requisitos de graduación",ko:"졸업 요건 완료",zh:"完成毕业要求",pt:"Concluir os requisitos de graduação",ja:"卒業要件を満たす",fr:"Remplir les conditions d’obtention du diplôme",tl:"Kumpletuhin ang mga requirement sa pagtatapos",de:"Abschlussanforderungen erfüllen",ru:"Выполнить требования для выпуска",ar:"استكمال متطلبات التخرج"},
+ c_housing:{es:"Vivienda",ko:"주거",zh:"住房",pt:"Moradia",ja:"住まい",fr:"Logement",tl:"Tirahan",de:"Wohnen",ru:"Жилье",ar:"السكن"},
+ c_reg:{es:"Inscripción",ko:"수강 신청",zh:"课程注册",pt:"Matrícula",ja:"履修登録",fr:"Inscription aux cours",tl:"Pagpaparehistro",de:"Kursanmeldung",ru:"Регистрация на курсы",ar:"التسجيل"},
+ c_tax:{es:"Impuestos",ko:"세금",zh:"税务",pt:"Impostos",ja:"税金",fr:"Impôts",tl:"Buwis",de:"Steuern",ru:"Налоги",ar:"الضرائب"},
+ c_emp:{es:"Empleo",ko:"취업",zh:"就业",pt:"Emprego",ja:"就職",fr:"Emploi",tl:"Trabaho",de:"Beschäftigung",ru:"Работа",ar:"العمل"},
+ c_imm:{es:"Apoyo migratorio",ko:"이민 지원",zh:"移民事务支持",pt:"Apoio imigratório",ja:"移民関連の支援",fr:"Aide en immigration",tl:"Suporta sa imigrasyon",de:"Unterstützung bei Einwanderungsfragen",ru:"Поддержка по вопросам иммиграции",ar:"دعم شؤون الهجرة"},
+ c_off:{es:"Oficinas de BYU",ko:"BYU 담당 부서",zh:"BYU 办公室",pt:"Escritórios da BYU",ja:"BYUの各窓口",fr:"Bureaux de BYU",tl:"Mga tanggapan ng BYU",de:"BYU-Stellen",ru:"Отделы BYU",ar:"مكاتب BYU"},
+ c_svc:{es:"Otros servicios",ko:"기타 서비스",zh:"其他服务",pt:"Outros serviços",ja:"その他のサービス",fr:"Autres services",tl:"Iba pang serbisyo",de:"Weitere Angebote",ru:"Другие услуги",ar:"خدمات أخرى"},
+ setup_intro:{es:"Esta página es una guía de demostración y no crea una cuenta oficial de BYU. Ingresa tus datos para continuar.",ko:"이 페이지는 안내용 예시이며 공식 BYU 계정을 만들지 않습니다. 계속하려면 정보를 입력하세요.",zh:"此页面是演示指南，不会创建 BYU 官方账户。请输入信息以继续。",pt:"Esta página é apenas um protótipo e não cria uma conta oficial da BYU. Informe seus dados para continuar.",ja:"このページは案内用のデモで、BYUの公式アカウントは作成されません。続けるには情報を入力してください。",fr:"Cette page est une démonstration et ne crée pas de compte BYU officiel. Saisissez vos renseignements pour continuer.",tl:"Gabay na prototype lamang ang pahinang ito at hindi ito lumilikha ng opisyal na BYU account. Ilagay ang iyong mga detalye upang magpatuloy.",de:"Diese Seite ist eine Demo und erstellt kein offizielles BYU-Konto. Geben Sie Ihre Angaben ein, um fortzufahren.",ru:"Эта страница — демонстрационный справочник, она не создает официальный аккаунт BYU. Введите данные, чтобы продолжить.",ar:"هذه الصفحة نموذج إرشادي ولا تنشئ حسابًا رسميًا لدى BYU. أدخل بياناتك للمتابعة."},
+ netid_hint:{es:"Solo letras y números, de 4 a 12 caracteres.",ko:"영문자와 숫자만 사용하세요(4~12자).",zh:"只能使用字母和数字，长度为 4–12 个字符。",pt:"Use apenas letras e números, de 4 a 12 caracteres.",ja:"英字と数字のみ、4～12文字です。",fr:"Lettres et chiffres uniquement, de 4 à 12 caractères.",tl:"Mga letra at numero lamang, 4–12 character.",de:"Nur Buchstaben und Zahlen, 4–12 Zeichen.",ru:"Только латинские буквы и цифры, от 4 до 12 символов.",ar:"استخدم الأحرف والأرقام فقط، من 4 إلى 12 حرفًا."},
+ password_hint:{es:"Al menos 4 caracteres.",ko:"4자 이상 입력하세요.",zh:"至少 4 个字符。",pt:"Pelo menos 4 caracteres.",ja:"4文字以上です。",fr:"Au moins 4 caractères.",tl:"Hindi bababa sa 4 na character.",de:"Mindestens 4 Zeichen.",ru:"Не менее 4 символов.",ar:"أربعة أحرف على الأقل."},
+ nation_prompt:{es:"Selecciona tu nacionalidad",ko:"국적을 선택하세요",zh:"请选择您的国籍",pt:"Selecione sua nacionalidade",ja:"国籍を選択してください",fr:"Sélectionnez votre nationalité",tl:"Piliin ang iyong nasyonalidad",de:"Wählen Sie Ihre Staatsangehörigkeit",ru:"Выберите гражданство",ar:"اختر جنسيتك"},
+ other_hint:{es:"Escribe tu nacionalidad.",ko:"국적을 입력하세요.",zh:"请输入您的国籍。",pt:"Informe sua nacionalidade.",ja:"国籍を入力してください。",fr:"Saisissez votre nationalité.",tl:"Ilagay ang iyong nasyonalidad.",de:"Geben Sie Ihre Staatsangehörigkeit ein.",ru:"Укажите гражданство.",ar:"أدخل جنسيتك."},
+ major_hint:{es:"Selecciona tu carrera prevista en el menú.",ko:"메뉴에서 희망 전공을 선택하세요.",zh:"请从下拉菜单中选择计划专业。",pt:"Selecione seu curso pretendido no menu.",ja:"メニューから希望する専攻を選択してください。",fr:"Choisissez votre spécialité prévue dans le menu.",tl:"Piliin ang planong major mo sa menu.",de:"Wählen Sie Ihr geplantes Hauptfach im Menü aus.",ru:"Выберите специальность из списка.",ar:"اختر تخصصك المخطط له من القائمة."},
+ setup_notice:{es:"Los datos se guardan en la base de datos de demostración. Esto no crea una cuenta oficial de BYU.",ko:"정보는 데모 데이터베이스에 저장됩니다. 공식 BYU 계정은 생성되지 않습니다.",zh:"您的信息会保存到演示数据库中。这不会创建 BYU 官方账户。",pt:"Seus dados serão salvos no banco de dados do protótipo. Isso não cria uma conta oficial da BYU.",ja:"入力情報はデモ用データベースに保存されます。BYU公式アカウントは作成されません。",fr:"Vos renseignements sont enregistrés dans la base de données de démonstration. Aucun compte BYU officiel n’est créé.",tl:"Ise-save ang mga detalye sa prototype database. Hindi ito lumilikha ng opisyal na BYU account.",de:"Ihre Angaben werden in der Demo-Datenbank gespeichert. Es wird kein offizielles BYU-Konto erstellt.",ru:"Данные сохраняются в демонстрационной базе. Официальный аккаунт BYU не создается.",ar:"تُحفظ بياناتك في قاعدة بيانات تجريبية. ولا يُنشأ حساب رسمي لدى BYU."},
+ checking_db:{es:"Comprobando la conexión con la base de datos…",ko:"데이터베이스 연결 확인 중…",zh:"正在检查数据库连接…",pt:"Verificando a conexão com o banco de dados…",ja:"データベースへの接続を確認しています…",fr:"Vérification de la connexion à la base de données…",tl:"Sinusuri ang koneksyon sa database…",de:"Datenbankverbindung wird geprüft…",ru:"Проверка подключения к базе данных…",ar:"جارٍ التحقق من اتصال قاعدة البيانات…"},
+ journey_intro:{es:"Seis etapas, desde antes de solicitar admisión hasta la graduación. Cada persona avanza a su ritmo. Usa esta guía para encontrar tu etapa y el siguiente paso. Selecciona una etapa para ver qué hacer y dónde pedir ayuda.",ko:"입학 지원 전부터 졸업까지 여섯 단계가 있습니다. 각자의 진행 속도는 다릅니다. 이 안내를 참고해 현재 단계와 다음 할 일을 확인하세요. 단계를 선택하면 할 일과 도움을 받을 곳을 볼 수 있습니다.",zh:"从申请前到毕业共有六个阶段。每个人的进度不同，您可以用本指南找到当前阶段和下一步。选择任一阶段可查看要做的事以及获取帮助的途径。",pt:"São seis etapas, do período anterior à candidatura até a formatura. Cada pessoa avança no próprio ritmo. Use este guia para encontrar sua etapa e o próximo passo. Selecione uma etapa para ver o que fazer e onde buscar ajuda.",ja:"出願前から卒業まで、6つの段階があります。進み方は人それぞれです。このガイドで現在の段階と次のステップを確認してください。段階を選ぶと、することや相談先が表示されます。",fr:"Six étapes, de la préparation de votre candidature à l’obtention du diplôme. Chacun avance à son rythme. Utilisez ce guide pour trouver votre étape et la suivante. Sélectionnez une étape pour voir les démarches et les ressources disponibles.",tl:"May anim na yugto mula bago mag-apply hanggang pagtatapos. Iba-iba ang bilis ng bawat isa. Gamitin ang gabay upang malaman ang kasalukuyan mong yugto at susunod na hakbang. Pumili ng yugto para makita ang mga dapat gawin at kung saan hihingi ng tulong.",de:"Sechs Etappen führen von der Vorbereitung der Bewerbung bis zum Abschluss. Jeder Mensch hat sein eigenes Tempo. Finden Sie mit diesem Leitfaden Ihre aktuelle Etappe und den nächsten Schritt. Wählen Sie eine Etappe, um Aufgaben und Anlaufstellen zu sehen.",ru:"Шесть этапов — от подготовки к поступлению до выпуска. Каждый движется в своем темпе. Найдите здесь текущий этап и следующий шаг. Выберите этап, чтобы узнать, что делать и куда обратиться за помощью.",ar:"ست مراحل تمتد من الاستعداد للتقديم إلى التخرج. لكل شخص وتيرته الخاصة. استخدم هذا الدليل لمعرفة مرحلتك والخطوة التالية. اختر أي مرحلة لمعرفة ما ينبغي فعله وأين تجد المساعدة."},
+ language_terms:{es:"Algunos términos de BYU, como NetID y MyMap, y los enlaces a sitios oficiales se mantienen sin cambios.",ko:"NetID와 MyMap 같은 BYU 용어 및 공식 웹사이트 링크는 원문 그대로 표시됩니다.",zh:"NetID、MyMap 等 BYU 专有词语以及官方网站链接会保留原样。",pt:"Termos da BYU, como NetID e MyMap, e links para sites oficiais permanecem inalterados.",ja:"NetIDやMyMapなどのBYU用語と公式サイトへのリンクは変更されません。",fr:"Certains termes de BYU, comme NetID et MyMap, ainsi que les liens officiels, restent inchangés.",tl:"Mananatiling hindi isasalin ang mga terminong BYU gaya ng NetID at MyMap, pati ang mga link sa opisyal na site.",de:"BYU-Begriffe wie NetID und MyMap sowie Links zu offiziellen Websites bleiben unverändert.",ru:"Термины BYU, например NetID и MyMap, а также ссылки на официальные сайты остаются без изменений.",ar:"تبقى بعض مصطلحات BYU مثل NetID وMyMap، وروابط المواقع الرسمية، كما هي."},
+ translation_notice:{es:"Las traducciones de esta guía ayudan a comprender la información. Algunos términos de BYU, nombres, títulos de cursos y contenidos de sitios oficiales enlazados pueden permanecer en inglés. Confirma la información académica o migratoria importante con la oficina correspondiente de BYU.",ko:"이 안내서의 번역은 내용을 이해하는 데 도움을 주기 위한 것입니다. BYU 용어, 이름, 과목명 및 연결된 공식 웹사이트의 내용은 영어로 표시될 수 있습니다. 중요한 학업 또는 이민 정보는 BYU 담당 부서에 확인하세요.",zh:"本指南的翻译旨在帮助您理解内容。部分 BYU 专有词、名称、课程名称以及链接到的官方网站内容可能仍为英文。重要的学业或移民信息请向 BYU 相应办公室确认。",pt:"As traduções deste guia ajudam na compreensão. Alguns termos da BYU, nomes, títulos de disciplinas e conteúdos dos sites oficiais vinculados podem permanecer em inglês. Confirme informações acadêmicas ou de imigração importantes com o escritório apropriado da BYU.",ja:"このガイドの翻訳は内容の理解を助けるものです。BYU固有の用語、人名、科目名、リンク先の公式サイトの内容は英語のままの場合があります。学業や移民に関する重要事項はBYUの担当窓口で確認してください。",fr:"Les traductions de ce guide facilitent la compréhension. Certains termes de BYU, noms, titres de cours et contenus des sites officiels liés peuvent rester en anglais. Vérifiez les informations importantes sur les études ou l’immigration auprès du service BYU concerné.",tl:"Pangkalahatang pag-unawa lamang ang layunin ng mga salin sa gabay na ito. Maaaring manatili sa English ang ilang terminong BYU, pangalan, pamagat ng kurso, at nilalaman ng mga opisyal na website na naka-link. Kumpirmahin sa tamang tanggapan ng BYU ang mahahalagang impormasyon tungkol sa pag-aaral o imigrasyon.",de:"Die Übersetzungen dieses Leitfadens dienen dem allgemeinen Verständnis. BYU-Begriffe, Namen, Kurstitel und Inhalte verlinkter offizieller Websites können auf Englisch bleiben. Lassen Sie wichtige Informationen zu Studium oder Einwanderung von der zuständigen BYU-Stelle bestätigen.",ru:"Перевод этого справочника помогает понять общую информацию. Некоторые термины BYU, имена, названия курсов и материалы официальных сайтов по ссылкам могут остаться на английском. Важные сведения об учебе или иммиграции уточняйте в соответствующем отделе BYU.",ar:"تهدف ترجمات هذا الدليل إلى تسهيل فهم المعلومات. قد تبقى بعض مصطلحات BYU والأسماء وعناوين المقررات ومحتويات المواقع الرسمية المرتبطة باللغة الإنجليزية. يرجى تأكيد المعلومات المهمة المتعلقة بالدراسة أو الهجرة لدى مكتب BYU المختص."},
+ appt_heading:{es:"Cita de orientación internacional",ko:"국제 학생 상담 예약",zh:"国际学生咨询预约",pt:"Agendamento de orientação internacional",ja:"留学生向け相談の予約",fr:"Rendez-vous de conseil pour étudiants internationaux",tl:"Appointment para sa international advising",de:"Beratungstermin für internationale Studierende",ru:"Консультация для иностранных студентов",ar:"موعد إرشادي للطلاب الدوليين"},
+ appt_none:{es:"No hay citas próximas.",ko:"예정된 상담이 없습니다.",zh:"目前没有即将进行的预约。",pt:"Não há consultas agendadas.",ja:"予定されている予約はありません。",fr:"Aucun rendez-vous à venir.",tl:"Walang naka-iskedyul na appointment.",de:"Keine bevorstehenden Termine.",ru:"Предстоящих встреч нет.",ar:"لا توجد مواعيد قادمة."},
+ appt_schedule:{es:"Programar una cita",ko:"상담 예약하기",zh:"预约咨询",pt:"Agendar consulta",ja:"予約する",fr:"Prendre rendez-vous",tl:"Mag-iskedyul ng appointment",de:"Termin vereinbaren",ru:"Записаться на консультацию",ar:"جدولة موعد"},
+ appt_sample:{es:"Disponibilidad de ejemplo. Los horarios usan la zona horaria de tu dispositivo.",ko:"예시 가능 시간입니다. 시간대는 기기 설정을 따릅니다.",zh:"此为示例时间。时间按您设备的时区显示。",pt:"Disponibilidade de demonstração. Os horários usam o fuso do seu dispositivo.",ja:"サンプルの空き時間です。時刻はお使いの端末のタイムゾーンで表示されます。",fr:"Disponibilités de démonstration. Les horaires utilisent le fuseau horaire de votre appareil.",tl:"Halimbawang availability ito. Gagamitin ang time zone ng device mo.",de:"Beispieltermine. Die Uhrzeiten richten sich nach der Zeitzone Ihres Geräts.",ru:"Пример доступного времени. Часовой пояс определяется настройками устройства.",ar:"هذه أوقات تجريبية. تُعرض المواعيد وفقًا للمنطقة الزمنية لجهازك."},
+ journey_intro:{es:"Seis etapas, desde antes de solicitar admisión hasta la graduación. Cada persona avanza a su ritmo. Usa esta guía para encontrar tu etapa y el siguiente paso. Selecciona una etapa para ver qué hacer y dónde pedir ayuda.",ko:"입학 지원 전부터 졸업까지 여섯 단계가 있습니다. 각자의 진행 속도는 다릅니다. 이 안내를 참고해 현재 단계와 다음 할 일을 확인하세요. 단계를 선택하면 할 일과 도움을 받을 곳을 볼 수 있습니다.",zh:"从申请前到毕业共有六个阶段。每个人的进度不同，您可以用本指南找到当前阶段和下一步。选择任一阶段可查看要做的事以及获取帮助的途径。",pt:"São seis etapas, do período anterior à candidatura até a formatura. Cada pessoa avança no próprio ritmo. Use este guia para encontrar sua etapa e o próximo passo. Selecione uma etapa para ver o que fazer e onde buscar ajuda.",ja:"出願前から卒業まで、6つの段階があります。進み方は人それぞれです。このガイドで現在の段階と次のステップを確認してください。段階を選ぶと、することや相談先が表示されます。",fr:"Six étapes, de la préparation de votre candidature à l’obtention du diplôme. Chacun avance à son rythme. Utilisez ce guide pour trouver votre étape et la suivante. Sélectionnez une étape pour voir les démarches et les ressources disponibles.",tl:"May anim na yugto mula bago mag-apply hanggang pagtatapos. Iba-iba ang bilis ng bawat isa. Gamitin ang gabay upang malaman ang kasalukuyan mong yugto at susunod na hakbang. Pumili ng yugto para makita ang mga dapat gawin at kung saan hihingi ng tulong.",de:"Sechs Etappen führen von der Vorbereitung der Bewerbung bis zum Abschluss. Jeder Mensch hat sein eigenes Tempo. Finden Sie mit diesem Leitfaden Ihre aktuelle Etappe und den nächsten Schritt. Wählen Sie eine Etappe, um Aufgaben und Anlaufstellen zu sehen.",ru:"Шесть этапов — от подготовки к поступлению до выпуска. Каждый движется в своем темпе. Найдите здесь текущий этап и следующий шаг. Выберите этап, чтобы узнать, что делать и куда обратиться за помощью.",ar:"ست مراحل تمتد من الاستعداد للتقديم إلى التخرج. لكل شخص وتيرته الخاصة. استخدم هذا الدليل لمعرفة مرحلتك والخطوة التالية. اختر أي مرحلة لمعرفة ما ينبغي فعله وأين تجد المساعدة."},
+ hub_intro:{es:"Selecciona una categoría para ver sitios web oficiales y saber a quién contactar. Cada categoría corresponde a una etapa del mapa de tu recorrido.",ko:"항목을 선택하면 공식 웹사이트와 문의할 곳을 확인할 수 있습니다. 각 항목은 여정 지도의 단계와 연결되어 있습니다.",zh:"选择一个类别，查看官方网站和联系对象。每个类别都对应旅程地图中的一个阶段。",pt:"Escolha uma categoria para ver sites oficiais e saber com quem falar. Cada categoria corresponde a uma etapa do mapa da jornada.",ja:"項目を選ぶと、公式サイトや問い合わせ先を確認できます。各項目は歩みのマップの段階に対応しています。",fr:"Choisissez une catégorie pour consulter les sites officiels et savoir qui contacter. Chaque catégorie correspond à une étape de votre parcours.",tl:"Pumili ng kategorya para makita ang mga opisyal na website at kung sino ang kokontakin. Katumbas ng bawat kategorya ang isang yugto sa mapa ng paglalakbay.",de:"Wählen Sie einen Bereich, um offizielle Websites und Ansprechpersonen zu sehen. Jeder Bereich entspricht einer Etappe Ihres Wegweisers.",ru:"Выберите раздел, чтобы посмотреть официальные сайты и узнать, куда обращаться. Каждый раздел соответствует этапу на карте пути.",ar:"اختر فرعًا للاطلاع على المواقع الرسمية ومعرفة جهة التواصل. يتوافق كل فرع مع مرحلة في خريطة رحلتك."},
+ language_terms:{es:"Algunos términos de BYU, como NetID y MyMap, y los enlaces a sitios oficiales se mantienen sin cambios.",ko:"NetID와 MyMap 같은 BYU 용어 및 공식 웹사이트 링크는 원문 그대로 표시됩니다.",zh:"NetID、MyMap 等 BYU 专有词语以及官方网站链接会保留原样。",pt:"Termos da BYU, como NetID e MyMap, e links para sites oficiais permanecem inalterados.",ja:"NetIDやMyMapなどのBYU用語と公式サイトへのリンクは変更されません。",fr:"Certains termes de BYU, comme NetID et MyMap, ainsi que les liens officiels, restent inchangés.",tl:"Mananatiling hindi isasalin ang mga terminong BYU gaya ng NetID at MyMap, pati ang mga link sa opisyal na site.",de:"BYU-Begriffe wie NetID und MyMap sowie Links zu offiziellen Websites bleiben unverändert.",ru:"Термины BYU, например NetID и MyMap, а также ссылки на официальные сайты остаются без изменений.",ar:"تبقى بعض مصطلحات BYU مثل NetID وMyMap، وروابط المواقع الرسمية، كما هي."},
+ translation_notice:{es:"Las traducciones de esta guía ayudan a comprender la información. Algunos términos de BYU, nombres, títulos de cursos y contenidos de sitios oficiales enlazados pueden permanecer en inglés. Confirma la información académica o migratoria importante con la oficina correspondiente de BYU.",ko:"이 안내서의 번역은 내용을 이해하는 데 도움을 주기 위한 것입니다. BYU 용어, 이름, 과목명 및 연결된 공식 웹사이트의 내용은 영어로 표시될 수 있습니다. 중요한 학업 또는 이민 정보는 BYU 담당 부서에 확인하세요.",zh:"本指南的翻译旨在帮助您理解内容。部分 BYU 专有词、名称、课程名称以及链接到的官方网站内容可能仍为英文。重要的学业或移民信息请向 BYU 相应办公室确认。",pt:"As traduções deste guia ajudam na compreensão. Alguns termos da BYU, nomes, títulos de disciplinas e conteúdos dos sites oficiais vinculados podem permanecer em inglês. Confirme informações acadêmicas ou de imigração importantes com o escritório apropriado da BYU.",ja:"このガイドの翻訳は内容の理解を助けるものです。BYU固有の用語、人名、科目名、リンク先の公式サイトの内容は英語のままの場合があります。学業や移民に関する重要事項はBYUの担当窓口で確認してください。",fr:"Les traductions de ce guide facilitent la compréhension. Certains termes de BYU, noms, titres de cours et contenus des sites officiels liés peuvent rester en anglais. Vérifiez les informations importantes sur les études ou l’immigration auprès du service BYU concerné.",tl:"Pangkalahatang pag-unawa lamang ang layunin ng mga salin sa gabay na ito. Maaaring manatili sa English ang ilang terminong BYU, pangalan, pamagat ng kurso, at nilalaman ng mga opisyal na website na naka-link. Kumpirmahin sa tamang tanggapan ng BYU ang mahahalagang impormasyon tungkol sa pag-aaral o imigrasyon.",de:"Die Übersetzungen dieses Leitfadens dienen dem allgemeinen Verständnis. BYU-Begriffe, Namen, Kurstitel und Inhalte verlinkter offizieller Websites können auf Englisch bleiben. Lassen Sie wichtige Informationen zu Studium oder Einwanderung von der zuständigen BYU-Stelle bestätigen.",ru:"Перевод этого справочника помогает понять общую информацию. Некоторые термины BYU, имена, названия курсов и материалы официальных сайтов по ссылкам могут остаться на английском. Важные сведения об учебе или иммиграции уточняйте в соответствующем отделе BYU.",ar:"تهدف ترجمات هذا الدليل إلى تسهيل فهم المعلومات. قد تبقى بعض مصطلحات BYU والأسماء وعناوين المقررات ومحتويات المواقع الرسمية المرتبطة باللغة الإنجليزية. يرجى تأكيد المعلومات المهمة المتعلقة بالدراسة أو الهجرة لدى مكتب BYU المختص."},
+ appt_heading:{es:"Cita de orientación internacional",ko:"국제 학생 상담 예약",zh:"国际学生咨询预约",pt:"Agendamento de orientação internacional",ja:"留学生向け相談の予約",fr:"Rendez-vous de conseil pour étudiants internationaux",tl:"Appointment para sa international advising",de:"Beratungstermin für internationale Studierende",ru:"Консультация для иностранных студентов",ar:"موعد إرشادي للطلاب الدوليين"},
+ appt_none:{es:"No hay citas próximas.",ko:"예정된 상담이 없습니다.",zh:"目前没有即将进行的预约。",pt:"Não há consultas agendadas.",ja:"予定されている予約はありません。",fr:"Aucun rendez-vous à venir.",tl:"Walang naka-iskedyul na appointment.",de:"Keine bevorstehenden Termine.",ru:"Предстоящих встреч нет.",ar:"لا توجد مواعيد قادمة."},
+ appt_schedule:{es:"Programar una cita",ko:"상담 예약하기",zh:"预约咨询",pt:"Agendar consulta",ja:"予約する",fr:"Prendre rendez-vous",tl:"Mag-iskedyul ng appointment",de:"Termin vereinbaren",ru:"Записаться на консультацию",ar:"جدولة موعد"},
+ appt_sample:{es:"Disponibilidad de ejemplo. Los horarios usan la zona horaria de tu dispositivo.",ko:"예시 가능 시간입니다. 시간대는 기기 설정을 따릅니다.",zh:"此为示例时间。时间按您设备的时区显示。",pt:"Disponibilidade de demonstração. Os horários usam o fuso do seu dispositivo.",ja:"サンプルの空き時間です。時刻はお使いの端末のタイムゾーンで表示されます。",fr:"Disponibilités de démonstration. Les horaires utilisent le fuseau horaire de votre appareil.",tl:"Halimbawang availability ito. Gagamitin ang time zone ng device mo.",de:"Beispieltermine. Die Uhrzeiten richten sich nach der Zeitzone Ihres Geräts.",ru:"Пример доступного времени. Часовой пояс определяется настройками устройства.",ar:"هذه أوقات تجريبية. تُعرض المواعيد وفقًا للمنطقة الزمنية لجهازك."},
+ chat_note:{es:"No puedo dar asesoría legal ni migratoria, ni reemplazar la orientación académica.",ko:"법률 또는 이민 관련 조언을 제공하거나 학업 상담을 대신할 수 없습니다.",zh:"我无法提供法律或移民建议，也不能代替学业指导。",pt:"Não posso dar orientação jurídica ou imigratória, nem substituir a orientação acadêmica.",ja:"法律や移民に関する助言はできず、学業相談に代わるものでもありません。",fr:"Je ne peux pas fournir de conseils juridiques ou d’immigration ni remplacer un conseiller pédagogique.",tl:"Hindi ako makapagbibigay ng legal o immigration advice at hindi rin ako kapalit ng academic advising.",de:"Ich kann keine Rechts- oder Einwanderungsberatung geben und keine Studienberatung ersetzen.",ru:"Я не могу давать юридические советы или рекомендации по иммиграции и не заменяю академического консультанта.",ar:"لا أستطيع تقديم المشورة القانونية أو المتعلقة بالهجرة، ولا أغني عن الإرشاد الأكاديمي."},
+ chat_placeholder:{es:"Haz una pregunta…",ko:"질문을 입력하세요…",zh:"请输入问题…",pt:"Faça uma pergunta…",ja:"質問を入力…",fr:"Posez une question…",tl:"Magtanong…",de:"Stellen Sie eine Frage…",ru:"Задайте вопрос…",ar:"اكتب سؤالًا…"},
+ send:{es:"Enviar",ko:"보내기",zh:"发送",pt:"Enviar",ja:"送信",fr:"Envoyer",tl:"Ipadala",de:"Senden",ru:"Отправить",ar:"إرسال"},
+ cancel:{es:"Cancelar",ko:"취소",zh:"取消",pt:"Cancelar",ja:"キャンセル",fr:"Annuler",tl:"Kanselahin",de:"Abbrechen",ru:"Отмена",ar:"إلغاء"},
+ appt_advisor:{es:"Asesor",ko:"상담자",zh:"顾问",pt:"Orientador",ja:"アドバイザー",fr:"Conseiller",tl:"Tagapayo",de:"Berater/in",ru:"Консультант",ar:"المستشار"},
+ appt_choose_advisor:{es:"Elige un asesor de demostración",ko:"예시 상담자를 선택하세요",zh:"请选择一位演示顾问",pt:"Escolha um orientador de demonstração",ja:"デモ用アドバイザーを選択",fr:"Choisissez un conseiller de démonstration",tl:"Pumili ng demo adviser",de:"Demo-Berater auswählen",ru:"Выберите консультанта для демонстрации",ar:"اختر مستشارًا تجريبيًا"},
+ appt_demo_a:{es:"Asesor de demostración A",ko:"예시 상담자 A",zh:"演示顾问 A",pt:"Orientador de demonstração A",ja:"デモ用アドバイザー A",fr:"Conseiller de démonstration A",tl:"Demo adviser A",de:"Demo-Berater A",ru:"Демонстрационный консультант A",ar:"المستشار التجريبي أ"},
+ appt_demo_b:{es:"Asesor de demostración B",ko:"예시 상담자 B",zh:"演示顾问 B",pt:"Orientador de demonstração B",ja:"デモ用アドバイザー B",fr:"Conseiller de démonstration B",tl:"Demo adviser B",de:"Demo-Berater B",ru:"Демонстрационный консультант B",ar:"المستشار التجريبي ب"},
+ appt_available:{es:"Cita disponible",ko:"예약 가능 시간",zh:"可预约时间",pt:"Horário disponível",ja:"予約可能な時間",fr:"Créneau disponible",tl:"Available na appointment",de:"Verfügbarer Termin",ru:"Доступное время",ar:"الموعد المتاح"},
+ appt_choose_first:{es:"Primero elige un asesor",ko:"먼저 상담자를 선택하세요",zh:"请先选择顾问",pt:"Primeiro escolha um orientador",ja:"先にアドバイザーを選択してください",fr:"Choisissez d’abord un conseiller",tl:"Pumili muna ng adviser",de:"Wählen Sie zuerst einen Berater aus",ru:"Сначала выберите консультанта",ar:"اختر مستشارًا أولًا"},
+ appt_topic:{es:"Tema de la cita",ko:"상담 주제",zh:"咨询主题",pt:"Assunto da consulta",ja:"相談の内容",fr:"Sujet du rendez-vous",tl:"Paksa ng appointment",de:"Gesprächsthema",ru:"Тема консультации",ar:"موضوع الموعد"},
+ appt_choose_topic:{es:"Elige un tema",ko:"주제를 선택하세요",zh:"请选择主题",pt:"Escolha um assunto",ja:"内容を選択してください",fr:"Choisissez un sujet",tl:"Pumili ng paksa",de:"Thema auswählen",ru:"Выберите тему",ar:"اختر موضوعًا"},
+ appt_arrival:{es:"Llegada y adaptación",ko:"도착 및 정착",zh:"抵达与适应",pt:"Chegada e adaptação",ja:"到着後の生活",fr:"Arrivée et installation",tl:"Pagdating at pag-aangkop",de:"Ankunft und Eingewöhnung",ru:"Приезд и обустройство",ar:"الوصول والاستقرار"},
+ appt_resources:{es:"Cómo encontrar recursos del campus",ko:"캠퍼스 자료 찾기",zh:"寻找校园资源",pt:"Como encontrar recursos no campus",ja:"キャンパスの支援を探す",fr:"Trouver les ressources du campus",tl:"Paghahanap ng mga mapagkukunan sa campus",de:"Campusangebote finden",ru:"Поиск ресурсов кампуса",ar:"العثور على موارد الحرم الجامعي"},
+ appt_academic:{es:"Planificación académica",ko:"학업 계획",zh:"学业规划",pt:"Planejamento acadêmico",ja:"学業計画",fr:"Planification des études",tl:"Pagpaplano ng pag-aaral",de:"Studienplanung",ru:"Учебное планирование",ar:"التخطيط الأكاديمي"},
+ appt_book:{es:"Reservar cita de demostración",ko:"예시 상담 예약",zh:"预约演示咨询",pt:"Agendar consulta de demonstração",ja:"デモ予約を確定",fr:"Réserver le rendez-vous de démonstration",tl:"Mag-book ng demo appointment",de:"Demo-Termin buchen",ru:"Записаться на демонстрационную встречу",ar:"حجز موعد تجريبي"},
+ journey_intro:{es:"Seis etapas, desde antes de solicitar admisión hasta la graduación. Cada persona avanza a su ritmo. Usa esta guía para encontrar tu etapa y el siguiente paso. Selecciona una etapa para ver qué hacer y dónde pedir ayuda.",ko:"입학 지원 전부터 졸업까지 여섯 단계가 있습니다. 각자의 진행 속도는 다릅니다. 이 안내를 참고해 현재 단계와 다음 할 일을 확인하세요. 단계를 선택하면 할 일과 도움을 받을 곳을 볼 수 있습니다.",zh:"从申请前到毕业共有六个阶段。每个人的进度不同，您可以用本指南找到当前阶段和下一步。选择任一阶段可查看要做的事以及获取帮助的途径。",pt:"São seis etapas, do período anterior à candidatura até a formatura. Cada pessoa avança no próprio ritmo. Use este guia para encontrar sua etapa e o próximo passo. Selecione uma etapa para ver o que fazer e onde buscar ajuda.",ja:"出願前から卒業まで、6つの段階があります。進み方は人それぞれです。このガイドで現在の段階と次のステップを確認してください。段階を選ぶと、することや相談先が表示されます。",fr:"Six étapes, de la préparation de votre candidature à l’obtention du diplôme. Chacun avance à son rythme. Utilisez ce guide pour trouver votre étape et la suivante. Sélectionnez une étape pour voir les démarches et les ressources disponibles.",tl:"May anim na yugto mula bago mag-apply hanggang pagtatapos. Iba-iba ang bilis ng bawat isa. Gamitin ang gabay upang malaman ang kasalukuyan mong yugto at susunod na hakbang. Pumili ng yugto para makita ang mga dapat gawin at kung saan hihingi ng tulong.",de:"Sechs Etappen führen von der Vorbereitung der Bewerbung bis zum Abschluss. Jeder Mensch hat sein eigenes Tempo. Finden Sie mit diesem Leitfaden Ihre aktuelle Etappe und den nächsten Schritt. Wählen Sie eine Etappe, um Aufgaben und Anlaufstellen zu sehen.",ru:"Шесть этапов — от подготовки к поступлению до выпуска. Каждый движется в своем темпе. Найдите здесь текущий этап и следующий шаг. Выберите этап, чтобы узнать, что делать и куда обратиться за помощью.",ar:"ست مراحل تمتد من الاستعداد للتقديم إلى التخرج. لكل شخص وتيرته الخاصة. استخدم هذا الدليل لمعرفة مرحلتك والخطوة التالية. اختر أي مرحلة لمعرفة ما ينبغي فعله وأين تجد المساعدة."},
+ hub_intro:{es:"Selecciona una categoría para ver sitios web oficiales y saber a quién contactar. Cada categoría corresponde a una etapa del mapa de tu recorrido.",ko:"항목을 선택하면 공식 웹사이트와 문의할 곳을 확인할 수 있습니다. 각 항목은 여정 지도의 단계와 연결되어 있습니다.",zh:"选择一个类别，查看官方网站和联系对象。每个类别都对应旅程地图中的一个阶段。",pt:"Escolha uma categoria para ver sites oficiais e saber com quem falar. Cada categoria corresponde a uma etapa do mapa da jornada.",ja:"項目を選ぶと、公式サイトや問い合わせ先を確認できます。各項目は歩みのマップの段階に対応しています。",fr:"Choisissez une catégorie pour consulter les sites officiels et savoir qui contacter. Chaque catégorie correspond à une étape de votre parcours.",tl:"Pumili ng kategorya para makita ang mga opisyal na website at kung sino ang kokontakin. Katumbas ng bawat kategorya ang isang yugto sa mapa ng paglalakbay.",de:"Wählen Sie einen Bereich, um offizielle Websites und Ansprechpersonen zu sehen. Jeder Bereich entspricht einer Etappe Ihres Wegweisers.",ru:"Выберите раздел, чтобы посмотреть официальные сайты и узнать, куда обращаться. Каждый раздел соответствует этапу на карте пути.",ar:"اختر فرعًا للاطلاع على المواقع الرسمية ومعرفة جهة التواصل. يتوافق كل فرع مع مرحلة في خريطة رحلتك."},
+ language_terms:{es:"Algunos términos de BYU, como NetID y MyMap, y los enlaces a sitios oficiales se mantienen sin cambios.",ko:"NetID와 MyMap 같은 BYU 용어 및 공식 웹사이트 링크는 원문 그대로 표시됩니다.",zh:"NetID、MyMap 等 BYU 专有词语以及官方网站链接会保留原样。",pt:"Termos da BYU, como NetID e MyMap, e links para sites oficiais permanecem inalterados.",ja:"NetIDやMyMapなどのBYU用語と公式サイトへのリンクは変更されません。",fr:"Certains termes de BYU, comme NetID et MyMap, ainsi que les liens officiels, restent inchangés.",tl:"Mananatiling hindi isasalin ang mga terminong BYU gaya ng NetID at MyMap, pati ang mga link sa opisyal na site.",de:"BYU-Begriffe wie NetID und MyMap sowie Links zu offiziellen Websites bleiben unverändert.",ru:"Термины BYU, например NetID и MyMap, а также ссылки на официальные сайты остаются без изменений.",ar:"تبقى بعض مصطلحات BYU مثل NetID وMyMap، وروابط المواقع الرسمية، كما هي."},
+ translation_notice:{es:"Las traducciones de esta guía ayudan a comprender la información. Algunos términos de BYU, nombres, títulos de cursos y contenidos de sitios oficiales enlazados pueden permanecer en inglés. Confirma la información académica o migratoria importante con la oficina correspondiente de BYU.",ko:"이 안내서의 번역은 내용을 이해하는 데 도움을 주기 위한 것입니다. BYU 용어, 이름, 과목명 및 연결된 공식 웹사이트의 내용은 영어로 표시될 수 있습니다. 중요한 학업 또는 이민 정보는 BYU 담당 부서에 확인하세요.",zh:"本指南的翻译旨在帮助您理解内容。部分 BYU 专有词、名称、课程名称以及链接到的官方网站内容可能仍为英文。重要的学业或移民信息请向 BYU 相应办公室确认。",pt:"As traduções deste guia ajudam na compreensão. Alguns termos da BYU, nomes, títulos de disciplinas e conteúdos dos sites oficiais vinculados podem permanecer em inglês. Confirme informações acadêmicas ou de imigração importantes com o escritório apropriado da BYU.",ja:"このガイドの翻訳は内容の理解を助けるものです。BYU固有の用語、人名、科目名、リンク先の公式サイトの内容は英語のままの場合があります。学業や移民に関する重要事項はBYUの担当窓口で確認してください。",fr:"Les traductions de ce guide facilitent la compréhension. Certains termes de BYU, noms, titres de cours et contenus des sites officiels liés peuvent rester en anglais. Vérifiez les informations importantes sur les études ou l’immigration auprès du service BYU concerné.",tl:"Pangkalahatang pag-unawa lamang ang layunin ng mga salin sa gabay na ito. Maaaring manatili sa English ang ilang terminong BYU, pangalan, pamagat ng kurso, at nilalaman ng mga opisyal na website na naka-link. Kumpirmahin sa tamang tanggapan ng BYU ang mahahalagang impormasyon tungkol sa pag-aaral o imigrasyon.",de:"Die Übersetzungen dieses Leitfadens dienen dem allgemeinen Verständnis. BYU-Begriffe, Namen, Kurstitel und Inhalte verlinkter offizieller Websites können auf Englisch bleiben. Lassen Sie wichtige Informationen zu Studium oder Einwanderung von der zuständigen BYU-Stelle bestätigen.",ru:"Перевод этого справочника помогает понять общую информацию. Некоторые термины BYU, имена, названия курсов и материалы официальных сайтов по ссылкам могут остаться на английском. Важные сведения об учебе или иммиграции уточняйте в соответствующем отделе BYU.",ar:"تهدف ترجمات هذا الدليل إلى تسهيل فهم المعلومات. قد تبقى بعض مصطلحات BYU والأسماء وعناوين المقررات ومحتويات المواقع الرسمية المرتبطة باللغة الإنجليزية. يرجى تأكيد المعلومات المهمة المتعلقة بالدراسة أو الهجرة لدى مكتب BYU المختص."},
+ appt_heading:{es:"Cita de orientación internacional",ko:"국제 학생 상담 예약",zh:"国际学生咨询预约",pt:"Agendamento de orientação internacional",ja:"留学生向け相談の予約",fr:"Rendez-vous de conseil pour étudiants internationaux",tl:"Appointment para sa international advising",de:"Beratungstermin für internationale Studierende",ru:"Консультация для иностранных студентов",ar:"موعد إرشادي للطلاب الدوليين"},
+ appt_none:{es:"No hay citas próximas.",ko:"예정된 상담이 없습니다.",zh:"目前没有即将进行的预约。",pt:"Não há consultas agendadas.",ja:"予定されている予約はありません。",fr:"Aucun rendez-vous à venir.",tl:"Walang naka-iskedyul na appointment.",de:"Keine bevorstehenden Termine.",ru:"Предстоящих встреч нет.",ar:"لا توجد مواعيد قادمة."},
+ appt_schedule:{es:"Programar una cita",ko:"상담 예약하기",zh:"预约咨询",pt:"Agendar consulta",ja:"予約する",fr:"Prendre rendez-vous",tl:"Mag-iskedyul ng appointment",de:"Termin vereinbaren",ru:"Записаться на консультацию",ar:"جدولة موعد"},
+ appt_sample:{es:"Disponibilidad de ejemplo. Los horarios usan la zona horaria de tu dispositivo.",ko:"예시 가능 시간입니다. 시간대는 기기 설정을 따릅니다.",zh:"此为示例时间。时间按您设备的时区显示。",pt:"Disponibilidade de demonstração. Os horários usam o fuso do seu dispositivo.",ja:"サンプルの空き時間です。時刻はお使いの端末のタイムゾーンで表示されます。",fr:"Disponibilités de démonstration. Les horaires utilisent le fuseau horaire de votre appareil.",tl:"Halimbawang availability ito. Gagamitin ang time zone ng device mo.",de:"Beispieltermine. Die Uhrzeiten richten sich nach der Zeitzone Ihres Geräts.",ru:"Пример доступного времени. Часовой пояс определяется настройками устройства.",ar:"هذه أوقات تجريبية. تُعرض المواعيد وفقًا للمنطقة الزمنية لجهازك."},
+ chat_note:{es:"No puedo dar asesoría legal ni migratoria, ni reemplazar la orientación académica.",ko:"법률 또는 이민 관련 조언을 제공하거나 학업 상담을 대신할 수 없습니다.",zh:"我无法提供法律或移民建议，也不能代替学业指导。",pt:"Não posso dar orientação jurídica ou imigratória, nem substituir a orientação acadêmica.",ja:"法律や移民に関する助言はできず、学業相談に代わるものでもありません。",fr:"Je ne peux pas fournir de conseils juridiques ou d’immigration ni remplacer un conseiller pédagogique.",tl:"Hindi ako makapagbibigay ng legal o immigration advice at hindi rin ako kapalit ng academic advising.",de:"Ich kann keine Rechts- oder Einwanderungsberatung geben und keine Studienberatung ersetzen.",ru:"Я не могу давать юридические советы или рекомендации по иммиграции и не заменяю академического консультанта.",ar:"لا أستطيع تقديم المشورة القانونية أو المتعلقة بالهجرة، ولا أغني عن الإرشاد الأكاديمي."},
+ chat_placeholder:{es:"Haz una pregunta…",ko:"질문을 입력하세요…",zh:"请输入问题…",pt:"Faça uma pergunta…",ja:"質問を入力…",fr:"Posez une question…",tl:"Magtanong…",de:"Stellen Sie eine Frage…",ru:"Задайте вопрос…",ar:"اكتب سؤالًا…"},
+ send:{es:"Enviar",ko:"보내기",zh:"发送",pt:"Enviar",ja:"送信",fr:"Envoyer",tl:"Ipadala",de:"Senden",ru:"Отправить",ar:"إرسال"}
 };
-var LANGS=[{c:"en",n:"English"},{c:"es",n:"Español"},{c:"zh",n:"中文（简体）"},{c:"pt",n:"Português"}];
-var lang="en";
-function t(k,en){ if(lang==="en") return en; return (I18N[k]&&I18N[k][lang])||en; }
+var I18N_EXTRA={
+ cancel:{es:"Cancelar",ko:"취소",zh:"取消",pt:"Cancelar",ja:"キャンセル",fr:"Annuler",tl:"Kanselahin",de:"Abbrechen",ru:"Отмена",ar:"إلغاء"},
+ appt_advisor:{es:"Asesor",ko:"상담자",zh:"顾问",pt:"Orientador",ja:"アドバイザー",fr:"Conseiller",tl:"Tagapayo",de:"Berater/in",ru:"Консультант",ar:"المستشار"},
+ appt_choose_advisor:{es:"Elige un asesor de demostración",ko:"예시 상담자를 선택하세요",zh:"请选择一位演示顾问",pt:"Escolha um orientador de demonstração",ja:"デモ用アドバイザーを選択",fr:"Choisissez un conseiller de démonstration",tl:"Pumili ng demo adviser",de:"Demo-Berater auswählen",ru:"Выберите консультанта для демонстрации",ar:"اختر مستشارًا تجريبيًا"},
+ appt_demo_a:{es:"Asesor de demostración A",ko:"예시 상담자 A",zh:"演示顾问 A",pt:"Orientador de demonstração A",ja:"デモ用アドバイザー A",fr:"Conseiller de démonstration A",tl:"Demo adviser A",de:"Demo-Berater A",ru:"Демонстрационный консультант A",ar:"المستشار التجريبي أ"},
+ appt_demo_b:{es:"Asesor de demostración B",ko:"예시 상담자 B",zh:"演示顾问 B",pt:"Orientador de demonstração B",ja:"デモ用アドバイザー B",fr:"Conseiller de démonstration B",tl:"Demo adviser B",de:"Demo-Berater B",ru:"Демонстрационный консультант B",ar:"المستشار التجريبي ب"},
+ appt_available:{es:"Cita disponible",ko:"예약 가능 시간",zh:"可预约时间",pt:"Horário disponível",ja:"予約可能な時間",fr:"Créneau disponible",tl:"Available na appointment",de:"Verfügbarer Termin",ru:"Доступное время",ar:"الموعد المتاح"},
+ appt_choose_first:{es:"Primero elige un asesor",ko:"먼저 상담자를 선택하세요",zh:"请先选择顾问",pt:"Primeiro escolha um orientador",ja:"先にアドバイザーを選択してください",fr:"Choisissez d’abord un conseiller",tl:"Pumili muna ng adviser",de:"Wählen Sie zuerst einen Berater aus",ru:"Сначала выберите консультанта",ar:"اختر مستشارًا أولًا"},
+ appt_topic:{es:"Tema de la cita",ko:"상담 주제",zh:"咨询主题",pt:"Assunto da consulta",ja:"相談の内容",fr:"Sujet du rendez-vous",tl:"Paksa ng appointment",de:"Gesprächsthema",ru:"Тема консультации",ar:"موضوع الموعد"},
+ appt_choose_topic:{es:"Elige un tema",ko:"주제를 선택하세요",zh:"请选择主题",pt:"Escolha um assunto",ja:"内容を選択してください",fr:"Choisissez un sujet",tl:"Pumili ng paksa",de:"Thema auswählen",ru:"Выберите тему",ar:"اختر موضوعًا"},
+ appt_arrival:{es:"Llegada y adaptación",ko:"도착 및 정착",zh:"抵达与适应",pt:"Chegada e adaptação",ja:"到着後の生活",fr:"Arrivée et installation",tl:"Pagdating at pag-aangkop",de:"Ankunft und Eingewöhnung",ru:"Приезд и обустройство",ar:"الوصول والاستقرار"},
+ appt_resources:{es:"Cómo encontrar recursos del campus",ko:"캠퍼스 자료 찾기",zh:"寻找校园资源",pt:"Como encontrar recursos no campus",ja:"キャンパスの支援を探す",fr:"Trouver les ressources du campus",tl:"Paghahanap ng mga mapagkukunan sa campus",de:"Campusangebote finden",ru:"Поиск ресурсов кампуса",ar:"العثور على موارد الحرم الجامعي"},
+ appt_academic:{es:"Planificación académica",ko:"학업 계획",zh:"学业规划",pt:"Planejamento acadêmico",ja:"学業計画",fr:"Planification des études",tl:"Pagpaplano ng pag-aaral",de:"Studienplanung",ru:"Учебное планирование",ar:"التخطيط الأكاديمي"},
+ appt_book:{es:"Reservar cita de demostración",ko:"예시 상담 예약",zh:"预约演示咨询",pt:"Agendar consulta de demonstração",ja:"デモ予約を確定",fr:"Réserver le rendez-vous de démonstration",tl:"Mag-book ng demo appointment",de:"Demo-Termin buchen",ru:"Записаться на демонстрационную встречу",ar:"حجز موعد تجريبي"},
+ change_prompt:{es:"¿Qué te gustaría cambiar?",ko:"무엇을 변경하시겠어요?",zh:"您想更改什么？",pt:"O que você gostaria de alterar?",ja:"何を変更しますか？",fr:"Que souhaitez-vous modifier ?",tl:"Ano ang gusto mong baguhin?",de:"Was möchten Sie ändern?",ru:"Что вы хотите изменить?",ar:"ما الذي ترغب في تغييره؟"},
+ details:{es:"Detalles",ko:"세부 정보",zh:"详情",pt:"Detalhes",ja:"詳細",fr:"Détails",tl:"Mga detalye",de:"Details",ru:"Подробности",ar:"التفاصيل"},
+ name:{es:"Nombre",ko:"이름",zh:"姓名",pt:"Nome",ja:"氏名",fr:"Nom",tl:"Pangalan",de:"Name",ru:"Имя",ar:"الاسم"},
+ other:{es:"Otro",ko:"기타",zh:"其他",pt:"Outro",ja:"その他",fr:"Autre",tl:"Iba pa",de:"Sonstiges",ru:"Другое",ar:"أخرى"},
+ change_example:{es:"p. ej., quisiera cambiarme a Biología",ko:"예: 생물학 전공으로 변경하고 싶습니다",zh:"例如：我想转到生物学专业",pt:"ex.: gostaria de mudar para Biologia",ja:"例：生物学専攻に変更したい",fr:"ex. : je voudrais passer en biologie",tl:"hal. gusto kong lumipat sa Biology",de:"z. B. Ich möchte zu Biologie wechseln",ru:"например, я хотел(а) бы перейти на биологию",ar:"مثال: أود التحويل إلى تخصص الأحياء"},
+ send_request:{es:"Enviar solicitud",ko:"요청 보내기",zh:"提交请求",pt:"Enviar solicitação",ja:"リクエストを送信",fr:"Envoyer la demande",tl:"Ipadala ang kahilingan",de:"Anfrage senden",ru:"Отправить запрос",ar:"إرسال الطلب"},
+ classes_for:{es:"Clases que suelen requerirse para",ko:"일반적으로 필요한 수업:",zh:"通常需要修读的课程：",pt:"Disciplinas geralmente exigidas para",ja:"通常必要となる授業：",fr:"Cours généralement requis pour",tl:"Mga karaniwang kailangang klase para sa",de:"Üblicherweise erforderliche Kurse für",ru:"Курсы, обычно необходимые для специальности",ar:"المقررات المطلوبة عادةً لـ"},
+ course_note:{es:"Lista de ejemplo para este prototipo. Confirma los requisitos vigentes con tu asesor académico y en MyMap.",ko:"프로토타입용 예시 목록입니다. 최신 요건은 학업 상담자와 MyMap에서 확인하세요.",zh:"此为原型示例课程列表。请向学业顾问并在 MyMap 中确认当前要求。",pt:"Lista de exemplo deste protótipo. Confirme os requisitos atuais com seu orientador acadêmico e no MyMap.",ja:"プロトタイプ用のサンプルです。最新の要件はアカデミックアドバイザーとMyMapで確認してください。",fr:"Liste indicative de ce prototype. Vérifiez les exigences actuelles auprès de votre conseiller et dans MyMap.",tl:"Halimbawang listahan lamang ito. Kumpirmahin ang kasalukuyang requirements sa academic adviser at sa MyMap.",de:"Beispielliste dieses Prototyps. Bestätigen Sie die aktuellen Anforderungen bei Ihrer Studienberatung und in MyMap.",ru:"Примерный список для прототипа. Актуальные требования уточняйте у академического консультанта и в MyMap.",ar:"هذه قائمة نموذجية. تحقّق من المتطلبات الحالية مع المرشد الأكاديمي وفي MyMap."},
+ registration_help:{es:"¿Necesitas inscribirte, añadir o dar de baja una clase?",ko:"수업을 신청하거나 추가 또는 철회해야 하나요?",zh:"需要注册、添加或退选课程吗？",pt:"Precisa se matricular, adicionar ou cancelar uma disciplina?",ja:"授業の登録、追加、取り消しが必要ですか？",fr:"Vous devez vous inscrire à un cours, l’ajouter ou l’abandonner ?",tl:"Kailangan bang magparehistro, magdagdag, o mag-drop ng klase?",de:"Müssen Sie sich für einen Kurs anmelden, ihn hinzufügen oder abmelden?",ru:"Нужно записаться на курс, добавить или отменить его?",ar:"هل تحتاج إلى التسجيل في مقرر أو إضافته أو الانسحاب منه؟"},
+ mymap_note:{es:"Usa MyMap u otro sistema oficial de BYU. Esta página solo muestra información.",ko:"MyMap 또는 BYU의 공식 시스템을 이용하세요. 이 페이지는 정보만 제공합니다.",zh:"请使用 MyMap 或其他 BYU 官方系统。本页面仅展示信息。",pt:"Use o MyMap ou outro sistema oficial da BYU. Esta página apenas exibe informações.",ja:"MyMapまたはBYUの公式システムを利用してください。このページは情報を表示するだけです。",fr:"Utilisez MyMap ou un autre système officiel de BYU. Cette page fournit uniquement des renseignements.",tl:"Gamitin ang MyMap o iba pang opisyal na BYU system. Nagpapakita lamang ng impormasyon ang pahinang ito.",de:"Nutzen Sie MyMap oder ein anderes offizielles BYU-System. Diese Seite zeigt nur Informationen an.",ru:"Используйте MyMap или другую официальную систему BYU. На этой странице приведена только информация.",ar:"استخدم MyMap أو نظامًا رسميًا آخر من BYU. تعرض هذه الصفحة المعلومات فقط."},
+ open_mymap:{es:"Abrir MyMap",ko:"MyMap 열기",zh:"打开 MyMap",pt:"Abrir MyMap",ja:"MyMapを開く",fr:"Ouvrir MyMap",tl:"Buksan ang MyMap",de:"MyMap öffnen",ru:"Открыть MyMap",ar:"فتح MyMap"},
+ chat_label:{es:"Chat con el asistente",ko:"도우미 채팅",zh:"助手聊天",pt:"Conversa com o assistente",ja:"アシスタントとのチャット",fr:"Discussion avec l’assistant",tl:"Chat sa assistant",de:"Chat mit dem Assistenten",ru:"Чат с помощником",ar:"محادثة مع المساعد"},
+ send_request:{es:"Enviar solicitud",ko:"요청 보내기",zh:"提交请求",pt:"Enviar solicitação",ja:"リクエストを送信",fr:"Envoyer la demande",tl:"Ipadala ang kahilingan",de:"Anfrage senden",ru:"Отправить запрос",ar:"إرسال الطلب"},
+ aria_home:{es:"Inicio de la Guía para estudiantes internacionales de BYU",ko:"BYU 국제 학생 안내 홈",zh:"BYU 国际学生指南主页",pt:"Início do Guia para estudantes internacionais da BYU",ja:"BYU留学生ガイドのホーム",fr:"Accueil du guide BYU pour étudiants internationaux",tl:"Home ng BYU International Student Guide",de:"Startseite des BYU-Leitfadens für internationale Studierende",ru:"Главная справочника BYU для иностранных студентов",ar:"الصفحة الرئيسية لدليل BYU للطلاب الدوليين"},
+ aria_main:{es:"Navegación principal",ko:"기본 탐색 메뉴",zh:"主导航",pt:"Navegação principal",ja:"メインナビゲーション",fr:"Navigation principale",tl:"Pangunahing nabigasyon",de:"Hauptnavigation",ru:"Основная навигация",ar:"التنقل الرئيسي"},
+ profile_overview:{es:"Resumen del perfil",ko:"프로필 개요",zh:"个人资料概览",pt:"Resumo do perfil",ja:"プロフィール概要",fr:"Aperçu du profil",tl:"Buod ng profile",de:"Profilübersicht",ru:"Обзор профиля",ar:"نظرة عامة على الملف الشخصي"},
+ language_menu:{es:"Menú de idioma",ko:"언어 메뉴",zh:"语言菜单",pt:"Menu de idioma",ja:"言語メニュー",fr:"Menu des langues",tl:"Menu ng wika",de:"Sprachmenü",ru:"Меню выбора языка",ar:"قائمة اللغة"}
+};
+function tr(k,en){return (I18N[lang]&&I18N[lang][k])||(I18N_EXTRA[lang]&&I18N_EXTRA[lang][k])||(I18N_MISC[lang]&&I18N_MISC[lang][k])||(I18N_STATUS[lang]&&I18N_STATUS[lang][k])||(DYNAMIC_LABELS[lang]&&DYNAMIC_LABELS[lang][k])||en;}
+var MAJOR_LABELS={
+ es:{"Business":"Negocios","Computer Science":"Informática","Biology":"Biología","Nursing":"Enfermería","English":"Inglés","Undeclared":"Sin decidir"},
+ ko:{"Business":"경영학","Computer Science":"컴퓨터 과학","Biology":"생물학","Nursing":"간호학","English":"영어","Undeclared":"미정"},
+ zh:{"Business":"商科","Computer Science":"计算机科学","Biology":"生物学","Nursing":"护理学","English":"英语","Undeclared":"未定"},
+ pt:{"Business":"Administração","Computer Science":"Ciência da Computação","Biology":"Biologia","Nursing":"Enfermagem","English":"Inglês","Undeclared":"Não declarado"},
+ ja:{"Business":"経営学","Computer Science":"コンピューターサイエンス","Biology":"生物学","Nursing":"看護学","English":"英語","Undeclared":"未定"},
+ fr:{"Business":"Commerce","Computer Science":"Informatique","Biology":"Biologie","Nursing":"Sciences infirmières","English":"Anglais","Undeclared":"Non déclaré"},
+ tl:{"Business":"Negosyo","Computer Science":"Computer Science","Biology":"Biology","Nursing":"Nursing","English":"English","Undeclared":"Hindi pa napipili"},
+ de:{"Business":"Betriebswirtschaft","Computer Science":"Informatik","Biology":"Biologie","Nursing":"Pflegewissenschaft","English":"Englisch","Undeclared":"Noch nicht festgelegt"},
+ ru:{"Business":"Бизнес","Computer Science":"Информатика","Biology":"Биология","Nursing":"Сестринское дело","English":"Английский язык","Undeclared":"Не определено"},
+ ar:{"Business":"إدارة الأعمال","Computer Science":"علوم الحاسوب","Biology":"علم الأحياء","Nursing":"التمريض","English":"اللغة الإنجليزية","Undeclared":"غير محدد"}
+};
+function localizeMajorName(name){return (MAJOR_LABELS[lang]&&MAJOR_LABELS[lang][name])||name;}
+function localizeMajorOptions(){
+  var select=$("#f-major"); if(!select) return;
+  Array.prototype.forEach.call(select.options,function(o){
+    if(o.dataset.majorName) o.textContent=localizeMajorName(o.dataset.majorName);
+    else if(o.dataset.state==="empty") o.textContent=t("no_majors","No majors found in database");
+    else if(o.dataset.state==="error") o.textContent=t("major_load_error","Error loading majors");
+    else if(!o.value) o.textContent=o.dataset.state==="loading"?t("loading_majors","Loading majors…"):t("major_prompt","Select a major...");
+  });
+}
+function updateMajorStatus(){
+  var status=$("#setup-db-status"); if(!status||!status.dataset.state) return;
+  var state=status.dataset.state;
+  if(state==="loading") status.textContent=t("checking_db","Checking database connection…");
+  else if(state==="empty") status.textContent=t("major_empty","Major table is empty.");
+  else if(state==="connected") status.textContent=t("major_connected","Connected to the database. Loaded")+" "+status.dataset.count+" "+t("majors_count","majors.");
+  else if(state==="error") status.textContent=t("error_prefix","Error:")+" "+(status.dataset.errorMessage||t("major_read_error","Could not read major table."));
+}
+function localizeStoredNationality(value){
+  var select=$("#f-nat");
+  if(select){var option=Array.prototype.find.call(select.options,function(o){return o.value===value});if(option)return option.textContent;}
+  return value;
+}
+function translateNationalityOptions(){
+  var select=$("#f-nat"); if(!select) return;
+  var locale=LANG_LOCALES[lang]||"en-US", names;
+  try{names=new Intl.DisplayNames([locale],{type:"region"});}catch(e){names=null;}
+  var codes={"United States":"US","Angola":"AO","Argentina":"AR","Armenia":"AM","Australia":"AU","Belgium":"BE","Bolivia":"BO","Brazil":"BR","Bulgaria":"BG","Canada":"CA","Cape Verde":"CV","Chile":"CL","China":"CN","Colombia":"CO","Costa Rica":"CR","Côte d’Ivoire":"CI","Czechia":"CZ","Democratic Republic of the Congo":"CD","Denmark":"DK","Dominican Republic":"DO","Ecuador":"EC","Egypt":"EG","El Salvador":"SV","Estonia":"EE","Ethiopia":"ET","Fiji":"FJ","Finland":"FI","France":"FR","French Polynesia":"PF","Germany":"DE","Ghana":"GH","Guatemala":"GT","Haiti":"HT","Honduras":"HN","Iceland":"IS","India":"IN","Indonesia":"ID","Italy":"IT","Jamaica":"JM","Japan":"JP","Jordan":"JO","Kenya":"KE","Kiribati":"KI","Kyrgyzstan":"KG","Laos":"LA","Madagascar":"MG","Malaysia":"MY","Mexico":"MX","Mongolia":"MN","Morocco":"MA","Netherlands":"NL","New Caledonia":"NC","New Zealand":"NZ","Nigeria":"NG","Norway":"NO","Palestine":"PS","Panama":"PA","Peru":"PE","Philippines":"PH","Poland":"PL","Portugal":"PT","Romania":"RO","Russia":"RU","Rwanda":"RW","Singapore":"SG","Slovenia":"SI","South Africa":"ZA","South Korea":"KR","Spain":"ES","Sudan":"SD","Sweden":"SE","Switzerland":"CH","Syria":"SY","Taiwan":"TW","Thailand":"TH","Turkey":"TR","Uganda":"UG","Ukraine":"UA","United Kingdom":"GB","Uruguay":"UY","Venezuela":"VE","Zambia":"ZM","Zimbabwe":"ZW"};
+  Array.prototype.forEach.call(select.options,function(o){
+    if(!o.value) o.textContent=t("nation_prompt","Select your nationality");
+    else if(o.value==="Other") o.textContent=tr("other","Other");
+    else o.textContent=names&&codes[o.value]?names.of(codes[o.value]):o.value;
+  });
+}
+var I18N_MISC={
+ es:{signin_hint:"Usa las credenciales de tu cuenta de BYU International Student Guide.",close_panel:"Cerrar",close_chat:"Cerrar chat",chat_title:"Asistente de la Guía para estudiantes internacionales de BYU",path_art:"Camino con seis etapas, desde la solicitud hasta la graduación",svg_apply:"Solicitar",svg_housing:"Vivienda",svg_classes:"Clases",svg_taxes:"Impuestos",svg_work:"Trabajo",svg_graduate:"Graduarse",error_signin_required:"Ingresa tu NetID y contraseña.",error_signin_invalid:"NetID o contraseña incorrectos.",error_signin:"No se pudo iniciar sesión.",error_signup_name:"Ingresa tu nombre y apellido.",error_signup_netid:"El NetID debe tener de 4 a 12 letras o números.",error_signup_password:"La contraseña debe tener al menos 4 caracteres.",error_signup_nation:"Ingresa tu nacionalidad.",error_signup_major:"Selecciona una carrera prevista en el menú.",error_save_prefix:"No se pudo guardar:",error_database:"Error de base de datos",button_creating:"Creando cuenta…",toast_account_created:"¡Cuenta de estudiante creada correctamente!",toast_welcome:"Te damos la bienvenida,",toast_signed_out:"Sesión cerrada.",chat_greeting:"¡Hola! ¿En qué puedo ayudarte?",chat_visa:"No puedo dar asesoría legal ni migratoria. International Services es la oficina oficial para estas preguntas.",chat_housing:"La vivienda es la etapa 2 de tu recorrido.",chat_register:"Inscríbete, añade o retira clases en MyMap.",chat_general:"Para obtener información confiable, consulta el sitio principal de BYU o contacta a la oficina correspondiente.",chat_visa_link:"Abrir International Services",chat_housing_link:"Abrir la sección de vivienda",chat_register_link:"Abrir MyMap",chat_general_link:"Abrir byu.edu",chip_welcome:"¿Qué es este sitio?",chip_setup:"¿Qué es un NetID?",chip_home1:"¿Qué debo hacer primero?",chip_home2:"¿Dónde encuentro vivienda?",chip_journey:"Explícame esta página",chip_profile:"¿Cómo cambio mi carrera?",chip_hub:"Explícame esta página"},
+ ko:{signin_hint:"BYU International Student Guide 계정 정보를 사용하세요.",close_panel:"닫기",close_chat:"채팅 닫기",chat_title:"BYU 국제 학생 안내 도우미",path_art:"지원부터 졸업까지 여섯 단계의 여정",svg_apply:"지원",svg_housing:"주거",svg_classes:"수업",svg_taxes:"세금",svg_work:"취업",svg_graduate:"졸업",error_signin_required:"NetID와 비밀번호를 입력하세요.",error_signin_invalid:"NetID 또는 비밀번호가 올바르지 않습니다.",error_signin:"로그인할 수 없습니다.",error_signup_name:"이름과 성을 입력하세요.",error_signup_netid:"NetID는 영문자와 숫자 4~12자로 입력하세요.",error_signup_password:"비밀번호는 4자 이상이어야 합니다.",error_signup_nation:"국적을 입력하세요.",error_signup_major:"희망 전공을 선택하세요.",error_save_prefix:"저장할 수 없습니다:",error_database:"데이터베이스 오류",button_creating:"계정을 만드는 중…",toast_account_created:"학생 계정이 생성되었습니다.",toast_welcome:"다시 오신 것을 환영합니다,",toast_signed_out:"로그아웃되었습니다.",chat_greeting:"안녕하세요! 무엇을 도와드릴까요?",chat_visa:"법률 또는 이민 상담은 제공할 수 없습니다. 관련 질문은 공식 부서인 International Services에 문의하세요.",chat_housing:"주거는 여정의 2단계입니다.",chat_register:"MyMap에서 수업을 신청·추가·철회하세요.",chat_general:"정확한 정보는 BYU 공식 웹사이트를 확인하거나 해당 부서에 문의하세요.",chat_visa_link:"International Services 열기",chat_housing_link:"주거 안내 열기",chat_register_link:"MyMap 열기",chat_general_link:"byu.edu 열기",chip_welcome:"이 사이트는 무엇인가요?",chip_setup:"NetID가 무엇인가요?",chip_home1:"먼저 무엇을 해야 하나요?",chip_home2:"주거 정보는 어디서 찾나요?",chip_journey:"이 페이지 설명하기",chip_profile:"전공은 어떻게 변경하나요?",chip_hub:"이 페이지 설명하기"},
+ zh:{signin_hint:"使用 BYU 国际学生指南账户的登录信息。",close_panel:"关闭",close_chat:"关闭聊天",chat_title:"BYU 国际学生指南助手",path_art:"从申请到毕业的六个阶段路线图",svg_apply:"申请",svg_housing:"住房",svg_classes:"课程",svg_taxes:"税务",svg_work:"工作",svg_graduate:"毕业",error_signin_required:"请输入 NetID 和密码。",error_signin_invalid:"NetID 或密码无效。",error_signin:"无法登录。",error_signup_name:"请输入名字和姓氏。",error_signup_netid:"NetID 必须为 4–12 位字母和数字。",error_signup_password:"密码至少需要 4 个字符。",error_signup_nation:"请输入您的国籍。",error_signup_major:"请选择计划专业。",error_save_prefix:"无法保存：",error_database:"数据库错误",button_creating:"正在创建账户…",toast_account_created:"学生账户创建成功！",toast_welcome:"欢迎回来，",toast_signed_out:"已退出登录。",chat_greeting:"您好！有什么可以帮您？",chat_visa:"我无法提供法律或移民建议。有关这些问题，请联系官方办公室 International Services。",chat_housing:"住房是旅程中的第二阶段。",chat_register:"请在 MyMap 注册、添加或退选课程。",chat_general:"如需可靠信息，请查看 BYU 官方网站或联系相关办公室。",chat_visa_link:"打开 International Services",chat_housing_link:"打开住房部分",chat_register_link:"打开 MyMap",chat_general_link:"打开 byu.edu",chip_welcome:"这个网站是什么？",chip_setup:"NetID 是什么？",chip_home1:"我应该先做什么？",chip_home2:"在哪里可以找住房？",chip_journey:"解释此页面",chip_profile:"如何更改专业？",chip_hub:"解释此页面"},
+ pt:{signin_hint:"Use as credenciais da sua conta do BYU International Student Guide.",close_panel:"Fechar",close_chat:"Fechar conversa",chat_title:"Assistente do Guia de estudantes internacionais da BYU",path_art:"Caminho com seis etapas, da candidatura à formatura",svg_apply:"Candidatura",svg_housing:"Moradia",svg_classes:"Aulas",svg_taxes:"Impostos",svg_work:"Trabalho",svg_graduate:"Formatura",error_signin_required:"Informe seu NetID e sua senha.",error_signin_invalid:"NetID ou senha inválidos.",error_signin:"Não foi possível entrar.",error_signup_name:"Informe seu nome e sobrenome.",error_signup_netid:"O NetID deve ter de 4 a 12 letras e números.",error_signup_password:"A senha deve ter pelo menos 4 caracteres.",error_signup_nation:"Informe sua nacionalidade.",error_signup_major:"Selecione o curso pretendido.",error_save_prefix:"Não foi possível salvar:",error_database:"Erro no banco de dados",button_creating:"Criando conta…",toast_account_created:"Conta de estudante criada com sucesso!",toast_welcome:"Boas-vindas,",toast_signed_out:"Você saiu da conta.",chat_greeting:"Olá! Como posso ajudar?",chat_visa:"Não posso dar orientação jurídica ou imigratória. Para essas dúvidas, fale com a International Services, o escritório oficial.",chat_housing:"Moradia é a etapa 2 da sua jornada.",chat_register:"Matricule-se, adicione ou cancele disciplinas no MyMap.",chat_general:"Para obter informações confiáveis, consulte o site oficial da BYU ou entre em contato com o escritório adequado.",chat_visa_link:"Abrir International Services",chat_housing_link:"Abrir seção de moradia",chat_register_link:"Abrir MyMap",chat_general_link:"Abrir byu.edu",chip_welcome:"O que é este site?",chip_setup:"O que é um NetID?",chip_home1:"O que devo fazer primeiro?",chip_home2:"Onde encontro moradia?",chip_journey:"Explique esta página",chip_profile:"Como altero meu curso?",chip_hub:"Explique esta página"},
+ ja:{signin_hint:"BYU International Student Guideのアカウント情報を入力してください。",close_panel:"閉じる",close_chat:"チャットを閉じる",chat_title:"BYU留学生ガイド アシスタント",path_art:"出願から卒業までの6段階の道のり",svg_apply:"出願",svg_housing:"住まい",svg_classes:"授業",svg_taxes:"税金",svg_work:"仕事",svg_graduate:"卒業",error_signin_required:"NetIDとパスワードを入力してください。",error_signin_invalid:"NetIDまたはパスワードが正しくありません。",error_signin:"ログインできませんでした。",error_signup_name:"名と姓を入力してください。",error_signup_netid:"NetIDは英字と数字の4～12文字です。",error_signup_password:"パスワードは4文字以上です。",error_signup_nation:"国籍を入力してください。",error_signup_major:"希望する専攻を選択してください。",error_save_prefix:"保存できませんでした：",error_database:"データベースエラー",button_creating:"アカウントを作成中…",toast_account_created:"学生アカウントを作成しました。",toast_welcome:"お帰りなさい、",toast_signed_out:"ログアウトしました。",chat_greeting:"こんにちは。どのようにお手伝いできますか？",chat_visa:"法律や移民に関する助言はできません。これらの質問は公式窓口のInternational Servicesにお問い合わせください。",chat_housing:"住まいは歩みの第2段階です。",chat_register:"MyMapで授業を登録・追加・取り消してください。",chat_general:"正確な情報はBYU公式サイトで確認するか、該当窓口にお問い合わせください。",chat_visa_link:"International Servicesを開く",chat_housing_link:"住まいの項目を開く",chat_register_link:"MyMapを開く",chat_general_link:"byu.eduを開く",chip_welcome:"このサイトについて",chip_setup:"NetIDとは何ですか？",chip_home1:"最初に何をすればよいですか？",chip_home2:"住まいはどこで探せますか？",chip_journey:"このページを説明",chip_profile:"専攻を変更するには？",chip_hub:"このページを説明"},
+ fr:{signin_hint:"Utilisez les identifiants de votre compte du Guide BYU pour étudiants internationaux.",close_panel:"Fermer",close_chat:"Fermer la discussion",chat_title:"Assistant du guide BYU pour étudiants internationaux",path_art:"Parcours en six étapes, de la candidature au diplôme",svg_apply:"Candidature",svg_housing:"Logement",svg_classes:"Cours",svg_taxes:"Impôts",svg_work:"Emploi",svg_graduate:"Diplôme",error_signin_required:"Saisissez votre NetID et votre mot de passe.",error_signin_invalid:"NetID ou mot de passe invalide.",error_signin:"Connexion impossible.",error_signup_name:"Saisissez votre prénom et votre nom.",error_signup_netid:"Le NetID doit contenir 4 à 12 lettres et chiffres.",error_signup_password:"Le mot de passe doit comporter au moins 4 caractères.",error_signup_nation:"Saisissez votre nationalité.",error_signup_major:"Choisissez votre spécialité prévue.",error_save_prefix:"Enregistrement impossible :",error_database:"Erreur de base de données",button_creating:"Création du compte…",toast_account_created:"Compte étudiant créé avec succès !",toast_welcome:"Bon retour,",toast_signed_out:"Vous êtes déconnecté.",chat_greeting:"Bonjour ! Comment puis-je vous aider ?",chat_visa:"Je ne peux pas fournir de conseils juridiques ou d’immigration. Pour ces questions, contactez International Services, le service officiel.",chat_housing:"Le logement correspond à la deuxième étape de votre parcours.",chat_register:"Inscrivez-vous aux cours, ajoutez-en ou abandonnez-en dans MyMap.",chat_general:"Pour obtenir des renseignements fiables, consultez le site officiel de BYU ou contactez le service concerné.",chat_visa_link:"Ouvrir International Services",chat_housing_link:"Voir la section logement",chat_register_link:"Ouvrir MyMap",chat_general_link:"Ouvrir byu.edu",chip_welcome:"À quoi sert ce site ?",chip_setup:"Qu’est-ce qu’un NetID ?",chip_home1:"Que dois-je faire en premier ?",chip_home2:"Où trouver un logement ?",chip_journey:"Expliquez cette page",chip_profile:"Comment changer de spécialité ?",chip_hub:"Expliquez cette page"},
+ tl:{signin_hint:"Gamitin ang login credentials ng BYU International Student Guide account mo.",close_panel:"Isara",close_chat:"Isara ang chat",chat_title:"Assistant ng BYU International Student Guide",path_art:"Anim na yugto mula aplikasyon hanggang pagtatapos",svg_apply:"Mag-apply",svg_housing:"Tirahan",svg_classes:"Mga klase",svg_taxes:"Buwis",svg_work:"Trabaho",svg_graduate:"Pagtatapos",error_signin_required:"Ilagay ang NetID at password.",error_signin_invalid:"Hindi tama ang NetID o password.",error_signin:"Hindi makapag-sign in.",error_signup_name:"Ilagay ang pangalan at apelyido.",error_signup_netid:"Dapat 4–12 letra at numero ang NetID.",error_signup_password:"Dapat hindi bababa sa 4 na character ang password.",error_signup_nation:"Ilagay ang iyong nasyonalidad.",error_signup_major:"Piliin ang planong major.",error_save_prefix:"Hindi na-save:",error_database:"Error sa database",button_creating:"Gumagawa ng account…",toast_account_created:"Matagumpay na nagawa ang student account!",toast_welcome:"Maligayang pagbabalik,",toast_signed_out:"Nag-sign out ka na.",chat_greeting:"Kumusta! Paano ako makakatulong?",chat_visa:"Hindi ako makapagbibigay ng legal o immigration advice. Para rito, kontakin ang opisyal na tanggapang International Services.",chat_housing:"Ikalawang yugto ng paglalakbay ang tirahan.",chat_register:"Magparehistro, magdagdag, o mag-drop ng klase sa MyMap.",chat_general:"Para sa maaasahang impormasyon, tingnan ang opisyal na BYU website o kontakin ang tamang tanggapan.",chat_visa_link:"Buksan ang International Services",chat_housing_link:"Buksan ang seksyon ng tirahan",chat_register_link:"Buksan ang MyMap",chat_general_link:"Buksan ang byu.edu",chip_welcome:"Ano ang site na ito?",chip_setup:"Ano ang NetID?",chip_home1:"Ano ang dapat kong unahin?",chip_home2:"Saan ako hahanap ng tirahan?",chip_journey:"Ipaliwanag ang pahinang ito",chip_profile:"Paano palitan ang major?",chip_hub:"Ipaliwanag ang pahinang ito"},
+ de:{signin_hint:"Verwenden Sie die Zugangsdaten Ihres BYU-Leitfadens für internationale Studierende.",close_panel:"Schließen",close_chat:"Chat schließen",chat_title:"Assistent des BYU-Leitfadens für internationale Studierende",path_art:"Sechs Etappen von der Bewerbung bis zum Abschluss",svg_apply:"Bewerbung",svg_housing:"Wohnen",svg_classes:"Kurse",svg_taxes:"Steuern",svg_work:"Arbeit",svg_graduate:"Abschluss",error_signin_required:"Geben Sie NetID und Passwort ein.",error_signin_invalid:"NetID oder Passwort ist ungültig.",error_signin:"Anmeldung nicht möglich.",error_signup_name:"Geben Sie Vor- und Nachnamen ein.",error_signup_netid:"Die NetID muss 4–12 Buchstaben und Zahlen enthalten.",error_signup_password:"Das Passwort muss mindestens 4 Zeichen lang sein.",error_signup_nation:"Geben Sie Ihre Staatsangehörigkeit ein.",error_signup_major:"Wählen Sie Ihr geplantes Hauptfach aus.",error_save_prefix:"Speichern nicht möglich:",error_database:"Datenbankfehler",button_creating:"Konto wird erstellt…",toast_account_created:"Studierendenkonto erfolgreich erstellt!",toast_welcome:"Willkommen zurück,",toast_signed_out:"Sie wurden abgemeldet.",chat_greeting:"Hallo! Wie kann ich Ihnen helfen?",chat_visa:"Ich kann keine Rechts- oder Einwanderungsberatung geben. Wenden Sie sich mit diesen Fragen an International Services, die offizielle Stelle.",chat_housing:"Wohnen ist die zweite Etappe Ihres Weges.",chat_register:"Melden Sie sich in MyMap für Kurse an, fügen Sie Kurse hinzu oder melden Sie sich ab.",chat_general:"Verlässliche Informationen finden Sie auf der offiziellen BYU-Website oder bei der zuständigen BYU-Stelle.",chat_visa_link:"International Services öffnen",chat_housing_link:"Bereich Wohnen öffnen",chat_register_link:"MyMap öffnen",chat_general_link:"byu.edu öffnen",chip_welcome:"Worum geht es auf dieser Website?",chip_setup:"Was ist eine NetID?",chip_home1:"Was sollte ich zuerst tun?",chip_home2:"Wo finde ich eine Unterkunft?",chip_journey:"Diese Seite erklären",chip_profile:"Wie ändere ich mein Hauptfach?",chip_hub:"Diese Seite erklären"},
+ ru:{signin_hint:"Используйте данные аккаунта справочника BYU для иностранных студентов.",close_panel:"Закрыть",close_chat:"Закрыть чат",chat_title:"Помощник справочника BYU для иностранных студентов",path_art:"Шесть этапов пути от поступления до выпуска",svg_apply:"Поступление",svg_housing:"Жилье",svg_classes:"Курсы",svg_taxes:"Налоги",svg_work:"Работа",svg_graduate:"Выпуск",error_signin_required:"Введите NetID и пароль.",error_signin_invalid:"Неверный NetID или пароль.",error_signin:"Не удалось войти.",error_signup_name:"Введите имя и фамилию.",error_signup_netid:"NetID должен содержать от 4 до 12 латинских букв и цифр.",error_signup_password:"Пароль должен содержать не менее 4 символов.",error_signup_nation:"Укажите гражданство.",error_signup_major:"Выберите специальность.",error_save_prefix:"Не удалось сохранить:",error_database:"Ошибка базы данных",button_creating:"Создание аккаунта…",toast_account_created:"Аккаунт студента успешно создан!",toast_welcome:"С возвращением,",toast_signed_out:"Вы вышли из аккаунта.",chat_greeting:"Здравствуйте! Чем я могу помочь?",chat_visa:"Я не могу давать юридические советы или рекомендации по иммиграции. Обратитесь по этим вопросам в официальный отдел International Services.",chat_housing:"Жилье — второй этап вашего пути.",chat_register:"Записывайтесь на курсы, добавляйте или отменяйте их в MyMap.",chat_general:"Надежную информацию можно найти на официальном сайте BYU или в соответствующем отделе университета.",chat_visa_link:"Открыть International Services",chat_housing_link:"Открыть раздел о жилье",chat_register_link:"Открыть MyMap",chat_general_link:"Открыть byu.edu",chip_welcome:"Что это за сайт?",chip_setup:"Что такое NetID?",chip_home1:"Что мне сделать в первую очередь?",chip_home2:"Где искать жилье?",chip_journey:"Объяснить эту страницу",chip_profile:"Как сменить специальность?",chip_hub:"Объяснить эту страницу"},
+ ar:{signin_hint:"استخدم بيانات حساب دليل الطلاب الدوليين في BYU.",close_panel:"إغلاق",close_chat:"إغلاق المحادثة",chat_title:"مساعد دليل BYU للطلاب الدوليين",path_art:"مسار من ست مراحل من التقديم حتى التخرج",svg_apply:"التقديم",svg_housing:"السكن",svg_classes:"المقررات",svg_taxes:"الضرائب",svg_work:"العمل",svg_graduate:"التخرج",error_signin_required:"أدخل NetID وكلمة المرور.",error_signin_invalid:"NetID أو كلمة المرور غير صحيحة.",error_signin:"تعذر تسجيل الدخول.",error_signup_name:"أدخل الاسم الأول واسم العائلة.",error_signup_netid:"يجب أن يتكون NetID من 4 إلى 12 حرفًا ورقمًا.",error_signup_password:"يجب ألا تقل كلمة المرور عن 4 أحرف.",error_signup_nation:"أدخل جنسيتك.",error_signup_major:"اختر التخصص المخطط له.",error_save_prefix:"تعذر الحفظ:",error_database:"خطأ في قاعدة البيانات",button_creating:"جارٍ إنشاء الحساب…",toast_account_created:"تم إنشاء حساب الطالب بنجاح!",toast_welcome:"مرحبًا بعودتك،",toast_signed_out:"تم تسجيل الخروج.",chat_greeting:"مرحبًا! كيف يمكنني مساعدتك؟",chat_visa:"لا أستطيع تقديم المشورة القانونية أو المتعلقة بالهجرة. تواصل مع مكتب International Services الرسمي لهذه الأسئلة.",chat_housing:"السكن هو المرحلة الثانية من رحلتك.",chat_register:"سجّل المقررات أو أضفها أو احذفها عبر MyMap.",chat_general:"للحصول على معلومات موثوقة، راجع موقع BYU الرسمي أو تواصل مع المكتب المختص.",chat_visa_link:"فتح International Services",chat_housing_link:"فتح قسم السكن",chat_register_link:"فتح MyMap",chat_general_link:"فتح byu.edu",chip_welcome:"ما هذا الموقع؟",chip_setup:"ما هو NetID؟",chip_home1:"ما أول خطوة ينبغي أن أقوم بها؟",chip_home2:"أين أجد سكنًا؟",chip_journey:"اشرح هذه الصفحة",chip_profile:"كيف أغيّر تخصصي؟",chip_hub:"اشرح هذه الصفحة"}
+};
+var I18N_STATUS={
+ es:{loading_majors:"Cargando carreras…",major_prompt:"Selecciona una carrera...",no_majors:"No se encontraron carreras en la base de datos",major_empty:"La tabla de carreras está vacía.",major_connected:"Conectado a la base de datos. Cargadas",majors_count:"carreras.",major_load_error:"Error al cargar las carreras",error_prefix:"Error:",major_read_error:"No se pudo leer la tabla de carreras.",journey_step:"Etapa del recorrido:",back_journey:"Volver al mapa del recorrido",appt_change:"Cambiar cita",appt_demo_summary:"Cita de demostración con",appt_on:"el",appt_topic_summary:"Tema:"},
+ ko:{loading_majors:"전공 불러오는 중…",major_prompt:"전공을 선택하세요...",no_majors:"데이터베이스에 전공이 없습니다",major_empty:"전공 테이블이 비어 있습니다.",major_connected:"데이터베이스에 연결되었습니다. 불러온 전공:",majors_count:"개.",major_load_error:"전공을 불러오지 못했습니다",error_prefix:"오류:",major_read_error:"전공 테이블을 읽을 수 없습니다.",journey_step:"여정 단계:",back_journey:"여정 지도로 돌아가기",appt_change:"예약 변경",appt_demo_summary:"데모 상담:",appt_on:"일시:",appt_topic_summary:"주제:"},
+ zh:{loading_majors:"正在加载专业…",major_prompt:"请选择专业…",no_majors:"数据库中没有找到专业",major_empty:"专业数据表为空。",major_connected:"已连接数据库。已加载专业数量：",majors_count:"个。",major_load_error:"加载专业失败",error_prefix:"错误：",major_read_error:"无法读取专业数据表。",journey_step:"旅程阶段：",back_journey:"返回旅程地图",appt_change:"更改预约",appt_demo_summary:"演示预约：",appt_on:"时间：",appt_topic_summary:"主题："},
+ pt:{loading_majors:"Carregando cursos…",major_prompt:"Selecione um curso...",no_majors:"Nenhum curso encontrado no banco de dados",major_empty:"A tabela de cursos está vazia.",major_connected:"Conectado ao banco de dados. Cursos carregados:",majors_count:".",major_load_error:"Erro ao carregar cursos",error_prefix:"Erro:",major_read_error:"Não foi possível ler a tabela de cursos.",journey_step:"Etapa da jornada:",back_journey:"Voltar ao mapa da jornada",appt_change:"Alterar consulta",appt_demo_summary:"Consulta de demonstração com",appt_on:"em",appt_topic_summary:"Assunto:"},
+ ja:{loading_majors:"専攻を読み込み中…",major_prompt:"専攻を選択…",no_majors:"データベースに専攻がありません",major_empty:"専攻テーブルは空です。",major_connected:"データベースに接続しました。読み込んだ専攻数：",majors_count:"件。",major_load_error:"専攻を読み込めません",error_prefix:"エラー：",major_read_error:"専攻テーブルを読み取れませんでした。",journey_step:"歩みの段階：",back_journey:"歩みのマップに戻る",appt_change:"予約を変更",appt_demo_summary:"デモ予約：",appt_on:"日時：",appt_topic_summary:"相談内容："},
+ fr:{loading_majors:"Chargement des spécialités…",major_prompt:"Sélectionnez une spécialité…",no_majors:"Aucune spécialité trouvée dans la base de données",major_empty:"La table des spécialités est vide.",major_connected:"Connecté à la base de données. Spécialités chargées :",majors_count:".",major_load_error:"Échec du chargement des spécialités",error_prefix:"Erreur :",major_read_error:"Impossible de lire la table des spécialités.",journey_step:"Étape du parcours :",back_journey:"Retour au parcours",appt_change:"Modifier le rendez-vous",appt_demo_summary:"Rendez-vous de démonstration avec",appt_on:"le",appt_topic_summary:"Sujet :"},
+ tl:{loading_majors:"Naglo-load ng mga major…",major_prompt:"Pumili ng major...",no_majors:"Walang major na nakita sa database",major_empty:"Walang laman ang major table.",major_connected:"Nakakonekta sa database. Na-load na major:",majors_count:".",major_load_error:"Error sa pag-load ng mga major",error_prefix:"Error:",major_read_error:"Hindi mabasa ang major table.",journey_step:"Yugto ng paglalakbay:",back_journey:"Bumalik sa mapa ng paglalakbay",appt_change:"Baguhin ang appointment",appt_demo_summary:"Demo appointment kay",appt_on:"sa",appt_topic_summary:"Paksa:"},
+ de:{loading_majors:"Hauptfächer werden geladen…",major_prompt:"Hauptfach auswählen…",no_majors:"Keine Hauptfächer in der Datenbank gefunden",major_empty:"Die Tabelle der Hauptfächer ist leer.",major_connected:"Mit der Datenbank verbunden. Geladene Hauptfächer:",majors_count:".",major_load_error:"Hauptfächer konnten nicht geladen werden",error_prefix:"Fehler:",major_read_error:"Tabelle der Hauptfächer konnte nicht gelesen werden.",journey_step:"Etappe:",back_journey:"Zurück zum Wegweiser",appt_change:"Termin ändern",appt_demo_summary:"Demo-Termin mit",appt_on:"am",appt_topic_summary:"Thema:"},
+ ru:{loading_majors:"Загрузка специальностей…",major_prompt:"Выберите специальность…",no_majors:"В базе данных специальности не найдены",major_empty:"Таблица специальностей пуста.",major_connected:"Подключено к базе данных. Загружено специальностей:",majors_count:".",major_load_error:"Не удалось загрузить специальности",error_prefix:"Ошибка:",major_read_error:"Не удалось прочитать таблицу специальностей.",journey_step:"Этап пути:",back_journey:"Вернуться к карте пути",appt_change:"Изменить встречу",appt_demo_summary:"Демонстрационная встреча с",appt_on:"в",appt_topic_summary:"Тема:"},
+ ar:{loading_majors:"جارٍ تحميل التخصصات…",major_prompt:"اختر التخصص…",no_majors:"لم يتم العثور على تخصصات في قاعدة البيانات",major_empty:"جدول التخصصات فارغ.",major_connected:"تم الاتصال بقاعدة البيانات. التخصصات المحمّلة:",majors_count:".",major_load_error:"تعذر تحميل التخصصات",error_prefix:"خطأ:",major_read_error:"تعذرت قراءة جدول التخصصات.",journey_step:"مرحلة الرحلة:",back_journey:"العودة إلى خريطة الرحلة",appt_change:"تغيير الموعد",appt_demo_summary:"موعد تجريبي مع",appt_on:"في",appt_topic_summary:"الموضوع:"}
+};
+var LANGS=[{c:"en",n:"English"},{c:"es",n:"Español"},{c:"ko",n:"한국어"},{c:"zh",n:"中文（普通话）"},{c:"pt",n:"Português"},{c:"ja",n:"日本語"},{c:"fr",n:"Français"},{c:"tl",n:"Tagalog (Filipino)"},{c:"de",n:"Deutsch"},{c:"ru",n:"Русский"},{c:"ar",n:"العربية"}];
+var LANG_LOCALES={en:"en-US",es:"es",ko:"ko",zh:"zh-CN",pt:"pt-BR",ja:"ja",fr:"fr",tl:"fil-PH",de:"de",ru:"ru",ar:"ar"};
+var lang=localStorage.getItem("byu-guide-language")||"en";
+if(!LANGS.some(function(x){return x.c===lang})) lang="en";
+function t(k,en){ if(lang==="en") return en; return tr(k,en); }
+
+var DYNAMIC_LABELS={
+ es:{what_to_do:"Qué hacer",student:"Estudiante",international_student:"Estudiante internacional",alert_housing_title:"Confirma tu plan de vivienda",alert_housing_desc:"Las opciones de vivienda pueden agotarse. Revisa tus opciones.",alert_housing_link:"Ver etapa de vivienda",alert_rules_title:"Consulta las reglas de impuestos y empleo con International Services",alert_rules_desc:"Esta oficina puede explicar qué reglas se aplican a tu caso.",alert_rules_link:"Buscar la oficina",alert_classes_title:"Revisa las clases de",alert_classes_desc:"Consulta los requisitos generales de tu carrera.",alert_classes_link:"Ver clases",alert_hub_title:"Explora el centro de recursos",alert_hub_desc:"Vivienda, impuestos, empleo y oficinas de BYU en un solo mapa.",alert_hub_link:"Abrir recursos",needs_attention:"Requiere atención",stage_updated:"Etapa actualizada.",request_sent:"Solicitud enviada (prototipo). Un asesor la revisaría.",select_branch:"Selecciona una categoría",branch_help:"Elige un tema en el mapa o pregunta al asistente por dónde empezar."},
+ ko:{what_to_do:"할 일",student:"학생",international_student:"국제 학생",alert_housing_title:"주거 계획을 확인하세요",alert_housing_desc:"주거 옵션이 조기에 마감될 수 있습니다. 선택 사항을 확인하세요.",alert_housing_link:"주거 단계 보기",alert_rules_title:"International Services에서 세금 및 근로 규정을 확인하세요",alert_rules_desc:"담당 부서에서 본인에게 적용되는 규정을 안내해 드립니다.",alert_rules_link:"담당 부서 찾기",alert_classes_title:"수업 검토:",alert_classes_desc:"전공에 일반적으로 필요한 수업을 확인하세요.",alert_classes_link:"수업 보기",alert_hub_title:"자료 안내 살펴보기",alert_hub_desc:"주거, 세금, 취업 및 BYU 부서를 한 지도에서 확인하세요.",alert_hub_link:"자료 열기",needs_attention:"확인 필요",stage_updated:"현재 단계가 업데이트되었습니다.",request_sent:"요청이 전송되었습니다. 상담자가 검토합니다.",select_branch:"항목 선택",branch_help:"지도에서 주제를 선택하거나 도우미에게 시작할 곳을 물어보세요."},
+ zh:{what_to_do:"要做什么",student:"学生",international_student:"国际学生",alert_housing_title:"确认您的住房计划",alert_housing_desc:"住房选择可能很快满额。请查看您的选择。",alert_housing_link:"查看住房阶段",alert_rules_title:"向 International Services 确认税务和工作规定",alert_rules_desc:"该办公室可以说明哪些规定适用于您。",alert_rules_link:"查找办公室",alert_classes_title:"查看课程：",alert_classes_desc:"了解您的专业通常有哪些课程要求。",alert_classes_link:"查看课程",alert_hub_title:"浏览资源中心",alert_hub_desc:"在一张地图中查看住房、税务、就业和 BYU 办公室资源。",alert_hub_link:"打开资源中心",needs_attention:"需要处理",stage_updated:"当前阶段已更新。",request_sent:"请求已发送。顾问将进行审核。",select_branch:"选择一个类别",branch_help:"选择地图上的主题，或询问助手从哪里开始。"},
+ pt:{what_to_do:"O que fazer",student:"Estudante",international_student:"Estudante internacional",alert_housing_title:"Confirme seu plano de moradia",alert_housing_desc:"As opções de moradia podem se esgotar. Revise suas escolhas.",alert_housing_link:"Ver etapa de moradia",alert_rules_title:"Consulte as regras de impostos e trabalho com a International Services",alert_rules_desc:"O escritório pode explicar quais regras se aplicam a você.",alert_rules_link:"Encontrar o escritório",alert_classes_title:"Revise as disciplinas de",alert_classes_desc:"Veja os requisitos gerais do seu curso.",alert_classes_link:"Ver disciplinas",alert_hub_title:"Explore a central de recursos",alert_hub_desc:"Moradia, impostos, empregos e escritórios da BYU em um só mapa.",alert_hub_link:"Abrir recursos",needs_attention:"Precisa de atenção",stage_updated:"Etapa atualizada.",request_sent:"Solicitação enviada. Um orientador faria a análise.",select_branch:"Selecione uma categoria",branch_help:"Escolha um tópico no mapa ou pergunte ao assistente por onde começar."},
+ ja:{what_to_do:"すること",student:"学生",international_student:"留学生",alert_housing_title:"住まいの計画を確認してください",alert_housing_desc:"住まいの選択肢は早く埋まることがあります。内容を確認してください。",alert_housing_link:"住まいの段階を見る",alert_rules_title:"International Servicesで税金と就労のルールを確認してください",alert_rules_desc:"担当窓口であなたに適用されるルールを確認できます。",alert_rules_link:"窓口を探す",alert_classes_title:"履修科目を確認：",alert_classes_desc:"専攻で一般的に必要となる科目を確認してください。",alert_classes_link:"科目を見る",alert_hub_title:"リソース案内を見る",alert_hub_desc:"住まい、税金、仕事、BYUの窓口を一つのマップで確認できます。",alert_hub_link:"リソースを開く",needs_attention:"要対応",stage_updated:"現在の段階を更新しました。",request_sent:"リクエストを送信しました。アドバイザーが確認します。",select_branch:"項目を選択",branch_help:"マップから項目を選ぶか、何から始めるかアシスタントに尋ねてください。"},
+ fr:{what_to_do:"À faire",student:"Étudiant",international_student:"Étudiant international",alert_housing_title:"Confirmez votre plan de logement",alert_housing_desc:"Les logements peuvent être vite complets. Vérifiez vos options.",alert_housing_link:"Voir l’étape logement",alert_rules_title:"Vérifiez les règles fiscales et de travail auprès d’International Services",alert_rules_desc:"Ce service peut vous expliquer les règles qui vous concernent.",alert_rules_link:"Trouver le service",alert_classes_title:"Vérifiez les cours de",alert_classes_desc:"Consultez les exigences générales de votre spécialité.",alert_classes_link:"Voir les cours",alert_hub_title:"Explorez le centre de ressources",alert_hub_desc:"Logement, impôts, emploi et services de BYU sur une seule carte.",alert_hub_link:"Ouvrir les ressources",needs_attention:"À traiter",stage_updated:"Étape actuelle mise à jour.",request_sent:"Demande envoyée. Un conseiller l’examinerait.",select_branch:"Sélectionnez une catégorie",branch_help:"Choisissez un sujet sur la carte ou demandez à l’assistant par où commencer."},
+ tl:{what_to_do:"Mga dapat gawin",student:"Estudyante",international_student:"International student",alert_housing_title:"Kumpirmahin ang plano mo sa tirahan",alert_housing_desc:"Maaaring mapuno agad ang mga opsyon sa tirahan. Suriin ang mga ito.",alert_housing_link:"Tingnan ang yugto ng tirahan",alert_rules_title:"Alamin sa International Services ang mga tuntunin sa buwis at trabaho",alert_rules_desc:"Maipapaliwanag nila kung aling mga tuntunin ang naaangkop sa iyo.",alert_rules_link:"Hanapin ang tanggapan",alert_classes_title:"Suriin ang mga klase para sa",alert_classes_desc:"Tingnan ang karaniwang requirements ng major mo.",alert_classes_link:"Tingnan ang mga klase",alert_hub_title:"Tingnan ang resource hub",alert_hub_desc:"Tirahan, buwis, trabaho, at mga tanggapan ng BYU sa iisang mapa.",alert_hub_link:"Buksan ang mga resource",needs_attention:"Kailangang asikasuhin",stage_updated:"Na-update ang kasalukuyang yugto.",request_sent:"Naipadala ang kahilingan. Susuriin ito ng adviser.",select_branch:"Pumili ng kategorya",branch_help:"Pumili ng paksa sa mapa o magtanong sa assistant kung saan magsisimula."},
+ de:{what_to_do:"Aufgaben",student:"Studierende/r",international_student:"Internationale/r Studierende/r",alert_housing_title:"Bestätigen Sie Ihren Wohnplan",alert_housing_desc:"Wohnmöglichkeiten können schnell ausgebucht sein. Prüfen Sie Ihre Optionen.",alert_housing_link:"Etappe Wohnen ansehen",alert_rules_title:"Klären Sie Steuer- und Arbeitsregeln mit International Services",alert_rules_desc:"Dort erfahren Sie, welche Regeln für Sie gelten.",alert_rules_link:"Anlaufstelle finden",alert_classes_title:"Kurse für das Hauptfach prüfen:",alert_classes_desc:"Sehen Sie sich die üblichen Anforderungen Ihres Hauptfachs an.",alert_classes_link:"Kurse ansehen",alert_hub_title:"Ressourcenzentrum erkunden",alert_hub_desc:"Wohnen, Steuern, Arbeit und BYU-Stellen auf einer Karte.",alert_hub_link:"Ressourcen öffnen",needs_attention:"Aktion erforderlich",stage_updated:"Aktuelle Etappe aktualisiert.",request_sent:"Anfrage gesendet. Die Studienberatung würde sie prüfen.",select_branch:"Bereich auswählen",branch_help:"Wählen Sie ein Thema auf der Karte oder fragen Sie den Assistenten, womit Sie beginnen sollen."},
+ ru:{what_to_do:"Что сделать",student:"Студент",international_student:"Иностранный студент",alert_housing_title:"Подтвердите план проживания",alert_housing_desc:"Свободные варианты жилья могут быстро закончиться. Проверьте свои варианты.",alert_housing_link:"Этап жилья",alert_rules_title:"Уточните налоговые правила и правила работы в International Services",alert_rules_desc:"Там объяснят, какие правила относятся к вашей ситуации.",alert_rules_link:"Найти отдел",alert_classes_title:"Проверьте курсы для специальности:",alert_classes_desc:"Посмотрите, какие курсы обычно требуются для вашей специальности.",alert_classes_link:"Посмотреть курсы",alert_hub_title:"Откройте центр ресурсов",alert_hub_desc:"Жилье, налоги, работа и отделы BYU на одной карте.",alert_hub_link:"Открыть ресурсы",needs_attention:"Требуется внимание",stage_updated:"Текущий этап обновлен.",request_sent:"Запрос отправлен. Его должен рассмотреть консультант.",select_branch:"Выберите раздел",branch_help:"Выберите тему на карте или спросите помощника, с чего начать."},
+ ar:{what_to_do:"ما ينبغي فعله",student:"طالب",international_student:"طالب دولي",alert_housing_title:"أكد خطة السكن",alert_housing_desc:"قد تمتلئ خيارات السكن بسرعة. راجع الخيارات المتاحة.",alert_housing_link:"عرض مرحلة السكن",alert_rules_title:"تحقق من قواعد الضرائب والعمل لدى International Services",alert_rules_desc:"يمكن للمكتب توضيح القواعد التي تنطبق عليك.",alert_rules_link:"العثور على المكتب",alert_classes_title:"راجع مقررات التخصص:",alert_classes_desc:"اطّلع على المتطلبات المعتادة لتخصصك.",alert_classes_link:"عرض المقررات",alert_hub_title:"استكشف مركز الموارد",alert_hub_desc:"السكن والضرائب والعمل ومكاتب BYU في خريطة واحدة.",alert_hub_link:"فتح الموارد",needs_attention:"يتطلب الانتباه",stage_updated:"تم تحديث المرحلة الحالية.",request_sent:"تم إرسال الطلب. سيراجعه المرشد.",select_branch:"اختر فرعًا",branch_help:"اختر موضوعًا على الخريطة أو اسأل المساعد من أين تبدأ."}
+};
+var DYNAMIC_TRANSLATIONS={
+ es:{steps:["Revisa los requisitos de admisión para estudiantes internacionales","Reúne tus certificados académicos y resultados de exámenes","Envía tu solicitud antes de la fecha límite","Compara las opciones dentro y fuera del campus","Revisa las fechas y los costos del contrato","Pregunta por viviendas para estudiantes internacionales nuevos","Consulta qué clases exige tu carrera","Reúnete con un asesor académico","Inscríbete, añade o retira clases en MyMap","Infórmate sobre los formularios fiscales que podrías recibir","Busca información y talleres sobre impuestos","Consulta con la oficina adecuada antes de presentar tu declaración","Aprende las reglas para trabajar dentro y fuera del campus","Prepara tu currículum con Career Services","Busca empleos y prácticas profesionales","Consulta con tu asesor el avance de tu título","Solicita la graduación antes de la fecha límite","Pregunta qué opciones tienes después de graduarte"],hubs:["Encuentra dónde vivir y conoce los contratos.","Inscríbete en clases y consulta los requisitos de tu carrera.","Infórmate sobre los impuestos de EE. UU. para estudiantes internacionales.","Obtén ayuda para buscar empleo y resolver dudas sobre autorización de trabajo.","Para preguntas sobre visas, estatus e inmigración, habla con la oficina oficial. Este sitio no ofrece asesoría migratoria.","Oficinas importantes que ayudan a los estudiantes.","Apoyo para salud, consejería y vida estudiantil."]},
+ ko:{steps:["국제 학생 입학 요건을 확인하세요","성적 증명서와 시험 점수를 준비하세요","마감일 전에 지원서를 제출하세요","교내외 주거 옵션을 비교하세요","계약 날짜와 비용을 확인하세요","신입 국제 학생을 위한 주거를 문의하세요","전공에 필요한 수업을 확인하세요","학업 상담자와 만나세요","MyMap에서 수업을 신청·추가·철회하세요","국제 학생이 받을 수 있는 세금 서류를 알아보세요","세금 정보와 설명회를 찾아보세요","세금 신고 전에 담당 부서에 문의하세요","교내외 근로 규정을 알아보세요","Career Services와 이력서를 준비하세요","일자리와 인턴십을 찾아보세요","상담자와 학위 이수 현황을 확인하세요","마감일까지 졸업 신청을 하세요","졸업 후 가능한 선택지를 문의하세요"],hubs:["거주지를 찾고 계약 내용을 확인하세요.","수업을 신청하고 전공 요건을 확인하세요.","국제 학생이 알아야 할 미국 세금 정보를 확인하세요.","구직과 취업 허가 관련 질문에 대한 도움을 받으세요.","비자, 체류 자격 및 이민 관련 질문은 공식 담당 부서에 문의하세요. 이 웹사이트는 이민 상담을 제공하지 않습니다.","학생을 지원하는 주요 BYU 부서입니다.","건강, 상담 및 학생 생활 지원을 찾아보세요."]},
+ zh:{steps:["查看国际学生的入学要求","准备成绩单和考试成绩","在截止日期前提交申请","比较校内和校外住房选择","确认合同日期和费用","咨询新入学国际学生住房信息","查看专业要求的课程","与学业顾问会面","在 MyMap 注册、添加或退选课程","了解国际学生可能收到的税务表格","查找税务信息和讲座","报税前向相应办公室咨询","了解校内外工作的规定","通过 Career Services 完善简历","查找工作和实习机会","与顾问确认学位完成进度","在截止日期前申请毕业","咨询毕业后的安排"],hubs:["查找住处并了解住房合同。","注册课程并查看专业要求。","了解国际学生需要知道的美国税务信息。","获取求职帮助，并咨询工作许可问题。","有关签证、身份和移民的问题，请联系官方办公室。本网站不提供移民建议。","为学生提供帮助的重要 BYU 办公室。","健康、咨询和学生生活支持。"]},
+ pt:{steps:["Revise os requisitos de admissão para estudantes internacionais","Reúna históricos escolares e resultados de exames","Envie sua candidatura antes do prazo","Compare opções dentro e fora do campus","Confira as datas e os custos do contrato","Pergunte sobre moradia para novos estudantes internacionais","Veja quais disciplinas seu curso exige","Converse com um orientador acadêmico","Matricule-se, adicione ou cancele disciplinas no MyMap","Saiba quais formulários fiscais estudantes internacionais podem receber","Procure informações e oficinas sobre impostos","Consulte o escritório adequado antes de declarar seus impostos","Conheça as regras para trabalhar dentro e fora do campus","Prepare seu currículo com a Career Services","Procure empregos e estágios","Confira seu progresso no curso com seu orientador","Solicite a formatura antes do prazo","Pergunte sobre as opções após a formatura"],hubs:["Encontre onde morar e entenda os contratos.","Matricule-se nas aulas e consulte os requisitos do curso.","Saiba o que estudantes internacionais precisam conhecer sobre impostos dos EUA.","Receba ajuda para procurar emprego e esclarecer dúvidas sobre autorização de trabalho.","Para dúvidas sobre visto, status e imigração, fale com o escritório oficial. Este site não oferece orientação imigratória.","Escritórios importantes que ajudam os estudantes.","Apoio de saúde, aconselhamento e vida estudantil."]},
+ ja:{steps:["留学生の入学要件を確認する","成績証明書と試験結果を準備する","締切までに出願する","大学内外の住居を比較する","契約日と費用を確認する","新入留学生向けの住居について問い合わせる","専攻で必要な授業を確認する","アカデミックアドバイザーと相談する","MyMapで授業を登録・追加・取り消す","留学生が受け取る可能性のある税務書類を確認する","税金に関する情報や説明会を探す","申告前に担当窓口へ相談する","学内外で働く際の規則を確認する","Career Servicesで履歴書を作成する","仕事やインターンシップを探す","アドバイザーと学位の進捗を確認する","締切までに卒業を申請する","卒業後の選択肢を相談する"],hubs:["住まいを探し、契約内容を確認します。","授業に登録し、専攻要件を確認します。","留学生が知っておくべき米国の税金を確認します。","就職活動や就労許可について相談できます。","ビザ、在留資格、移民に関する質問は公式窓口に相談してください。このサイトは移民に関する助言を行いません。","学生を支援するBYUの主な窓口です。","健康、カウンセリング、学生生活に関する支援です。"]},
+ fr:{steps:["Consultez les conditions d’admission pour les étudiants internationaux","Rassemblez vos relevés de notes et résultats d’examens","Envoyez votre candidature avant la date limite","Comparez les logements sur et hors campus","Vérifiez les dates et les coûts du contrat","Renseignez-vous sur le logement des nouveaux étudiants internationaux","Vérifiez les cours requis pour votre spécialité","Rencontrez un conseiller pédagogique","Inscrivez-vous aux cours, ajoutez-en ou abandonnez-en dans MyMap","Découvrez les formulaires fiscaux que les étudiants internationaux peuvent recevoir","Cherchez des renseignements et ateliers sur les impôts","Consultez le service compétent avant de déclarer vos impôts","Renseignez-vous sur les règles de travail sur et hors campus","Préparez votre CV avec Career Services","Cherchez des emplois et des stages","Faites le point sur votre diplôme avec votre conseiller","Demandez l’obtention du diplôme avant la date limite","Renseignez-vous sur les possibilités après le diplôme"],hubs:["Trouvez un logement et comprenez les contrats.","Inscrivez-vous aux cours et consultez les exigences de votre spécialité.","Découvrez les règles fiscales américaines utiles aux étudiants internationaux.","Obtenez de l’aide pour chercher un emploi et poser des questions sur l’autorisation de travail.","Pour les questions de visa, de statut et d’immigration, contactez le service officiel. Ce site ne fournit pas de conseils en immigration.","Les principaux services de BYU qui accompagnent les étudiants.","Soutien en santé, accompagnement et vie étudiante."]},
+ tl:{steps:["Suriin ang admission requirements para sa international students","Ihanda ang transcripts at mga resulta ng pagsusulit","Isumite ang aplikasyon bago ang deadline","Ihambing ang mga opsyon sa loob at labas ng campus","Suriin ang mga petsa at gastos sa kontrata","Magtanong tungkol sa tirahan para sa mga bagong international student","Tingnan kung anong mga klase ang kailangan sa major mo","Makipagkita sa academic adviser","Magparehistro, magdagdag, o mag-drop ng klase sa MyMap","Alamin kung anong tax form ang maaaring matanggap ng international students","Maghanap ng impormasyon at workshop tungkol sa buwis","Magtanong sa tamang tanggapan bago mag-file ng buwis","Alamin ang mga tuntunin sa pagtatrabaho sa loob at labas ng campus","Gumawa ng résumé kasama ang Career Services","Maghanap ng trabaho at internship","Suriin ang progreso sa degree kasama ang adviser","Mag-apply para sa graduation bago ang deadline","Magtanong tungkol sa mga susunod na hakbang pagkatapos magtapos"],hubs:["Maghanap ng matitirhan at unawain ang mga kontrata.","Magparehistro sa mga klase at tingnan ang requirements ng major.","Alamin ang tungkol sa buwis sa U.S. para sa mga international student.","Humingi ng tulong sa paghahanap ng trabaho at mga tanong tungkol sa work authorization.","Para sa visa, status, at immigration, makipag-ugnayan sa opisyal na tanggapan. Hindi nagbibigay ng immigration advice ang website na ito.","Mahahalagang tanggapan ng BYU na tumutulong sa mga estudyante.","Suporta para sa kalusugan, counseling, at buhay-estudyante."]},
+ de:{steps:["Prüfen Sie die Zulassungsvoraussetzungen für internationale Studierende","Stellen Sie Zeugnisse und Prüfungsergebnisse zusammen","Reichen Sie die Bewerbung vor der Frist ein","Vergleichen Sie Wohnmöglichkeiten auf und außerhalb des Campus","Prüfen Sie Vertragsdaten und Kosten","Fragen Sie nach Wohnraum für neu ankommende internationale Studierende","Prüfen Sie, welche Kurse Ihr Hauptfach erfordert","Sprechen Sie mit der Studienberatung","Melden Sie sich in MyMap für Kurse an, fügen Sie Kurse hinzu oder melden Sie sich ab","Informieren Sie sich über mögliche Steuerformulare für internationale Studierende","Suchen Sie Steuerinformationen und Workshops","Fragen Sie vor der Steuererklärung bei der zuständigen Stelle nach","Informieren Sie sich über Arbeit auf und außerhalb des Campus","Erstellen Sie Ihren Lebenslauf mit Career Services","Suchen Sie nach Jobs und Praktika","Prüfen Sie Ihren Studienfortschritt mit der Studienberatung","Beantragen Sie den Abschluss vor der Frist","Fragen Sie nach Möglichkeiten nach dem Abschluss"],hubs:["Finden Sie eine Unterkunft und informieren Sie sich über Verträge.","Melden Sie sich für Kurse an und sehen Sie die Anforderungen Ihres Hauptfachs.","Erfahren Sie, was internationale Studierende über US-Steuern wissen sollten.","Hilfe bei der Jobsuche und Fragen zur Arbeitserlaubnis.","Bei Fragen zu Visum, Aufenthaltsstatus und Einwanderung wenden Sie sich an die offizielle Stelle. Diese Website bietet keine Einwanderungsberatung.","Wichtige BYU-Stellen, die Studierende unterstützen.","Unterstützung zu Gesundheit, Beratung und Studentenleben."]},
+ ru:{steps:["Изучите требования к поступлению для иностранных студентов","Подготовьте выписки с оценками и результаты экзаменов","Подайте заявление до крайнего срока","Сравните варианты жилья в кампусе и за его пределами","Проверьте даты и стоимость договора","Уточните жилье для новых иностранных студентов","Узнайте, какие курсы нужны для специальности","Встретьтесь с академическим консультантом","Записывайтесь на курсы, добавляйте или отменяйте их в MyMap","Узнайте, какие налоговые формы могут получить иностранные студенты","Найдите информацию и семинары по налогам","До подачи декларации уточните сведения в нужном отделе","Изучите правила работы в кампусе и за его пределами","Составьте резюме с Career Services","Ищите вакансии и стажировки","Проверьте прогресс по программе с консультантом","Подайте заявку на выпуск до крайнего срока","Узнайте о возможностях после выпуска"],hubs:["Найдите жилье и разберитесь в условиях договора.","Запишитесь на курсы и посмотрите требования специальности.","Узнайте о налогах США, которые важны для иностранных студентов.","Помощь в поиске работы и ответы на вопросы о разрешении на работу.","По вопросам визы, статуса и иммиграции обращайтесь в официальный отдел. Этот сайт не предоставляет иммиграционных консультаций.","Основные отделы BYU, помогающие студентам.","Поддержка по вопросам здоровья, консультирования и студенческой жизни."]},
+ ar:{steps:["راجع متطلبات القبول للطلاب الدوليين","اجمع كشوف الدرجات ونتائج الاختبارات","قدّم طلبك قبل الموعد النهائي","قارن خيارات السكن داخل الحرم الجامعي وخارجه","تحقق من تواريخ العقد وتكاليفه","استفسر عن السكن للطلاب الدوليين الجدد","تحقق من المقررات المطلوبة لتخصصك","قابل المرشد الأكاديمي","سجّل المقررات أو أضفها أو احذفها عبر MyMap","تعرّف على النماذج الضريبية التي قد يتلقاها الطلاب الدوليون","ابحث عن معلومات وورش عمل حول الضرائب","اسأل المكتب المختص قبل تقديم الإقرار الضريبي","تعرّف على قواعد العمل داخل الحرم الجامعي وخارجه","أعد سيرتك الذاتية بمساعدة Career Services","ابحث عن وظائف وفرص تدريب","راجع تقدمك الدراسي مع المرشد","قدّم طلب التخرج قبل الموعد النهائي","استفسر عن الخيارات بعد التخرج"],hubs:["اعثر على مكان للسكن وتعرّف على العقود.","سجّل في المقررات واطّلع على متطلبات تخصصك.","تعرّف على الضرائب الأمريكية التي تهم الطلاب الدوليين.","مساعدة في البحث عن عمل وأسئلة تصريح العمل.","لأسئلة التأشيرة والوضع القانوني والهجرة، تواصل مع المكتب الرسمي. لا يقدم هذا الموقع استشارات هجرة.","مكاتب BYU الرئيسية التي تساعد الطلاب.","دعم الصحة والإرشاد والحياة الطلابية."]}
+};
+function dyn(section,index,en){var a=DYNAMIC_TRANSLATIONS[lang]&&DYNAMIC_TRANSLATIONS[lang][section];return a&&a[index]||en;}
+
+var CURRENT_I18N={"en": {"email_label": "Email address", "password_auth_hint": "At least 8 characters. Do not use your BYU password.", "auth_notice": "Creates a BYU Navigator login through Supabase Auth. This does not create an official BYU account. Do not use your BYU password.", "sample_courses": "Sample courses for", "register_demo": "Register (simulation)", "registered_demo": "Registered — demo", "saving": "Saving…", "loading_courses": "Loading sample courses…", "no_courses": "No sample courses are available for this major yet.", "credit": "credit", "credits": "credits", "demo_notice": "Course selections here are saved for Demo Term as a simulation. To officially register, add, or drop a BYU class, use MyMap.", "saved_demo": "Saved for Demo Term. This is not official BYU registration.", "error_course_load": "Could not load courses:", "error_register": "Could not register:", "error_email": "Enter a valid email address.", "error_password8": "Password must be at least 8 characters.", "signing_in": "Signing in…", "signin_email_hint": "Use your Navigator email and password.", "signup_received": "Signup request received. Check your email for a confirmation link. If you already have an account, sign in.", "signup_complete": "Signup completed. Sign in to finish setting up your profile."}, "es": {"email_label": "Correo electrónico", "password_auth_hint": "Al menos 8 caracteres. No uses tu contraseña de BYU.", "auth_notice": "Crea una cuenta de BYU Navigator mediante Supabase Auth, no una cuenta oficial de BYU. No uses tu contraseña de BYU.", "sample_courses": "Cursos de ejemplo para", "register_demo": "Inscribirse (simulación)", "registered_demo": "Inscrito — demo", "saving": "Guardando…", "loading_courses": "Cargando cursos de ejemplo…", "no_courses": "Todavía no hay cursos de ejemplo para esta carrera.", "credit": "crédito", "credits": "créditos", "demo_notice": "Las selecciones se guardan para Demo Term como simulación. Para inscribirte, añadir o retirar cursos oficialmente, usa MyMap.", "saved_demo": "Guardado para Demo Term. No es una inscripción oficial de BYU.", "error_course_load": "No se pudieron cargar los cursos:", "error_register": "No se pudo inscribir:", "error_email": "Ingresa un correo electrónico válido.", "error_password8": "La contraseña debe tener al menos 8 caracteres.", "signing_in": "Iniciando sesión…", "signin_email_hint": "Usa tu correo y contraseña de Navigator.", "signup_received": "Solicitud recibida. Busca el enlace de confirmación en tu correo. Si ya tienes cuenta, inicia sesión.", "signup_complete": "Registro completado. Inicia sesión para terminar tu perfil."}, "ja": {"email_label": "メールアドレス", "password_auth_hint": "8文字以上。BYUのパスワードは使わないでください。", "auth_notice": "Supabase AuthでBYU Navigatorのアカウントを作成します。BYUの公式アカウントではありません。BYUのパスワードは使わないでください。", "sample_courses": "専攻のサンプル科目：", "register_demo": "登録（練習）", "registered_demo": "登録済み — デモ", "saving": "保存中…", "loading_courses": "サンプル科目を読み込み中…", "no_courses": "この専攻のサンプル科目はまだありません。", "credit": "単位", "credits": "単位", "demo_notice": "科目の選択はDemo Termの練習として保存されます。正式な履修登録・追加・取り消しにはMyMapを使ってください。", "saved_demo": "Demo Termに保存しました。BYUの正式な履修登録ではありません。", "error_course_load": "科目を読み込めません：", "error_register": "登録できません：", "error_email": "有効なメールアドレスを入力してください。", "error_password8": "パスワードは8文字以上にしてください。", "signing_in": "ログイン中…", "signin_email_hint": "Navigatorのメールアドレスとパスワードを使ってください。", "signup_received": "登録の申請を受け付けました。メールの確認リンクを開いてください。アカウントがある場合はログインしてください。", "signup_complete": "登録が完了しました。ログインしてプロフィールの設定を完了してください。"}, "ko": {"email_label": "이메일 주소", "password_auth_hint": "8자 이상. BYU 비밀번호를 사용하지 마세요.", "auth_notice": "Supabase Auth로 BYU Navigator 계정을 만듭니다. BYU 공식 계정이 아닙니다. BYU 비밀번호를 사용하지 마세요.", "sample_courses": "전공 샘플 과목:", "register_demo": "수강 신청 (모의)", "registered_demo": "신청 완료 — 데모", "saving": "저장 중…", "loading_courses": "샘플 과목 불러오는 중…", "no_courses": "이 전공의 샘플 과목이 아직 없습니다.", "credit": "학점", "credits": "학점", "demo_notice": "선택한 과목은 Demo Term의 모의 신청으로 저장됩니다. 공식 수강 신청·추가·취소는 MyMap을 이용하세요.", "saved_demo": "Demo Term에 저장되었습니다. BYU 공식 수강 신청이 아닙니다.", "error_course_load": "과목을 불러올 수 없습니다:", "error_register": "신청할 수 없습니다:", "error_email": "유효한 이메일 주소를 입력하세요.", "error_password8": "비밀번호는 8자 이상이어야 합니다.", "signing_in": "로그인 중…", "signin_email_hint": "Navigator 이메일과 비밀번호를 사용하세요.", "signup_received": "신청을 받았습니다. 이메일의 확인 링크를 확인하세요. 계정이 있다면 로그인하세요.", "signup_complete": "가입이 완료되었습니다. 로그인하여 프로필 설정을 완료하세요."}, "zh": {"email_label": "电子邮箱", "password_auth_hint": "至少8个字符。请勿使用您的BYU密码。", "auth_notice": "通过Supabase Auth创建BYU Navigator账号。这不是BYU官方账号。请勿使用您的BYU密码。", "sample_courses": "专业示例课程：", "register_demo": "注册（模拟）", "registered_demo": "已注册 — 演示", "saving": "正在保存…", "loading_courses": "正在加载示例课程…", "no_courses": "此专业暂无示例课程。", "credit": "学分", "credits": "学分", "demo_notice": "所选课程作为Demo Term的模拟注册保存。正式注册、添加或退课请使用MyMap。", "saved_demo": "已保存至Demo Term。这不是BYU正式选课注册。", "error_course_load": "无法加载课程：", "error_register": "无法注册：", "error_email": "请输入有效的电子邮箱。", "error_password8": "密码至少需要8个字符。", "signing_in": "正在登录…", "signin_email_hint": "请使用Navigator邮箱和密码。", "signup_received": "已收到注册请求。请查看邮件中的确认链接。已有账号请登录。", "signup_complete": "注册完成。请登录以完成个人资料设置。"}, "pt": {"email_label": "E-mail", "password_auth_hint": "Pelo menos 8 caracteres. Não use sua senha da BYU.", "auth_notice": "Cria uma conta BYU Navigator pelo Supabase Auth, não uma conta oficial da BYU. Não use sua senha da BYU.", "sample_courses": "Disciplinas de exemplo para", "register_demo": "Matricular (simulação)", "registered_demo": "Matriculado — demo", "saving": "Salvando…", "loading_courses": "Carregando disciplinas de exemplo…", "no_courses": "Ainda não há disciplinas de exemplo para este curso.", "credit": "crédito", "credits": "créditos", "demo_notice": "As seleções são salvas em Demo Term como simulação. Para matrícula, inclusão ou exclusão oficial, use o MyMap.", "saved_demo": "Salvo em Demo Term. Não é uma matrícula oficial da BYU.", "error_course_load": "Não foi possível carregar disciplinas:", "error_register": "Não foi possível matricular:", "error_email": "Digite um e-mail válido.", "error_password8": "A senha deve ter pelo menos 8 caracteres.", "signing_in": "Entrando…", "signin_email_hint": "Use seu e-mail e senha do Navigator.", "signup_received": "Solicitação recebida. Confira o link de confirmação no seu e-mail. Se já tem conta, entre.", "signup_complete": "Cadastro concluído. Entre para concluir seu perfil."}, "fr": {"email_label": "Adresse e-mail", "password_auth_hint": "Au moins 8 caractères. N’utilisez pas votre mot de passe BYU.", "auth_notice": "Crée un compte BYU Navigator via Supabase Auth, et non un compte officiel BYU. N’utilisez pas votre mot de passe BYU.", "sample_courses": "Exemples de cours pour", "register_demo": "S’inscrire (simulation)", "registered_demo": "Inscrit — démo", "saving": "Enregistrement…", "loading_courses": "Chargement des exemples de cours…", "no_courses": "Aucun exemple de cours disponible pour cette spécialité.", "credit": "crédit", "credits": "crédits", "demo_notice": "Les choix sont enregistrés pour Demo Term à titre de simulation. Pour une inscription, un ajout ou un abandon officiel, utilisez MyMap.", "saved_demo": "Enregistré pour Demo Term. Ce n’est pas une inscription officielle BYU.", "error_course_load": "Impossible de charger les cours :", "error_register": "Impossible de s’inscrire :", "error_email": "Saisissez une adresse e-mail valide.", "error_password8": "Le mot de passe doit comporter au moins 8 caractères.", "signing_in": "Connexion…", "signin_email_hint": "Utilisez votre e-mail et mot de passe Navigator.", "signup_received": "Demande reçue. Consultez le lien de confirmation dans votre e-mail. Si vous avez déjà un compte, connectez-vous.", "signup_complete": "Inscription terminée. Connectez-vous pour compléter votre profil."}, "de": {"email_label": "E-Mail-Adresse", "password_auth_hint": "Mindestens 8 Zeichen. Verwenden Sie nicht Ihr BYU-Passwort.", "auth_notice": "Erstellt ein BYU-Navigator-Konto über Supabase Auth, kein offizielles BYU-Konto. Verwenden Sie nicht Ihr BYU-Passwort.", "sample_courses": "Beispielkurse für", "register_demo": "Anmelden (Simulation)", "registered_demo": "Angemeldet — Demo", "saving": "Wird gespeichert…", "loading_courses": "Beispielkurse werden geladen…", "no_courses": "Für dieses Hauptfach sind noch keine Beispielkurse verfügbar.", "credit": "Credit", "credits": "Credits", "demo_notice": "Die Auswahl wird als Simulation für Demo Term gespeichert. Für die offizielle An-, Um- oder Abmeldung nutzen Sie MyMap.", "saved_demo": "Für Demo Term gespeichert. Keine offizielle BYU-Kursanmeldung.", "error_course_load": "Kurse konnten nicht geladen werden:", "error_register": "Anmeldung fehlgeschlagen:", "error_email": "Geben Sie eine gültige E-Mail-Adresse ein.", "error_password8": "Das Passwort muss mindestens 8 Zeichen enthalten.", "signing_in": "Anmeldung läuft…", "signin_email_hint": "Verwenden Sie Ihre Navigator-E-Mail und Ihr Passwort.", "signup_received": "Anfrage erhalten. Prüfen Sie den Bestätigungslink in Ihrer E-Mail. Mit bestehendem Konto bitte anmelden.", "signup_complete": "Registrierung abgeschlossen. Melden Sie sich an, um Ihr Profil einzurichten."}, "ru": {"email_label": "Электронная почта", "password_auth_hint": "Не менее 8 символов. Не используйте пароль BYU.", "auth_notice": "Создаёт аккаунт BYU Navigator через Supabase Auth, а не официальный аккаунт BYU. Не используйте пароль BYU.", "sample_courses": "Примеры курсов для", "register_demo": "Записаться (симуляция)", "registered_demo": "Записан — демо", "saving": "Сохранение…", "loading_courses": "Загрузка примеров курсов…", "no_courses": "Для этой специальности пока нет примеров курсов.", "credit": "кредит", "credits": "кредитов", "demo_notice": "Выбор сохраняется для Demo Term как симуляция. Для официальной записи, добавления или отмены курса используйте MyMap.", "saved_demo": "Сохранено для Demo Term. Это не официальная запись на курсы BYU.", "error_course_load": "Не удалось загрузить курсы:", "error_register": "Не удалось записаться:", "error_email": "Введите действительный адрес электронной почты.", "error_password8": "Пароль должен содержать не менее 8 символов.", "signing_in": "Вход…", "signin_email_hint": "Используйте почту и пароль Navigator.", "signup_received": "Запрос получен. Откройте ссылку подтверждения в письме. Если аккаунт уже есть, войдите.", "signup_complete": "Регистрация завершена. Войдите, чтобы настроить профиль."}, "ar": {"email_label": "البريد الإلكتروني", "password_auth_hint": "8 أحرف على الأقل. لا تستخدم كلمة مرور BYU.", "auth_notice": "ينشئ حساب BYU Navigator عبر Supabase Auth، وليس حساب BYU رسميًا. لا تستخدم كلمة مرور BYU.", "sample_courses": "مقررات تجريبية للتخصص:", "register_demo": "تسجيل (محاكاة)", "registered_demo": "مسجل — تجريبي", "saving": "جارٍ الحفظ…", "loading_courses": "جارٍ تحميل المقررات التجريبية…", "no_courses": "لا توجد مقررات تجريبية لهذا التخصص بعد.", "credit": "ساعة معتمدة", "credits": "ساعات معتمدة", "demo_notice": "تُحفظ الاختيارات للفصل Demo Term كمحاكاة. للتسجيل الرسمي أو إضافة المقررات أو حذفها، استخدم MyMap.", "saved_demo": "تم الحفظ للفصل Demo Term. هذا ليس تسجيلًا رسميًا في BYU.", "error_course_load": "تعذر تحميل المقررات:", "error_register": "تعذر التسجيل:", "error_email": "أدخل بريدًا إلكترونيًا صالحًا.", "error_password8": "يجب ألا تقل كلمة المرور عن 8 أحرف.", "signing_in": "جارٍ تسجيل الدخول…", "signin_email_hint": "استخدم بريد Navigator وكلمة المرور.", "signup_received": "تم استلام الطلب. تحقق من رابط التأكيد في بريدك. إذا كان لديك حساب، فسجّل الدخول.", "signup_complete": "اكتمل التسجيل. سجّل الدخول لإكمال ملفك الشخصي."}, "tl": {"email_label": "Email address", "password_auth_hint": "Hindi bababa sa 8 character. Huwag gamitin ang BYU password mo.", "auth_notice": "Gumagawa ng BYU Navigator account gamit ang Supabase Auth, hindi opisyal na BYU account. Huwag gamitin ang BYU password mo.", "sample_courses": "Mga halimbawang kurso para sa", "register_demo": "Magrehistro (simulation)", "registered_demo": "Nakarehistro — demo", "saving": "Sine-save…", "loading_courses": "Naglo-load ng mga halimbawang kurso…", "no_courses": "Wala pang halimbawang kurso para sa major na ito.", "credit": "credit", "credits": "credits", "demo_notice": "Sine-save ang mga pinili para sa Demo Term bilang simulation. Gamitin ang MyMap para sa opisyal na pagpaparehistro, pagdagdag, o pag-drop ng klase.", "saved_demo": "Na-save para sa Demo Term. Hindi ito opisyal na pagpaparehistro sa BYU.", "error_course_load": "Hindi ma-load ang mga kurso:", "error_register": "Hindi makapagrehistro:", "error_email": "Maglagay ng wastong email address.", "error_password8": "Dapat hindi bababa sa 8 character ang password.", "signing_in": "Nagsa-sign in…", "signin_email_hint": "Gamitin ang iyong Navigator email at password.", "signup_received": "Natanggap ang kahilingan. Tingnan ang confirmation link sa email. Kung may account ka na, mag-sign in.", "signup_complete": "Tapos na ang signup. Mag-sign in para kumpletuhin ang profile."}};
+Object.keys(CURRENT_I18N).forEach(function(code){
+  I18N[code]=Object.assign(I18N[code]||{},CURRENT_I18N[code]);
+  I18N[code].setup_notice=CURRENT_I18N[code].auth_notice;
+  I18N[code].password_hint=CURRENT_I18N[code].password_auth_hint;
+  I18N[code].error_signup_password=CURRENT_I18N[code].error_password8;
+  I18N[code].signin_hint=CURRENT_I18N[code].signin_email_hint;
+});
+
+
+var SAMPLE_MAJOR_LABELS={"es": ["Sistemas de Información", "Contabilidad"], "ja": ["情報システム", "会計学"], "ko": ["정보시스템", "회계학"], "zh": ["信息系统", "会计学"], "pt": ["Sistemas de Informação", "Contabilidade"], "fr": ["Systèmes d’information", "Comptabilité"], "tl": ["Information Systems", "Accounting"], "de": ["Wirtschaftsinformatik", "Rechnungswesen"], "ru": ["Информационные системы", "Бухгалтерский учёт"], "ar": ["نظم المعلومات", "المحاسبة"]};
+Object.keys(SAMPLE_MAJOR_LABELS).forEach(function(code){ MAJOR_LABELS[code]["Information Systems"]=SAMPLE_MAJOR_LABELS[code][0]; MAJOR_LABELS[code]["Accounting"]=SAMPLE_MAJOR_LABELS[code][1]; });
 
 var STAGES=[
  {k:"s0",en:"Apply to BYU",steps:["Review admission requirements for international students","Gather transcripts and test scores","Submit your application before the deadline"],links:[["Admissions","https://admissions.byu.edu"]]},
@@ -623,7 +914,7 @@ const TABLES = { student: "student", major: "major" };
 const COLS = {
   studentId: "studentid", netId: "netid", firstName: "firstname",
   lastName: "lastname", nationality: "nationality", majorId: "majorid",
-  password: "password", majorIdInMajor: "majorid", majorName: "majorname"
+  majorIdInMajor: "majorid", majorName: "majorname"
 };
 
 var supabaseClient = null;
@@ -762,7 +1053,7 @@ $("#signin-form").addEventListener("submit", async function(e) {
   }
 
   button.disabled = true;
-  button.textContent = "Signing in…";
+  button.textContent = t("signing_in", "Signing in…");
 
   try {
     // Authenticate with Supabase Auth.
@@ -855,7 +1146,7 @@ $("#signin-form").addEventListener("submit", async function(e) {
 
     $("#si-pw").value = "";
     go("home");
-    toast("Welcome back, " + user.first + "!");
+    toast(t("toast_welcome", "Welcome back,") + " " + user.first + "!");
 
   } catch (error) {
     // Avoid leaving a partial login if profile loading fails.
@@ -869,8 +1160,20 @@ $("#signin-form").addEventListener("submit", async function(e) {
 
   } finally {
     button.disabled = false;
-    button.textContent = "Sign in";
+    button.textContent = t("signin", "Sign in");
   }
+});
+
+$("#f-nat").addEventListener("change", function() {
+  var isOther = this.value === "Other";
+  $("#f-nat-other-wrap").hidden = !isOther;
+  $("#f-nat-other").required = isOther;
+  if (!isOther) $("#f-nat-other").value = "";
+});
+
+$("#setup-form").addEventListener("reset", function() {
+  $("#f-nat-other-wrap").hidden = true;
+  $("#f-nat-other").required = false;
 });
 
 $("#setup-form").addEventListener("submit", async function(e) {
@@ -880,24 +1183,25 @@ $("#setup-form").addEventListener("submit", async function(e) {
   var err = $("#setup-err");
   var status = $("#signup-status");
   var msg = "";
+  var nationality = v("#f-nat") === "Other" ? v("#f-nat-other") : v("#f-nat");
 
   status.textContent = "";
 
   if (!v("#f-first") || !v("#f-last")) {
-    msg = "Enter your first and last name.";
+    msg = t("error_signup_name", "Enter your first and last name.");
   } else if (!/^[A-Za-z0-9]{4,12}$/.test(v("#f-net"))) {
-    msg = "NetID must be 4–12 letters or numbers.";
+    msg = t("error_signup_netid", "NetID must be 4–12 letters or numbers.");
   } else if (!v("#f-email") || !$("#f-email").validity.valid) {
-    msg = "Enter a valid email address.";
+    msg = t("error_email", "Enter a valid email address.");
   } else if ($("#f-pw").value.length < 8) {
-    msg = "Password must be at least 8 characters.";
-  } else if (!v("#f-nat")) {
-    msg = "Enter your nationality.";
+    msg = t("error_password8", "Password must be at least 8 characters.");
+  } else if (!nationality) {
+    msg = t("error_signup_nation", "Enter your nationality.");
   } else if (
     !v("#f-major") ||
     !Number.isSafeInteger(Number(v("#f-major")))
   ) {
-    msg = "Select a planned major.";
+    msg = t("error_signup_major", "Select a planned major.");
   }
 
   err.textContent = msg;
@@ -906,7 +1210,7 @@ $("#setup-form").addEventListener("submit", async function(e) {
 
   var button = $("#setup-form button[type=submit]");
   button.disabled = true;
-  button.textContent = "Creating account…";
+  button.textContent = t("button_creating", "Creating account…");
 
   try {
     var result = await supabaseClient.auth.signUp({
@@ -917,7 +1221,7 @@ $("#setup-form").addEventListener("submit", async function(e) {
           firstname: v("#f-first"),
           lastname: v("#f-last"),
           netid: v("#f-net"),
-          nationality: v("#f-nat"),
+          nationality: nationality,
           majorid: Number(v("#f-major"))
         }
       }
@@ -928,8 +1232,8 @@ $("#setup-form").addEventListener("submit", async function(e) {
     $("#f-pw").value = "";
 
     status.textContent = result.data.session
-      ? "Account signup completed. Profile setup and sign-in integration are still being connected."
-      : "Signup request received. Check your email for a confirmation link. If you already have an account, use Sign in once integration is complete.";
+      ? t("signup_complete", "Signup completed. Sign in to finish setting up your profile.")
+      : t("signup_received", "Signup request received. Check your email for a confirmation link. If you already have an account, sign in.");
 
   } catch (error) {
     err.textContent =
@@ -938,7 +1242,7 @@ $("#setup-form").addEventListener("submit", async function(e) {
     err.classList.add("show");
   } finally {
     button.disabled = false;
-    button.textContent = "Create account";
+    button.textContent = t("signup", "Create account");
   }
 });
 
@@ -947,6 +1251,7 @@ async function loadMajorOptions() {
   var select = document.getElementById("f-major");
   var status = document.getElementById("setup-db-status");
   if (!select || !supabaseClient) return;
+  if(status) status.dataset.state="loading";
 
   try {
     var res = await supabaseClient.from("major").select("*");
@@ -954,23 +1259,23 @@ async function loadMajorOptions() {
     var majors = res.data || [];
 
     if (majors.length === 0) {
-      select.innerHTML = '<option value="">No majors found in database</option>';
-      if (status) status.textContent = "Major table is empty.";
+      select.innerHTML = '<option value="" data-state="empty">'+esc(t("no_majors","No majors found in database"))+'</option>';
+      if (status){status.dataset.state="empty";updateMajorStatus();}
       return;
     }
 
-    var html = '<option value="">Select a major...</option>';
+    var html = '<option value="" data-state="prompt">'+esc(t("major_prompt","Select a major..."))+'</option>';
     majors.forEach(function(m) {
       var id = m.majorid !== undefined ? m.majorid : m.major_id;
       var name = m.majorname || m.major_name || m.name;
-      html += '<option value="' + id + '">' + name + '</option>';
+      html += '<option value="' + id + '" data-major-name="' + esc(name) + '">' + esc(localizeMajorName(name)) + '</option>';
     });
 
     select.innerHTML = html;
-    if (status) status.textContent = "Connected to Supabase. Loaded " + majors.length + " majors.";
+    if (status){status.dataset.state="connected";status.dataset.count=majors.length;updateMajorStatus();}
   } catch (err) {
-    select.innerHTML = '<option value="">Error loading majors</option>';
-    if (status) status.textContent = "Error: " + (err.message || "Could not read major table.");
+    select.innerHTML = '<option value="" data-state="error">'+esc(t("major_load_error","Error loading majors"))+'</option>';
+    if (status){status.dataset.state="error";status.dataset.errorMessage=err.message||"";updateMajorStatus();}
   }
 }
 
@@ -990,7 +1295,7 @@ $("#signout").addEventListener("click", async function() {
     $("#signin-form").reset();
 
     go("welcome");
-    toast("Signed out.");
+    toast(t("toast_signed_out", "Signed out."));
 
   } catch (error) {
     toast(error.message || "Could not sign out. Please try again.");
@@ -1004,11 +1309,11 @@ function render(){
   if(user){
     $$(".js-first").forEach(function(e){e.textContent=user.first});
     $$(".js-fullname").forEach(function(e){e.textContent=user.first+" "+user.last});
-    $$(".js-initials").forEach(function(e){e.textContent=(user.first[0]+user.last[0]).toUpperCase()});
+    $$(".js-initials").forEach(function(e){e.textContent=((user.first||"").charAt(0)+(user.last||"").charAt(0)).toUpperCase()});
     $$(".js-netid").forEach(function(e){e.textContent=user.net});
-    $$(".js-major").forEach(function(e){e.textContent=user.major});
-    $$(".js-nat").forEach(function(e){e.textContent=user.nat});
-    $$(".js-netid-line").forEach(function(e){e.textContent=intl()?"International student":"Student"});
+    $$(".js-major").forEach(function(e){e.textContent=localizeMajorName(user.major)});
+    $$(".js-nat").forEach(function(e){e.textContent=localizeStoredNationality(user.nat)});
+    $$(".js-netid-line").forEach(function(e){e.textContent=intl()?t("international_student","International student"):t("student","Student")});
   }
   if(current==="home") renderHome();
   if(current==="journey") renderJourney();
@@ -1018,13 +1323,13 @@ function render(){
 
 function renderHome(){
   var a=[];
-  if(intl()) a.push({u:1,t:"Confirm your housing plan",d:"Housing options can fill up. Review your choices.",go:"journey",l:"See housing step"});
-  if(intl()) a.push({u:1,t:"Check tax and work rules with International Services",d:"They can explain what applies to you.",go:"hub",l:"Find the office"});
-  a.push({u:0,t:"Review the classes for "+user.major,d:"See what your major generally requires.",go:"profile",l:"View classes"});
-  a.push({u:0,t:"Explore the resource hub",d:"Housing, taxes, jobs, and BYU offices in one map.",go:"hub",l:"Open hub"});
+  if(intl()) a.push({u:1,t:t("alert_housing_title","Confirm your housing plan"),d:t("alert_housing_desc","Housing options can fill up. Review your choices."),go:"journey",l:t("alert_housing_link","See housing step")});
+  if(intl()) a.push({u:1,t:t("alert_rules_title","Check tax and work rules with International Services"),d:t("alert_rules_desc","They can explain what applies to you."),go:"hub",l:t("alert_rules_link","Find the office")});
+  a.push({u:0,t:t("alert_classes_title","Review the classes for")+" "+localizeMajorName(user.major),d:t("alert_classes_desc","See what your major generally requires."),go:"profile",l:t("alert_classes_link","View classes")});
+  a.push({u:0,t:t("alert_hub_title","Explore the resource hub"),d:t("alert_hub_desc","Housing, taxes, jobs, and BYU offices in one map."),go:"hub",l:t("alert_hub_link","Open hub")});
   $("#alerts").innerHTML=a.map(function(x){
     return '<li class="alert'+(x.u?' urgent':'')+'"><div class="grow"><b>'+esc(x.t)+'</b>'+esc(x.d)+'</div>'
-     +(x.u?'<span class="tag urgent">Needs attention</span>':'')
+     +(x.u?'<span class="tag urgent">'+esc(t("needs_attention","Needs attention"))+'</span>':'')
      +'<button class="btn ghost small" data-go="'+x.go+'">'+esc(x.l)+'</button></li>';
   }).join("");
   $("#strip").innerHTML=STAGES.map(function(s,i){
@@ -1045,7 +1350,7 @@ function renderJourney(){
     var open=openStage===i;
     return '<li class="stage '+st+'"><span class="node" aria-hidden="true">'+(st==="done"?"✓":i+1)+'</span>'
      +'<button class="stage-head" aria-expanded="'+open+'" data-stage="'+i+'"><span class="t">'+esc(t(s.k,s.en))+'</span>'+tag+'</button>'
-     +'<div class="stage-body'+(open?' open':'')+'"><strong>What to do</strong><ul>'+s.steps.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>'
+     +'<div class="stage-body'+(open?' open':'')+'"><strong>' + esc(t("what_to_do","What to do")) + '</strong><ul>'+s.steps.map(function(x,j){return '<li>'+esc(dyn("steps",i*3+j,x))+'</li>'}).join("")+'</ul>'
      +'<div class="acts">'+s.links.map(function(l){return '<a class="btn small" target="_blank" rel="noopener" href="'+l[1]+'">'+esc(l[0])+'</a>'}).join("")
      +(i!==stage?'<button class="btn ghost small" data-setstage="'+i+'">'+esc(t("mark_here","Mark as my current stage"))+'</button>':'')
      +'</div></div></li>';
@@ -1056,85 +1361,177 @@ document.addEventListener("click",function(e){
   var s=e.target.closest("[data-stage]");
   if(s){var i=+s.dataset.stage; openStage=openStage===i?null:i; renderJourney(); return;}
   var m=e.target.closest("[data-setstage]");
-  if(m){stage=+m.dataset.setstage; renderJourney(); toast("Current stage updated.");}
+  if(m){stage=+m.dataset.setstage; renderJourney(); toast(t("stage_updated", "Current stage updated."));}
 });
 
 async function renderProfile() {
   var list = $("#courses");
 
-  if (!user || !user.majorid) {
+  function showMessage(text) {
     list.textContent = "";
-    var missing = document.createElement("li");
-    missing.textContent = "No planned major is linked to your profile.";
-    list.appendChild(missing);
+    var item = document.createElement("li");
+    item.textContent = text;
+    list.appendChild(item);
+  }
+
+  if (!user || !user.studentid || !user.majorid) {
+    showMessage("Sign in with a linked student profile to view courses.");
     return;
   }
 
-  var majorId = user.majorid;
   var studentId = user.studentid;
+  var majorId = user.majorid;
+  var term = "Demo Term";
 
-  list.textContent = "";
-  var loading = document.createElement("li");
-  loading.textContent = "Loading sample courses…";
-  list.appendChild(loading);
+  function sameStudent() {
+    return user &&
+      user.studentid === studentId &&
+      user.majorid === majorId;
+  }
+
+  showMessage(t("loading_courses", "Loading sample courses…"));
 
   try {
-    var result = await supabaseClient
-      .from("major_course")
-      .select("course:courseid(id,course_code,course_name,credits)")
-      .eq("majorid", majorId);
+    var results = await Promise.all([
+      supabaseClient
+        .from("major_course")
+        .select("course:courseid(id,course_code,course_name,credits)")
+        .eq("majorid", majorId),
 
-    if (result.error) throw result.error;
+      supabaseClient
+        .from("enrollment")
+        .select("courseid")
+        .eq("studentid", studentId)
+        .eq("term", term)
+    ]);
 
-    // Ignore results if the student signed out or changed.
-    if (
-      !user ||
-      user.studentid !== studentId ||
-      user.majorid !== majorId
-    ) return;
+    if (results[0].error) throw results[0].error;
+    if (results[1].error) throw results[1].error;
+    if (!sameStudent()) return;
 
-    var courses = (result.data || [])
+    var courses = (results[0].data || [])
       .map(function(row) { return row.course; })
       .filter(Boolean)
       .sort(function(a, b) {
         return a.course_code.localeCompare(b.course_code);
       });
 
+    var registered = new Set(
+      (results[1].data || []).map(function(row) {
+        return String(row.courseid);
+      })
+    );
+
     list.textContent = "";
 
     if (!courses.length) {
-      var empty = document.createElement("li");
-      empty.textContent = "No sample courses are available for this major yet.";
-      list.appendChild(empty);
+      showMessage(t("no_courses", "No sample courses are available for this major yet."));
       return;
     }
 
     courses.forEach(function(course) {
       var item = document.createElement("li");
-      item.appendChild(document.createTextNode(
-        course.course_code + " — " + course.course_name
-      ));
+      item.style.flexWrap = "wrap";
+      item.style.gap = ".75rem";
+
+      var description = document.createElement("div");
+      description.textContent =
+        course.course_code + " — " + course.course_name;
 
       var credits = document.createElement("span");
       credits.textContent =
-        course.credits + (Number(course.credits) === 1 ? " credit" : " credits");
+        course.credits +
+        " " + t(Number(course.credits) === 1 ? "credit" : "credits", Number(course.credits) === 1 ? "credit" : "credits");
 
+      var button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn small";
+
+      function markRegistered() {
+        button.disabled = true;
+        button.textContent = t("registered_demo", "Registered — demo");
+      }
+
+      if (registered.has(String(course.id))) {
+        markRegistered();
+      } else {
+        button.textContent = t("register_demo", "Register (simulation)");
+      }
+
+      var feedback = document.createElement("p");
+      feedback.className = "hint";
+      feedback.setAttribute("role", "status");
+      feedback.style.flexBasis = "100%";
+      feedback.style.margin = "0";
+
+      button.addEventListener("click", async function() {
+        if (!sameStudent()) return;
+
+        button.disabled = true;
+        button.textContent = t("saving", "Saving…");
+        feedback.textContent = "";
+
+        try {
+          var saved = await supabaseClient
+            .from("enrollment")
+            .insert({
+              studentid: studentId,
+              courseid: course.id,
+              term: term
+            })
+            .select("enrollmentid,courseid")
+            .single();
+
+          if (saved.error) {
+            // Another tab may have registered this course already.
+            if (saved.error.code === "23505") {
+              var existing = await supabaseClient
+                .from("enrollment")
+                .select("enrollmentid")
+                .eq("studentid", studentId)
+                .eq("courseid", course.id)
+                .eq("term", term)
+                .maybeSingle();
+
+              if (existing.error) throw existing.error;
+              if (!existing.data) throw saved.error;
+            } else {
+              throw saved.error;
+            }
+          }
+
+          if (!sameStudent()) return;
+
+          registered.add(String(course.id));
+          markRegistered();
+          feedback.textContent =
+            t("saved_demo", "Saved for Demo Term. This is not official BYU registration.");
+
+        } catch (error) {
+          if (!sameStudent()) return;
+
+          button.disabled = false;
+          button.textContent = t("register_demo", "Register (simulation)");
+          feedback.textContent =
+            t("error_register", "Could not register: ") +
+            (error.message || "Please try again.");
+        }
+      });
+
+      item.appendChild(description);
       item.appendChild(credits);
+      item.appendChild(button);
+      item.appendChild(feedback);
       list.appendChild(item);
     });
 
   } catch (error) {
-    if (
-      !user ||
-      user.studentid !== studentId ||
-      user.majorid !== majorId
-    ) return;
+    if (!sameStudent()) return;
 
-    list.textContent = "";
-    var message = document.createElement("li");
-    message.textContent =
-      "Could not load courses: " + (error.message || "Please try again.");
-    list.appendChild(message);
+    showMessage(
+      t("error_course_load", "Could not load courses: ") +
+      (error.message || "Please try again.")
+    );
   }
 }
 
@@ -1143,7 +1540,7 @@ $("#open-change").addEventListener("click",function(){
 });
 $("#change-form").addEventListener("submit",function(e){
   e.preventDefault(); $("#change-form").classList.remove("open"); $("#chg-text").value="";
-  toast("Request sent (prototype). An advisor would review it.");
+  toast(t("request_sent", "Request sent (prototype). An advisor would review it."));
 });
 
 /* Mind Map Hub */
@@ -1164,28 +1561,54 @@ function renderHub(){
   out+='<g class="center"><circle cx="'+cx+'" cy="'+cy+'" r="62"/><text x="'+cx+'" y="'+(cy+7)+'">BYU</text></g>';
   svg.innerHTML=out;
   var d=$("#hub-detail"), h=HUB.filter(function(x){return x.k===selHub})[0];
-  if(!h){ d.innerHTML='<h2>Select a branch</h2><p>Pick a topic on the map, or ask the assistant where to start.</p>'; return; }
-  d.innerHTML='<h2>'+esc(t(h.k,h.en))+'</h2><p>'+esc(h.blurb)+'</p>'
-   +(h.from!==null?'<p><span class="tag">Journey step: '+esc(t("s"+h.from,STAGES[h.from].en))+'</span></p>':'')
+  if(!h){ d.innerHTML='<h2>'+esc(t('select_branch','Select a branch'))+'</h2><p>'+esc(t('branch_help','Pick a topic on the map, or ask the assistant where to start.'))+'</p>'; return; }
+  d.innerHTML='<h2>'+esc(t(h.k,h.en))+'</h2><p>'+esc(dyn('hubs',HUB.indexOf(h),h.blurb))+'</p>'
+   +(h.from!==null?'<p><span class="tag">'+esc(t("journey_step","Journey step:"))+' '+esc(t("s"+h.from,STAGES[h.from].en))+'</span></p>':'')
    +'<ul class="links">'+h.links.map(function(l){return '<li><a target="_blank" rel="noopener" href="'+l[1]+'"><span>'+esc(l[0])+'</span><small>'+esc(l[2])+'</small></a></li>'}).join("")+'</ul>'
-   +(h.from!==null?'<p style="margin-top:1rem"><button class="btn ghost small" data-go="journey">Back to journey map</button></p>':'');
+   +(h.from!==null?'<p style="margin-top:1rem"><button class="btn ghost small" data-go="journey">'+esc(t("back_journey","Back to journey map"))+'</button></p>':'');
 }
 
 function pickNode(k){ selHub=k; renderHub(); }
 $("#mindmap").addEventListener("click",function(e){var g=e.target.closest("[data-node]"); if(g) pickNode(g.dataset.node)});
 
 /* Languages */
+function localizeAppointmentTimes(){
+  if(typeof demoAppointmentSlots==="undefined") return;
+  var locale=LANG_LOCALES[lang]||"en-US";
+  Object.keys(demoAppointmentSlots).forEach(function(id){
+    demoAppointmentSlots[id].forEach(function(slot){
+      var stamp=Number(slot.id.substring(slot.id.lastIndexOf("-")+1));
+      slot.label=new Date(stamp).toLocaleString(locale,{weekday:"long",month:"short",day:"numeric",hour:"numeric",minute:"2-digit"});
+    });
+  });
+  var dropdown=$("#appointment-slot");
+  if(dropdown){
+    var advisor=$("#appointment-advisor");
+    if(dropdown.options.length&&dropdown.options[0].value==="") dropdown.options[0].textContent=advisor&&advisor.value?t("appt_choose_time","Choose a time"):t("appt_choose_first","Choose an advisor first");
+    Array.prototype.forEach.call(dropdown.options,function(o){var slot=Object.keys(demoAppointmentSlots).reduce(function(found,id){return found||demoAppointmentSlots[id].find(function(x){return x.id===o.value})},null);if(slot)o.textContent=slot.label;});
+  }
+}
 function applyLang(){
   document.documentElement.lang=lang;
-  $$("[data-i18n]").forEach(function(el){
+  document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  $$ ("[data-i18n]").forEach(function(el){
     if(!el.dataset.en) el.dataset.en=el.textContent;
-    var k=el.dataset.i18n;
-    el.textContent=lang==="en"?el.dataset.en:((I18N[k]&&I18N[k][lang])||el.dataset.en);
+    el.textContent=tr(el.dataset.i18n,el.dataset.en);
   });
+  $$ ("[data-i18n-placeholder]").forEach(function(el){if(!el.dataset.placeholderEn) el.dataset.placeholderEn=el.getAttribute("placeholder")||"";el.placeholder=lang==="en"?el.dataset.placeholderEn:tr(el.dataset.i18nPlaceholder,el.dataset.placeholderEn)});
+  $$ ("[data-i18n-aria]").forEach(function(el){if(!el.dataset.ariaEn) el.dataset.ariaEn=el.getAttribute("aria-label")||"";el.setAttribute("aria-label",lang==="en"?el.dataset.ariaEn:tr(el.dataset.i18nAria,el.dataset.ariaEn))});
+  translateNationalityOptions();
+  localizeMajorOptions();
+  updateMajorStatus();
+  localizeAppointmentTimes();
+  if($("#appointment-summary") && $("#appointment-summary").dataset.booked!=="true") $("#appointment-summary").textContent=t("appt_none","No upcoming appointments.");
+  updateAppointmentSummary();
+  var apptButton=$("#schedule-appointment-btn");
+  if(apptButton && apptButton.dataset.booked==="true") apptButton.textContent=t("appt_change","Change appointment");
   $("#lang-list").innerHTML=LANGS.map(function(l){return '<li><button data-lang="'+l.c+'" aria-pressed="'+(l.c===lang)+'">'+l.n+'</button></li>'}).join("");
-  render();
+  render(); updateChips();
 }
-$("#lang-list").addEventListener("click",function(e){var b=e.target.closest("[data-lang]"); if(b){lang=b.dataset.lang; applyLang();}});
+$("#lang-list").addEventListener("click",function(e){var b=e.target.closest("[data-lang]"); if(b){lang=b.dataset.lang;localStorage.setItem("byu-guide-language",lang);applyLang();}});
 function langPanel(open){ $("#lang-panel").classList.toggle("open",open); $("#lang-tab").setAttribute("aria-expanded",open); if(open) $("#lang-close").focus(); }
 $("#lang-tab").addEventListener("click",function(){langPanel(!$("#lang-panel").classList.contains("open"))});
 $("#lang-close").addEventListener("click",function(){langPanel(false);$("#lang-tab").focus()});
@@ -1209,16 +1632,17 @@ function bot(text,link){
 function me(text){var m=document.createElement("div");m.className="msg me";m.textContent=text;$("#msgs").appendChild(m);$("#msgs").scrollTop=1e6}
 function answer(q){
   var s=q.toLowerCase();
-  if(/visa|immigra|i-20|sevis|status/.test(s)) return ["I can't give legal or immigration advice. International Services is the official office for these questions.",{l:"Open International Services",url:"https://internationalservices.byu.edu"}];
-  if(/housing|apartment|live|dorm/.test(s)) return ["Housing is step 2 on your journey.",{l:"Open Housing branch",go:"hub",hub:"c_housing"}];
-  if(/regist|class|course|mymap/.test(s)) return ["Register, add, or drop classes in MyMap.",{l:"Open MyMap",url:"https://mymap.byu.edu"}];
-  return ["For a reliable answer, try the main BYU website or contact the relevant BYU office.",{l:"Open byu.edu",url:"https://www.byu.edu"}];
+  if(/visa|immigra|i-20|sevis|status|비자|이민|签证|移民|在留|visto|imigra|wisa|วีซ่า|imigrasyon|visum|виза|иммигр|تأشيرة|هجرة/.test(s)) return [t("chat_visa","I can't give legal or immigration advice. International Services is the official office for these questions."),{l:t("chat_visa_link","Open International Services"),url:"https://internationalservices.byu.edu"}];
+  if(/housing|apartment|live|dorm|주거|숙소|住房|住处|moradia|logement|tirahan|unterkunft|жиль|السكن/.test(s)) return [t("chat_housing","Housing is step 2 on your journey."),{l:t("chat_housing_link","Open Housing branch"),go:"hub",hub:"c_housing"}];
+  if(/regist|class|course|mymap|수업|课程|选课|授業|cours|aula|klase|kurs|занят|мymap|مقرر/.test(s)) return [t("chat_register","Register, add, or drop classes in MyMap."),{l:t("chat_register_link","Open MyMap"),url:"https://mymap.byu.edu"}];
+  return [t("chat_general","For a reliable answer, try the main BYU website or contact the relevant BYU office."),{l:t("chat_general_link","Open byu.edu"),url:"https://www.byu.edu"}];
 }
 function ask(q){ me(q); var r=answer(q); setTimeout(function(){bot(r[0],r[1])},250); }
-function updateChips(){ $("#chips").innerHTML=(CHIPS[current]||[]).map(function(c){return '<button type="button">'+esc(c)+'</button>'}).join(""); }
+var CHIP_KEYS={welcome:["chip_welcome"],setup:["chip_setup"],home:["chip_home1","chip_home2"],journey:["chip_journey"],profile:["chip_profile"],hub:["chip_hub"]};
+function updateChips(){ $("#chips").innerHTML=(CHIPS[current]||[]).map(function(c,i){return '<button type="button">'+esc(t((CHIP_KEYS[current]||[])[i],c))+'</button>'}).join(""); }
 $("#chips").addEventListener("click",function(e){var b=e.target.closest("button"); if(b) ask(b.textContent)});
 $("#chat-form").addEventListener("submit",function(e){e.preventDefault();var v=$("#chat-in").value.trim(); if(!v) return; $("#chat-in").value=""; ask(v)});
-function chat(open){ $("#chat").classList.toggle("open",open); $("#chat-fab").setAttribute("aria-expanded",open); if(open){ if(!$("#msgs").children.length) bot("Hi! How can I help you today?"); $("#chat-in").focus(); } }
+function chat(open){ $("#chat").classList.toggle("open",open); $("#chat-fab").setAttribute("aria-expanded",open); if(open){ if(!$("#msgs").children.length) bot(t("chat_greeting","Hi! How can I help you today?")); $("#chat-in").focus(); } }
 $("#chat-fab").addEventListener("click",function(){chat(!$("#chat").classList.contains("open"))});
 $("#chat-close").addEventListener("click",function(){chat(false);$("#chat-fab").focus()});
 
@@ -1239,7 +1663,7 @@ var demoAppointmentSlots = {};
     var date = new Date();
     date.setDate(date.getDate() + 1);
     date.setHours(hour, index * 30, 0, 0);
-    return { id: advisorId + "-" + date.getTime(), label: date.toLocaleString([], { weekday: "long", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) };
+    return { id: advisorId + "-" + date.getTime(), label: date.toLocaleString(LANG_LOCALES[lang]||"en-US", { weekday: "long", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) };
   });
 });
 
@@ -1249,13 +1673,25 @@ $("#appointment-advisor").addEventListener("change", function() {
   dropdown.innerHTML = "";
   var placeholder = document.createElement("option");
   placeholder.value = "";
-  placeholder.textContent = slots.length ? "Choose a time" : "Choose an advisor first";
+  placeholder.textContent = slots.length ? t("appt_choose_time","Choose a time") : t("appt_choose_first","Choose an advisor first");
   dropdown.appendChild(placeholder);
   slots.forEach(function(slot) {
     var option = document.createElement("option"); option.value = slot.id; option.textContent = slot.label; dropdown.appendChild(option);
   });
   dropdown.disabled = slots.length === 0;
 });
+
+function updateAppointmentSummary(){
+  var summary=$("#appointment-summary");
+  if(!summary||summary.dataset.booked!=="true") return;
+  var advisor=$("#appointment-advisor"), topic=$("#appointment-topic"), slotId=summary.dataset.slot;
+  var advisorOption=Array.prototype.find.call(advisor.options,function(o){return o.value===summary.dataset.advisor});
+  var topicOption=Array.prototype.find.call(topic.options,function(o){return o.value===summary.dataset.topic});
+  var slot=null;
+  Object.keys(demoAppointmentSlots).some(function(id){slot=demoAppointmentSlots[id].find(function(x){return x.id===slotId});return !!slot;});
+  if(!advisorOption||!topicOption||!slot) return;
+  summary.textContent=t("appt_demo_summary","Demo appointment with")+" "+advisorOption.textContent+" "+t("appt_on","on")+" "+slot.label+". "+t("appt_topic_summary","Topic:")+" "+topicOption.textContent;
+}
 
 $("#appointment-form").addEventListener("submit", function(e) {
   e.preventDefault();
@@ -1267,9 +1703,15 @@ $("#appointment-form").addEventListener("submit", function(e) {
 
   if (!advisorDropdown.value || !selectedSlot || !topicDropdown.value) return;
 
-  $("#appointment-summary").textContent = "Demo appointment with " + advisorDropdown.options[advisorDropdown.selectedIndex].textContent + " on " + selectedSlot.label + ". Topic: " + topicDropdown.options[topicDropdown.selectedIndex].textContent;
+  var summary=$("#appointment-summary");
+  summary.dataset.booked="true";
+  summary.dataset.advisor=advisorDropdown.value;
+  summary.dataset.slot=slotDropdown.value;
+  summary.dataset.topic=topicDropdown.value;
+  updateAppointmentSummary();
   $("#appointment-form-container").hidden = true;
-  $("#schedule-appointment-btn").textContent = "Change appointment";
+  $("#schedule-appointment-btn").dataset.booked="true";
+  $("#schedule-appointment-btn").textContent = t("appt_change","Change appointment");
   $("#schedule-appointment-btn").hidden = false;
 });
 
