@@ -1671,12 +1671,28 @@ totalDisplay.textContent =
 function courseGroup(course) {
   if (!isInformationSystems) return "";
 
-  if (["ACC 200", "IS 201"].includes(course.course_code)) {
+  var code = course.course_code;
+
+  if (["ACC 200", "IS 201"].includes(code)) {
     return "Admission prerequisites — both courses";
   }
 
-  if (["C S 111", "IS 303"].includes(course.course_code)) {
+  if (["C S 111", "IS 303"].includes(code)) {
     return "Programming prerequisite — choose one";
+  }
+
+  if ([
+    "ECON 110", "FIN 201", "IS 110",
+    "M COM 320", "MKTG 201", "STAT 121"
+  ].includes(code)) {
+    return "Supporting courses — six courses";
+  }
+
+  if ([
+    "IS 401", "IS 402", "IS 403", "IS 404",
+    "IS 414", "IS 455", "IS 456"
+  ].includes(code)) {
+    return "Information Systems core — seven courses";
   }
 
   return "Other sample courses";
@@ -1685,6 +1701,8 @@ function courseGroup(course) {
 var groupOrder = [
   "Admission prerequisites — both courses",
   "Programming prerequisite — choose one",
+  "Supporting courses — six courses",
+  "Information Systems core — seven courses",
   "Other sample courses"
 ];
 
