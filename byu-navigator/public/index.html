@@ -350,6 +350,17 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
   outline: 3px solid #b42318;
   outline-offset: 3px;
 }
+.course-list > .course-group-heading {
+  display: block;
+  background: transparent;
+  padding: 1rem 0 .25rem;
+}
+
+.course-group-heading h3 {
+  margin: 0;
+  color: #002e5d;
+  font-size: 1.15rem;
+}
 </style>
 </head>
 <body class="signed-out">
@@ -1654,7 +1665,54 @@ totalDisplay.textContent =
       return;
     }
 
-    courses.forEach(function(course) {
+    var isInformationSystems =
+  String(user.major).trim().toLowerCase() === "information systems";
+
+function courseGroup(course) {
+  if (!isInformationSystems) return "";
+
+  if (["ACC 200", "IS 201"].includes(course.course_code)) {
+    return "Admission prerequisites — both courses";
+  }
+
+  if (["C S 111", "IS 303"].includes(course.course_code)) {
+    return "Programming prerequisite — choose one";
+  }
+
+  return "Other sample courses";
+}
+
+var groupOrder = [
+  "Admission prerequisites — both courses",
+  "Programming prerequisite — choose one",
+  "Other sample courses"
+];
+
+if (isInformationSystems) {
+  courses.sort(function(a, b) {
+    return (
+      groupOrder.indexOf(courseGroup(a)) -
+      groupOrder.indexOf(courseGroup(b))
+    ) || a.course_code.localeCompare(b.course_code);
+  });
+}
+
+var previousGroup = "";
+
+courses.forEach(function(course) {
+  var group = courseGroup(course);
+
+  if (group && group !== previousGroup) {
+    var headingItem = document.createElement("li");
+    headingItem.className = "course-group-heading";
+
+    var heading = document.createElement("h3");
+    heading.textContent = group;
+
+    headingItem.appendChild(heading);
+    list.appendChild(headingItem);
+    previousGroup = group;
+  }
       var item = document.createElement("li");
       item.style.flexWrap = "wrap";
       item.style.gap = ".75rem";
@@ -1740,6 +1798,29 @@ totalDisplay.textContent =
 
           return;
         }
+
+        var programmingCodes = ["C S 111", "IS 303"];
+
+if (
+  isInformationSystems &&
+  programmingCodes.includes(course.course_code)
+) {
+  var otherChoice = courses.find(function(candidate) {
+    return (
+      programmingCodes.includes(candidate.course_code) &&
+      String(candidate.id) !== String(course.id) &&
+      registered.has(String(candidate.id))
+    );
+  });
+
+  if (otherChoice) {
+    feedback.textContent =
+      "Choose one programming prerequisite. You already selected " +
+      otherChoice.course_code +
+      ". Drop that course first if you want to change your selection.";
+    return;
+  }
+}
 
         var confirmed = await confirmCourseAction(
           "Confirm registration",
