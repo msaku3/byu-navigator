@@ -1550,6 +1550,67 @@ document.addEventListener("click",function(e){
   var h=e.target.closest("[data-hub]"); if(!h) return; e.preventDefault(); selHub=h.dataset.hub; go("hub");
 });
 
+$("#generate-journey-plan").addEventListener("click", async function() {
+  var button = $("#generate-journey-plan");
+  var status = $("#journey-plan-status");
+  var studentAuthId = user && user.auth_user_id;
+
+  if (button.disabled) return;
+
+  if (!studentAuthId) {
+    status.textContent = "Please sign in first.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Checking your saved journey stage…";
+  $("#journey-plan-result").hidden = true;
+
+  try {
+    if (typeof pendingStageSave !== "undefined" && pendingStageSave) {
+      await pendingStageSave;
+    }
+
+    var sessionResult = await supabaseClient.auth.getSession();
+
+    if (sessionResult.error) throw sessionResult.error;
+
+    var session = sessionResult.data.session;
+
+    if (!session || session.user.id !== studentAuthId) {
+      throw new Error("Please sign in again.");
+    }
+
+    var response = await fetch("/api/journey-plan", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + session.access_token
+      },
+      signal: AbortSignal.timeout(30000)
+    });
+
+    var result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not load your stage.");
+    }
+
+    if (!user || user.auth_user_id !== studentAuthId) return;
+
+    status.textContent =
+      "Connected to your saved stage: " +
+      STAGES[result.stage].en +
+      ". AI generation is not connected yet.";
+  } catch (error) {
+    if (!user || user.auth_user_id !== studentAuthId) return;
+
+    status.textContent =
+      error.message || "Could not connect. Please try again.";
+  } finally {
+    button.disabled = false;
+  }
+});
+
 function renderJourney(){
   $("#timeline").innerHTML=STAGES.map(function(s,i){
     var st=i<stage?"done":i===stage?"current":"ahead";
