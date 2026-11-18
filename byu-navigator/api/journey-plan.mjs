@@ -1,3 +1,74 @@
+const JOURNEY_STAGES = [
+  {
+    title: "Apply to BYU",
+    steps: [
+      "Review admission requirements for international students",
+      "Gather transcripts and test scores",
+      "Submit your application before the deadline"
+    ],
+    links: [
+      ["Admissions", "https://admissions.byu.edu"]
+    ]
+  },
+  {
+    title: "Find housing",
+    steps: [
+      "Compare on-campus and off-campus options",
+      "Check contract dates and costs",
+      "Ask about housing for incoming international students"
+    ],
+    links: [
+      ["BYU Housing", "https://housing.byu.edu"]
+    ]
+  },
+  {
+    title: "Register for classes",
+    steps: [
+      "See which classes your major requires",
+      "Meet with an academic advisor",
+      "Register, add, or drop classes in MyMap"
+    ],
+    links: [
+      ["MyMap", "https://mymap.byu.edu"],
+      ["Registrar", "https://registrar.byu.edu"]
+    ]
+  },
+  {
+    title: "Understand taxes",
+    steps: [
+      "Find general tax information for international students",
+      "Find tax information and workshops",
+      "Ask the appropriate office or a qualified tax professional for help"
+    ],
+    links: [
+      ["International Services", "https://internationalservices.byu.edu"]
+    ]
+  },
+  {
+    title: "Find employment resources",
+    steps: [
+      "Ask International Services about work authorization before working",
+      "Build your resume with Career Services",
+      "Explore jobs and internships with Career Services"
+    ],
+    links: [
+      ["Career Services", "https://careers.byu.edu"],
+      ["International Services", "https://internationalservices.byu.edu"]
+    ]
+  },
+  {
+    title: "Complete graduation requirements",
+    steps: [
+      "Check your degree progress with your advisor",
+      "Check the official graduation application deadline",
+      "Ask the relevant BYU office about next steps after graduation"
+    ],
+    links: [
+      ["Graduation (Registrar)", "https://registrar.byu.edu"]
+    ]
+  }
+];
+
 function reply(status, data) {
   return Response.json(data, {
     status,
@@ -99,10 +170,125 @@ export default {
         });
       }
 
-      return reply(200, {
+      const guidance = JOURNEY_STAGES[stage];
+        const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+
+        const geminiResponse = await fetch(
+        "https://generativelanguage.googleapis.com/v1beta/models/" +
+            encodeURIComponent(model) + ":generateContent",
+        {
+            method: "POST",
+            headers: {
+            "Content-Type": "application/json",
+            "x-goog-api-key": process.env.GEMINI_API_KEY
+            },
+            signal: AbortSignal.timeout(25000),
+            body: JSON.stringify({
+            systemInstruction: {
+                parts: [{
+                text: [
+                    "You help students navigate BYU resources.",
+                    "Generate exactly three short, practical suggested actions.",
+                    "Use only the supplied stage guidance.",
+                    "Make each action one or two sentences, at most 60 words.",
+                    "Do not simply copy the guidance; explain a useful way to act on it.",
+                    "The selected stage does not prove completion of earlier tasks.",
+                    "Do not invent deadlines, costs, eligibility rules, or requirements.",
+                    "Do not provide legal, immigration, or tax advice.",
+                    "For those subjects, direct students to the listed office or a qualified professional.",
+                    "Do not include URLs, HTML, or Markdown.",
+                    "Do not claim you booked, submitted, registered, or completed anything."
+                ].join(" ")
+                }]
+            },
+            contents: [{
+                role: "user",
+                parts: [{
+                text: JSON.stringify({
+                    selectedStage: guidance.title,
+                    guidance: guidance.steps,
+                    resourceNames: guidance.links.map(link => link[0])
+                })
+                }]
+            }],
+            generationConfig: {
+                maxOutputTokens: 4096,
+                responseMimeType: "application/json",
+                responseJsonSchema: {
+                type: "object",
+                properties: {
+                    actions: {
+                    type: "array",
+                    items: { type: "string" },
+                    minItems: 3,
+                    maxItems: 3
+                    }
+                },
+                required: ["actions"],
+                additionalProperties: false
+                }
+            }
+            })
+        }
+        );
+
+        if (!geminiResponse.ok) {
+        const status = geminiResponse.status;
+
+        // Log only the status, never credentials or student data.
+        console.error("Gemini request failed:", status);
+
+        return reply(status === 429 ? 429 : 502, {
+            error: status === 429
+            ? "AI usage limits have been reached. Please try again later."
+            : "AI generation is unavailable. Please try again later."
+        });
+        }
+
+        const generated = await geminiResponse.json();
+        const candidate = generated.candidates?.[0];
+
+        if (candidate?.finishReason !== "STOP") {
+        return reply(502, {
+            error: "The AI could not finish a plan. Please try again."
+        });
+        }
+
+        const text = (candidate.content?.parts || [])
+        .filter(part => !part.thought && typeof part.text === "string")
+        .map(part => part.text)
+        .join("");
+
+        let plan;
+
+        try {
+        plan = JSON.parse(text);
+        } catch {
+        return reply(502, {
+            error: "The AI returned an unreadable plan. Please try again."
+        });
+        }
+
+        if (
+        !Array.isArray(plan.actions) ||
+        plan.actions.length !== 3 ||
+        !plan.actions.every(action =>
+            typeof action === "string" &&
+            action.trim().length > 0 &&
+            action.length <= 700
+        )
+        ) {
+        return reply(502, {
+            error: "The AI returned an incomplete plan. Please try again."
+        });
+        }
+
+        return reply(200, {
         stage,
-        message: "Your saved stage is connected. Gemini setup is next."
-      });
+        title: "Suggested next steps: " + guidance.title,
+        actions: plan.actions.map(action => action.trim()),
+        links: guidance.links
+        });
     } catch {
       return reply(503, {
         error: "The journey service could not connect. Please try again."

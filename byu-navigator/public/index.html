@@ -1563,7 +1563,7 @@ $("#generate-journey-plan").addEventListener("click", async function() {
   }
 
   button.disabled = true;
-  status.textContent = "Checking your saved journey stage…";
+  status.textContent = "Generating your next steps…";
   $("#journey-plan-result").hidden = true;
 
   try {
@@ -1586,7 +1586,7 @@ $("#generate-journey-plan").addEventListener("click", async function() {
       headers: {
         Authorization: "Bearer " + session.access_token
       },
-      signal: AbortSignal.timeout(30000)
+      signal: AbortSignal.timeout(60000)
     });
 
     var result = await response.json();
@@ -1597,10 +1597,40 @@ $("#generate-journey-plan").addEventListener("click", async function() {
 
     if (!user || user.auth_user_id !== studentAuthId) return;
 
-    status.textContent =
-      "Connected to your saved stage: " +
-      STAGES[result.stage].en +
-      ". AI generation is not connected yet.";
+    if (Number(stage) !== result.stage) {
+  status.textContent =
+    "Your stage changed. Generate a new plan for your current stage.";
+  return;
+}
+
+$("#journey-plan-title").textContent = result.title;
+
+var actionList = $("#journey-plan-actions");
+actionList.textContent = "";
+
+result.actions.forEach(function(action) {
+  var item = document.createElement("li");
+  item.textContent = action;
+  item.style.marginBottom = ".75rem";
+  actionList.appendChild(item);
+});
+
+var links = $("#journey-plan-links");
+links.textContent = "";
+
+result.links.forEach(function(resource) {
+  var link = document.createElement("a");
+  link.className = "btn small";
+  link.textContent = resource[0];
+  link.href = resource[1];
+  link.target = "_blank";
+  link.rel = "noopener";
+  links.appendChild(link);
+});
+
+$("#journey-plan-result").hidden = false;
+status.textContent =
+  "Your AI-generated suggestions are ready. Review them before acting.";
   } catch (error) {
     if (!user || user.auth_user_id !== studentAuthId) return;
 
