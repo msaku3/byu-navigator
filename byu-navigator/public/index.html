@@ -10,9 +10,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
+  color-scheme:light;
   --royal:#002e5d; --ink:#12263f; --muted:#51647c; --sky:#dbe9f7; --sky-2:#eef4fb;
   --paper:#f4f7fb; --card:#ffffff; --line:#d3dde9; --amber:#8a5200; --amber-bg:#fff1d2;
   --green:#1b6b4c; --green-bg:#dff3ea; --accent:#2b7bd0;
+  --action-bg:#002e5d; --action-text:#ffffff; --nav-bg:#ffffff; --nav-shadow:0 2px 5px rgba(0,0,0,.12);
   --shadow:0 1px 2px rgba(0,46,93,.08),0 8px 24px -12px rgba(0,46,93,.18);
   --font-head:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
   --font-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
@@ -22,17 +24,22 @@
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
+    color-scheme:dark;
     --royal:#8fc0f2; --ink:#e6eef8; --muted:#a3b4c9; --sky:#16324f; --sky-2:#10263d;
     --paper:#0b1a2b; --card:#12263f; --line:#26405f; --amber:#ffd48a; --amber-bg:#3a2b0d;
-    --green:#8fe0bd; --green-bg:#12382b; --accent:#6fb1e8;
+    --green:#8fe0bd; --green-bg:#12382b; --accent:#6fb1e8; --action-bg:#8fc0f2; --action-text:#07182a;
+    --nav-bg:#10263d; --nav-shadow:0 2px 8px rgba(0,0,0,.35);
     --shadow:0 1px 2px rgba(0,0,0,.4);
   }
 }
 :root[data-theme="dark"]{
+  color-scheme:dark;
   --royal:#8fc0f2; --ink:#e6eef8; --muted:#a3b4c9; --sky:#16324f; --sky-2:#10263d;
   --paper:#0b1a2b; --card:#12263f; --line:#26405f; --amber:#ffd48a; --amber-bg:#3a2b0d;
-  --green:#8fe0bd; --green-bg:#12382b; --accent:#6fb1e8; --shadow:0 1px 2px rgba(0,0,0,.4);
+  --green:#8fe0bd; --green-bg:#12382b; --accent:#6fb1e8; --action-bg:#8fc0f2; --action-text:#07182a;
+  --nav-bg:#10263d; --nav-shadow:0 2px 8px rgba(0,0,0,.35); --shadow:0 1px 2px rgba(0,0,0,.4);
 }
+:root[data-theme="light"]{color-scheme:light}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:17px;line-height:1.55}
@@ -48,8 +55,7 @@ button{font:inherit;cursor:pointer}
 main{max-width:1120px;margin:0 auto;padding:clamp(1.2rem,3vw,2.5rem) clamp(1rem,4vw,2rem) 6rem}
 .screen{display:none}.screen.active{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:1.4rem;box-shadow:var(--shadow)}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.7rem 1.2rem;font-weight:600;border:2px solid var(--royal);background:var(--royal);color:#fff;text-decoration:none}
-:root .btn { color: #fff; }
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;border-radius:12px;padding:.7rem 1.2rem;font-weight:600;border:2px solid var(--action-bg);background:var(--action-bg);color:var(--action-text);text-decoration:none}
 :root .btn.ghost { color: var(--royal); }
 .btn.ghost{background:transparent;color:var(--royal)}
 .btn.small{padding:.4rem .8rem;font-size:.92rem;border-radius:10px}
@@ -68,12 +74,12 @@ main{max-width:1120px;margin:0 auto;padding:clamp(1.2rem,3vw,2.5rem) clamp(1rem,
 .choice strong{display:block;font-family:var(--font-head);font-size:1.2rem;color:var(--royal)}
 .choice span{color:var(--muted);font-size:.95rem}
 .path-art{width:100%;height:auto}
-.signin-form{display:none;margin-top:1rem}
-.signin-form.open{display:block}
+.signin-form{margin:1rem 0}
 
 /* forms */
 .form{display:grid;gap:1rem;max-width:560px}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.signup-actions{display:flex;gap:.75rem;flex-wrap:wrap}
 label{display:grid;gap:.3rem;font-weight:600}
 input,select,textarea{font:inherit;padding:.65rem .8rem;border-radius:10px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);width:100%}
 .hint{font-weight:400;color:var(--muted);font-size:.9rem}
@@ -83,8 +89,7 @@ input,select,textarea{font:inherit;padding:.65rem .8rem;border-radius:10px;borde
 
 /* home */
 .home-grid{display:grid;grid-template-columns:320px 1fr;gap:1.5rem;align-items:start}
-.avatar{width:64px;height:64px;border-radius:50%;background:var(--royal);color:#fff;display:grid;place-items:center;font-family:var(--font-head);font-weight:700;font-size:1.4rem}
-:root[data-theme="dark"] .avatar,:root:not([data-theme="light"]) .avatar{color:#fff}
+.avatar{width:64px;height:64px;border-radius:50%;background:var(--action-bg);color:var(--action-text);display:grid;place-items:center;font-family:var(--font-head);font-weight:700;font-size:1.4rem}
 dl.facts{margin:1rem 0 0;display:grid;gap:.6rem}
 dl.facts div{display:flex;justify-content:space-between;gap:1rem;border-top:1px solid var(--line);padding-top:.5rem}
 dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
@@ -108,7 +113,7 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .stage{position:relative;padding-left:70px;margin-bottom:1rem}
 .node{position:absolute;left:0;top:10px;width:48px;height:48px;border-radius:50%;background:var(--card);border:3px solid var(--line);display:grid;place-items:center;font-family:var(--font-head);font-weight:700;color:var(--muted)}
 .stage.done .node{background:var(--green-bg);border-color:var(--green);color:var(--green)}
-.stage.current .node{background:var(--royal);border-color:var(--royal);color:#fff;box-shadow:0 0 0 6px var(--sky)}
+.stage.current .node{background:var(--action-bg);border-color:var(--action-bg);color:var(--action-text);box-shadow:0 0 0 6px var(--sky)}
 .stage-head{width:100%;display:flex;align-items:center;gap:.8rem;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.9rem 1.1rem;color:var(--ink)}
 .stage-head .t{flex:1;font-family:var(--font-head);font-weight:700;font-size:1.15rem;color:var(--royal)}
 .stage-head[aria-expanded="true"]{border-color:var(--accent)}
@@ -126,6 +131,19 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .callout p{margin:0;flex:1;min-width:200px}
 .change-form{display:none;margin-top:1rem}
 .change-form.open{display:grid;gap:.8rem}
+.change-request-item{align-items:flex-start}
+.change-request-content{flex:1;min-width:0}
+.change-request-details{margin:.35rem 0 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.change-request-meta{display:block;color:var(--muted);font-size:.92rem}
+.appointment-intro{color:var(--muted);margin:.15rem 0 1rem}
+.appointment-demo-note{margin:0 0 1rem;padding:.75rem .9rem;border-radius:10px;background:var(--sky-2);color:var(--muted);font-size:.92rem}
+#appointment-summary{margin:0 0 1rem;padding:1rem;border:1px solid var(--line);border-radius:12px;background:var(--sky-2);color:var(--ink)}
+#appointment-summary[data-booked="true"]{border-color:var(--green);background:var(--green-bg)}
+#appointment-form-container{margin-top:1rem;padding:1.1rem;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+#appointment-form{max-width:620px}
+#appointment-form h3{margin:0}
+#appointment-form label span{color:var(--royal)}
+#appointment-form > div{display:flex;flex-wrap:wrap}
 
 /* hub */
 .hub-wrap{display:grid;grid-template-columns:1.3fr 1fr;gap:1.5rem;align-items:start}
@@ -135,11 +153,11 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .mindmap g.n{cursor:pointer}
 .mindmap g.n circle{fill:var(--sky-2);stroke:var(--accent);stroke-width:2.5;transition:fill .15s}
 .mindmap g.n:hover circle{fill:var(--sky)}
-.mindmap g.n.sel circle{fill:var(--royal);stroke:var(--royal)}
+.mindmap g.n.sel circle{fill:var(--action-bg);stroke:var(--action-bg)}
 .mindmap g.n text{fill:var(--royal);font:700 15px var(--font-head);text-anchor:middle}
-.mindmap g.n.sel text{fill:#fff}
-.mindmap .center circle{fill:var(--royal)}
-.mindmap .center text{fill:#fff;font:700 20px var(--font-head);text-anchor:middle}
+.mindmap g.n.sel text{fill:var(--action-text)}
+.mindmap .center circle{fill:var(--action-bg)}
+.mindmap .center text{fill:var(--action-text);font:700 20px var(--font-head);text-anchor:middle}
 .links{list-style:none;padding:0;margin:1rem 0 0;display:grid;gap:.5rem}
 .links a{display:flex;justify-content:space-between;gap:1rem;padding:.7rem .9rem;border:1px solid var(--line);border-radius:10px;text-decoration:none;font-weight:600}
 .links a:hover{background:var(--sky-2)}
@@ -156,15 +174,15 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .close{float:right;background:none;border:0;font-size:1.5rem;color:var(--muted)}
 
 /* chatbot */
-.chat-fab{position:fixed;right:1.2rem;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));z-index:35;display:flex;align-items:center;gap:.5rem;border:0;background:var(--accent);color:#fff;border-radius:999px;padding:.8rem 1.2rem;font-weight:600;box-shadow:0 8px 24px -8px rgba(0,46,93,.55)}
+.chat-fab{position:fixed;right:1.2rem;bottom:calc(1.2rem + env(safe-area-inset-bottom,0px));z-index:35;display:flex;align-items:center;gap:.5rem;border:0;background:var(--action-bg);color:var(--action-text);border-radius:999px;padding:.8rem 1.2rem;font-weight:600;box-shadow:0 8px 24px -8px rgba(0,46,93,.55)}
 .chat{position:fixed;right:1.2rem;bottom:calc(5rem + env(safe-area-inset-bottom,0px));width:min(380px,calc(100vw - 2rem));height:min(520px,70vh);z-index:36;background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 20px 50px -16px rgba(0,0,0,.4);display:none;flex-direction:column;overflow:hidden}
 .chat.open{display:flex}
-.chat header{padding:.8rem 1rem;background:var(--royal);color:#fff;display:flex;justify-content:space-between;align-items:center;font-family:var(--font-head);font-weight:700}
+.chat header{padding:.8rem 1rem;background:var(--action-bg);color:var(--action-text);display:flex;justify-content:space-between;align-items:center;font-family:var(--font-head);font-weight:700}
 .chat header button{background:none;border:0;color:inherit;font-size:1.3rem}
 .msgs{flex:1;overflow:auto;padding:1rem;display:grid;gap:.6rem;align-content:start}
 .msg{padding:.6rem .85rem;border-radius:14px;max-width:88%;font-size:.97rem}
 .msg.bot{background:var(--sky-2);justify-self:start}
-.msg.me{background:var(--royal);color:#fff;justify-self:end}
+.msg.me{background:var(--action-bg);color:var(--action-text);justify-self:end}
 .msg .go{display:inline-block;margin-top:.4rem}
 .chips{display:flex;gap:.4rem;flex-wrap:wrap;padding:0 1rem .6rem}
 .chips button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:.3rem .7rem;font-size:.88rem}
@@ -195,32 +213,21 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .btn, input, select, textarea { min-height: 44px; }
 .btn { white-space: normal; text-align: center; }
 :where(button, a, input, select, textarea, [tabindex]):focus-visible {
-  outline: 3px solid #005fcc;
+  outline: 3px solid var(--accent);
   outline-offset: 4px;
-  box-shadow: 0 0 0 2px #fff;
+  box-shadow: 0 0 0 2px var(--paper);
 }
 .quick, #appointment-form > div { gap: 0.75rem; }
 .btn:disabled {
-  opacity: 1;
-  background: #e2e8f0;
-  border-color: #64748b;
-  color: #334155;
+  opacity: .62;
+  background: var(--sky-2);
+  border-color: var(--line);
+  color: var(--muted);
   cursor: not-allowed;
 }
 
 /* BYU Styling Header */
 :root {
-  color-scheme: light;
-  --royal: #002e5d;
-  --ink: #17191c;
-  --muted: #60656b;
-  --sky: #d7eafd;
-  --sky-2: #f3f6f9;
-  --paper: #ffffff;
-  --card: #ffffff;
-  --line: #d9dde2;
-  --accent: #0057b8;
-  --shadow: 0 4px 18px rgba(0, 33, 71, .08);
   --font-head: Arial, "Helvetica Neue", sans-serif;
   --font-body: Arial, "Helvetica Neue", sans-serif;
 }
@@ -240,18 +247,18 @@ dt{color:var(--muted)} dd{margin:0;font-weight:600;text-align:right}
 .byu-account-icon { width:30px; height:30px; flex:none; }
 .byu-signout { border:0; border-radius:0; background:transparent; padding:.45rem .2rem; cursor:pointer; }
 body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
-.byu-navigation { display:block; background:#fff; color:#002e5d; box-shadow:0 2px 5px rgba(0,0,0,.12); position:relative; z-index:10; }
+.byu-navigation { display:block; background:var(--nav-bg); color:var(--royal); box-shadow:var(--nav-shadow); position:relative; z-index:10; }
 .nav-row { width:min(100%,1200px); min-height:66px; margin:0 auto; padding:0 12px; display:flex; align-items:center; justify-content:flex-start; gap:.6rem; }
-.nav-row + .nav-row { border-top:1px solid #edf0f2; }
+.nav-row + .nav-row { border-top:1px solid var(--line); }
 .byu-navigation .byu-nav-item {
   position:relative; display:inline-flex; align-items:center; min-height:100%; padding:1rem 1.2rem;
-  border:0; border-radius:0; background:transparent; color:#002e5d;
+  border:0; border-radius:0; background:transparent; color:var(--royal);
   font-family:Arial,"Helvetica Neue",sans-serif; font-size:1rem; font-weight:600; text-transform:uppercase; white-space:nowrap;
 }
-.byu-navigation .byu-nav-item:hover { background:#f4f6f8; }
-.byu-navigation .byu-nav-item[aria-current="page"]::before { position:absolute; right:0; bottom:0; left:0; height:4px; background:#002e5d; content:""; }
-.nav-row .lang-btn { margin-left:auto; border-radius:0; border-color:transparent; color:#002e5d; }
-.nav-row .lang-btn:hover,.nav-row .lang-btn[aria-expanded="true"] { background:#f3f6f9; }
+.byu-navigation .byu-nav-item:hover { background:var(--sky-2); }
+.byu-navigation .byu-nav-item[aria-current="page"]::before { position:absolute; right:0; bottom:0; left:0; height:4px; background:var(--royal); content:""; }
+.nav-row .lang-btn { margin-left:auto; border-radius:0; border-color:transparent; color:var(--royal); }
+.nav-row .lang-btn:hover,.nav-row .lang-btn[aria-expanded="true"] { background:var(--sky-2); }
 /* Translation integration: preserve layout for long labels and RTL. */
 .translation-note{max-width:1000px;margin:2rem auto 1rem;padding:.85rem 1rem;border-top:1px solid var(--line);color:var(--muted);font-size:.9rem;line-height:1.5}
 .course-list li{flex-wrap:wrap;gap:.75rem}
@@ -294,45 +301,44 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       <h1 id="w-h" data-i18n="w_title">Your BYU path, in one place.</h1>
       <p class="lead" data-i18n="w_sub">We help international students navigate the BYU application and student experience, one step at a time.</p>
       <div class="choices">
-        <button class="choice" id="choose-signin"><strong data-i18n="signin">Sign in</strong><span data-i18n="have_acct">I already have an account</span></button>
+        <button class="choice" data-go="signin"><strong data-i18n="signin">Sign in</strong><span data-i18n="have_acct">I already have an account</span></button>
         <button class="choice" data-go="setup"><strong data-i18n="signup">Create account</strong><span data-i18n="new_here">I'm new here</span></button>
       </div>
-      <form class="signin-form card form" id="signin-form">
-        <label for="si-email">
-          <span data-i18n="email_label">Email address</span>
-          <input
-            id="si-email"
-            name="email"
-            type="email"
-            autocomplete="username"
-            placeholder="you@example.com"
-            required
-          >
-        </label>
-        <label for="si-pw"><span data-i18n="password">Password</span>
-          <input id="si-pw" type="password" autocomplete="current-password" required>
-        </label>
-        <p id="signin-err" role="alert" class="error"></p>
-        <button class="btn" type="submit" data-i18n="signin">Sign in</button>
-        <p class="hint" data-i18n="signin_hint">Use your BYU International Student Guide account credentials.</p>
-      </form>
     </div>
     <svg class="path-art" viewBox="0 0 400 360" role="img" aria-label="A winding path with six waypoints, from applying to graduating" data-i18n-aria="path_art">
-      <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170 S 90 150, 150 95 S 330 90, 350 30" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
+      <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170 S 90 150, 150 95 C 195 95, 225 115, 262 108 S 330 90, 350 30" fill="none" stroke="var(--line)" stroke-width="10" stroke-linecap="round"/>
       <path d="M40 320 C 140 300, 60 240, 160 225 S 330 235, 290 170" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round"/>
       <g fill="var(--card)" stroke="var(--royal)" stroke-width="4">
         <circle cx="40" cy="320" r="13"/><circle cx="160" cy="225" r="13"/><circle cx="290" cy="170" r="13"/>
         <circle cx="150" cy="95" r="13"/><circle cx="262" cy="108" r="13"/><circle cx="350" cy="30" r="13"/>
       </g>
       <g fill="var(--royal)" font-family="Arial, sans-serif" font-weight="700" font-size="15">
-        <text x="62" y="346" data-i18n="svg_apply">Apply</text><text x="178" y="252" data-i18n="svg_housing">Housing</text><text x="200" y="152" data-i18n="svg_classes">Classes</text>
-        <text x="40" y="82" data-i18n="svg_taxes">Taxes</text><text x="272" y="140" data-i18n="svg_work">Work</text><text x="290" y="22" data-i18n="svg_graduate">Graduate</text>
+        <text x="62" y="346" data-i18n="svg_apply">Apply</text><text x="178" y="252" data-i18n="svg_housing">Housing</text><text x="309" y="190" data-i18n="svg_classes">Classes</text>
+        <text x="132" y="86" text-anchor="end" data-i18n="svg_taxes">Taxes</text><text x="225" y="86" data-i18n="svg_work">Work</text><text x="330" y="22" text-anchor="end" data-i18n="svg_graduate">Graduate</text>
       </g>
     </svg>
   </div>
 </section>
 
 <!-- SCREEN 2 -->
+<section class="screen" id="s-signin" aria-labelledby="si-h">
+  <h1 id="si-h" data-i18n="signin">Sign in</h1>
+  <p class="lead" data-i18n="signin_hint">Use your BYU International Student Guide account credentials.</p>
+  <form class="signin-form card form" id="signin-form">
+    <label for="si-email">
+      <span data-i18n="email_label">Email address</span>
+      <input id="si-email" name="email" type="email" autocomplete="username" placeholder="you@example.com" required>
+    </label>
+    <label for="si-pw"><span data-i18n="password">Password</span>
+      <input id="si-pw" type="password" autocomplete="current-password" required>
+    </label>
+    <p id="signin-err" role="alert" class="error"></p>
+    <button class="btn" type="submit" data-i18n="signin">Sign in</button>
+  </form>
+  <button class="btn ghost" type="button" data-go="welcome" data-i18n="back_welcome">Back to welcome page</button>
+</section>
+
+<!-- SCREEN 3 -->
 <section class="screen" id="s-setup" aria-labelledby="su-h">
   <h2 id="su-h" data-i18n="setup_title">Set up your account</h2>
   <p data-i18n="setup_intro">This is a demonstration of account setup and does not create an official BYU account. Enter your details to continue.</p>
@@ -467,7 +473,10 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     </div>
     <div class="error" id="setup-err" role="alert"></div>
     <p id="signup-status" role="status" aria-live="polite"></p>
-    <button class="btn" type="submit" data-i18n="continue">Create account</button>
+    <div class="signup-actions">
+      <button class="btn ghost" type="button" data-go="welcome" data-i18n="cancel">Cancel</button>
+      <button class="btn" type="submit" data-i18n="continue">Create account</button>
+    </div>
     <div class="proto" data-i18n="auth_notice">Creates a BYU Navigator login through Supabase Auth. This does not create an official BYU account. Do not use your BYU password.</div>
     <div class="proto" id="setup-db-status" role="status" aria-live="polite">Checking database connection…</div>
   </form>
@@ -492,24 +501,27 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     <div class="stack">
       <section class="card" aria-labelledby="appointment-heading">
         <h2 id="appointment-heading" data-i18n="appt_heading">International advising appointment</h2>
-        <p id="appointment-summary" role="status" >No upcoming appointments.</p>
+        <p class="appointment-intro">Choose an advisor, select an available time, and tell us what you’d like to discuss.</p>
+        <p class="appointment-demo-note">This is a sample appointment flow. The listed times are examples and won’t be sent to an advisor.</p>
+        <p id="appointment-summary" role="status" aria-live="polite">No upcoming appointments.</p>
         <button class="btn" id="schedule-appointment-btn" type="button" data-i18n="appt_schedule">Schedule appointment</button>
         <div id="appointment-form-container" hidden>
           <form id="appointment-form" class="form">
-            <label for="appointment-advisor"><span data-i18n="appt_advisor">Advisor</span>
+            <h3 id="appointment-form-heading">Choose your appointment details</h3>
+            <label for="appointment-advisor"><span>① <span data-i18n="appt_advisor">Choose an advisor</span></span>
               <select id="appointment-advisor" required>
                 <option value="" data-i18n="appt_choose_advisor">Choose a demo advisor</option>
                 <option value="advisor-1" data-i18n="appt_demo_a">Demo Advisor A</option>
                 <option value="advisor-2" data-i18n="appt_demo_b">Demo Advisor B</option>
               </select>
             </label>
-            <label for="appointment-slot"><span data-i18n="appt_available">Available appointment</span>
+            <label for="appointment-slot"><span>② <span data-i18n="appt_available">Choose a time</span></span>
               <select id="appointment-slot" required disabled>
                 <option value="" data-i18n="appt_choose_first">Choose an advisor first</option>
               </select>
             </label>
             <p class="hint" data-i18n="appt_sample">Sample availability. Times use your device’s time zone.</p>
-            <label for="appointment-topic"><span data-i18n="appt_topic">Appointment topic</span>
+            <label for="appointment-topic"><span>③ <span data-i18n="appt_topic">What would you like to discuss?</span></span>
               <select id="appointment-topic" required>
                 <option value="" data-i18n="appt_choose_topic">Choose a topic</option>
                 <option value="arrival" data-i18n="appt_arrival">Arrival and settling in</option>
@@ -519,7 +531,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
             </label>
             <p id="appointment-form-error" role="alert" class="error"></p>
             <div>
-              <button class="btn" type="submit" data-i18n="appt_book">Book demo appointment</button>
+              <button class="btn" type="submit" data-i18n="appt_book">Save appointment</button>
               <button class="btn ghost" id="cancel-appointment-form-btn" type="button" data-i18n="cancel">Cancel</button>
             </div>
           </form>
@@ -566,14 +578,19 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
       </dl>
       <p style="margin:1rem 0 .5rem"><button class="btn ghost small" id="open-change" data-i18n="request_change">Request a change</button></p>
       <form class="change-form" id="change-form">
-        <label><span data-i18n="change_prompt">What would you like to change?</span>
-          <select id="chg-what"><option data-i18n="major">Major</option><option data-i18n="name">Name</option><option data-i18n="other">Other</option></select>
+        <label><span data-i18n="change_prompt">Requested major</span>
+          <select id="chg-major" required><option value="" data-i18n="major_prompt">Select a major...</option></select>
         </label>
-        <label><span data-i18n="details">Details</span> <textarea id="chg-text" rows="3" placeholder="e.g. I'd like to switch to Biology" data-i18n-placeholder="change_example"></textarea></label>
+        <p id="change-request-feedback" class="hint" role="status" aria-live="polite"></p>
         <button class="btn small" type="submit" data-i18n="send_request">Send request</button>
       </form>
     </div>
     <div class="stack">
+      <section class="card" aria-labelledby="change-requests-heading">
+        <h2 id="change-requests-heading" data-i18n="my_change_requests">My change requests</h2>
+        <p id="change-requests-message" class="hint" role="status" aria-live="polite">Sign in to view your requests.</p>
+        <ul id="change-request-list" class="course-list"></ul>
+      </section>
       <section class="card">
         <h2><span data-i18n="sample_courses">Sample courses for</span> <span class="js-major"></span></h2>
         <p id="registered-credits" role="status" aria-live="polite"></p>
@@ -637,6 +654,7 @@ var I18N={
  signin:{es:"Iniciar sesión",ko:"로그인",zh:"登录",pt:"Entrar",ja:"ログイン",fr:"Se connecter",tl:"Mag-sign in",de:"Anmelden",ru:"Войти",ar:"تسجيل الدخول"},
  signup:{es:"Crear cuenta",ko:"계정 만들기",zh:"创建账户",pt:"Criar conta",ja:"アカウントを作成",fr:"Créer un compte",tl:"Gumawa ng account",de:"Konto erstellen",ru:"Создать аккаунт",ar:"إنشاء حساب"},
  have_acct:{es:"Ya tengo una cuenta",ko:"이미 계정이 있어요",zh:"我已有账户",pt:"Já tenho uma conta",ja:"すでにアカウントをお持ちの方",fr:"J’ai déjà un compte",tl:"May account na ako",de:"Ich habe bereits ein Konto",ru:"У меня уже есть аккаунт",ar:"لدي حساب بالفعل"},
+ back_welcome:{es:"Volver al inicio",ko:"시작 화면으로 돌아가기",zh:"返回欢迎页",pt:"Voltar à página inicial",ja:"ウェルカムページに戻る",fr:"Retour à l’accueil",tl:"Bumalik sa welcome page",de:"Zurück zur Startseite",ru:"Вернуться на главную",ar:"العودة إلى صفحة الترحيب"},
  new_here:{es:"Soy nuevo aquí",ko:"처음 방문했어요",zh:"我是新用户",pt:"Sou novo por aqui",ja:"初めて利用します",fr:"Je découvre le site",tl:"Bago ako rito",de:"Ich bin neu hier",ru:"Я здесь впервые",ar:"أنا جديد هنا"},
  setup_title:{es:"Configura tu cuenta",ko:"계정 설정",zh:"设置您的账户",pt:"Configure sua conta",ja:"アカウントを設定",fr:"Configurez votre compte",tl:"I-set up ang iyong account",de:"Richten Sie Ihr Konto ein",ru:"Настройте аккаунт",ar:"إعداد حسابك"},
  setup_intro:{es:"Esta página es una guía de demostración y no crea una cuenta oficial de BYU. Ingresa tus datos para continuar.",ko:"이 페이지는 안내용 예시이며 공식 BYU 계정을 만들지 않습니다. 계속하려면 정보를 입력하세요.",zh:"此页面是演示指南，不会创建 BYU 官方账户。请输入信息以继续。",pt:"Esta página é apenas um protótipo e não cria uma conta oficial da BYU. Informe seus dados para continuar.",ja:"このページは案内用のデモで、BYUの公式アカウントは作成されません。続けるには情報を入力してください。",fr:"Cette page est une démonstration et ne crée pas de compte BYU officiel. Saisissez vos renseignements pour continuer.",tl:"Gabay na prototype lamang ang pahinang ito at hindi ito lumilikha ng opisyal na BYU account. Ilagay ang iyong mga detalye upang magpatuloy.",de:"Diese Seite ist eine Demo und erstellt kein offizielles BYU-Konto. Geben Sie Ihre Angaben ein, um fortzufahren.",ru:"Эта страница — демонстрационный справочник, она не создает официальный аккаунт BYU. Введите данные, чтобы продолжить.",ar:"هذه الصفحة نموذج إرشادي ولا تنشئ حسابًا رسميًا لدى BYU. أدخل بياناتك للمتابعة."},
@@ -667,6 +685,7 @@ var I18N={
  done:{es:"Completado",ko:"완료",zh:"已完成",pt:"Concluído",ja:"完了",fr:"Terminé",tl:"Tapos na",de:"Abgeschlossen",ru:"Выполнено",ar:"مكتمل"},
  ahead:{es:"Próximamente",ko:"다음 단계",zh:"即将开始",pt:"A seguir",ja:"次の段階",fr:"À venir",tl:"Susunod",de:"Als Nächstes",ru:"Далее",ar:"لاحقًا"},
  request_change:{es:"Solicitar un cambio",ko:"변경 요청",zh:"申请更改",pt:"Solicitar alteração",ja:"変更をリクエスト",fr:"Demander une modification",tl:"Humiling ng pagbabago",de:"Änderung beantragen",ru:"Запросить изменение",ar:"طلب تغيير"},
+ my_change_requests:{es:"Mis solicitudes de cambio",ko:"내 변경 요청",zh:"我的更改请求",pt:"Minhas solicitações de alteração",ja:"変更リクエスト",fr:"Mes demandes de modification",tl:"Mga hiling kong pagbabago",de:"Meine Änderungsanfragen",ru:"Мои запросы на изменение",ar:"طلبات التغيير الخاصة بي"},
  s0:{es:"Solicitar admisión a BYU",ko:"BYU 지원하기",zh:"申请 BYU",pt:"Candidatar-se à BYU",ja:"BYUに出願する",fr:"Candidater à BYU",tl:"Mag-apply sa BYU",de:"Bei BYU bewerben",ru:"Подать заявление в BYU",ar:"التقديم إلى BYU"},
  s1:{es:"Encontrar vivienda",ko:"주거 찾기",zh:"寻找住房",pt:"Encontrar moradia",ja:"住まいを探す",fr:"Trouver un logement",tl:"Maghanap ng matitirhan",de:"Unterkunft finden",ru:"Найти жилье",ar:"العثور على سكن"},
  s2:{es:"Inscribirse en clases",ko:"수업 등록",zh:"注册课程",pt:"Matricular-se nas aulas",ja:"授業に登録する",fr:"S’inscrire aux cours",tl:"Magparehistro sa mga klase",de:"Für Kurse anmelden",ru:"Записаться на занятия",ar:"التسجيل في المقررات"},
@@ -911,7 +930,11 @@ var COURSES={
 const SUPABASE_URL = "https://xeldikaeoxbiwtqhabsw.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_kws05stP8txREy3GONIOuQ_rMTYx8ZY";
 
-const TABLES = { student: "student", major: "major" };
+const TABLES = { student: "student", major: "major", majorRequest: "major_requests" };
+const MAJOR_REQUEST_COLS = {
+  id: "id", studentNetId: "student_netid", requestedMajor: "requested_major",
+  submittedAt: "submitted_at", status: "status"
+};
 const COLS = {
   studentId: "studentid", netId: "netid", firstName: "firstname",
   lastName: "lastname", nationality: "nationality", majorId: "majorid",
@@ -925,6 +948,7 @@ if (window.supabase) {
 
 /* ---------- State ---------- */
 var user = null, stage = 0, openStage = null, selHub = null;
+var pendingStageSave = null;
 var SESSION_KEY = "byu-navigator-session";
 
 function saveSession(){
@@ -1013,16 +1037,39 @@ var $$ = function(s,r){return Array.prototype.slice.call((r||document).querySele
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
 function toast(m){var e=$("#toast");e.textContent=m;e.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("show")},2800)}
 function intl(){return user && user.nat!=="United States"}
+function clearSignupForm(preserveStatus){
+  var form=$("#setup-form");
+  if(!form) return;
+  var status=$("#signup-status");
+  var statusText=preserveStatus&&status?status.textContent:"";
+  form.reset();
+  form.querySelectorAll("input").forEach(function(input){input.value="";});
+  $("#f-nat").selectedIndex=0;
+  $("#f-major").selectedIndex=0;
+  $("#setup-err").textContent="";
+  $("#setup-err").classList.remove("show");
+  if(status) status.textContent=statusText;
+}
+
+window.addEventListener("pagehide",function(){clearSignupForm();});
+window.addEventListener("pageshow",function(event){if(event.persisted) clearSignupForm();});
 
 /* ---------- Navigation ---------- */
 var current="welcome";
 function go(name){
-  if(name!=="welcome"&&name!=="setup"&&!user){ name="welcome"; }
+  if(name!=="welcome"&&name!=="setup"&&name!=="signin"&&!user){ name="welcome"; }
+  if(current==="setup"&&name!=="setup") clearSignupForm();
+  if(current==="signin"&&name!=="signin"){
+    $("#signin-form").reset();
+    $("#signin-err").textContent="";
+    $("#signin-err").classList.remove("show");
+  }
   current=name;
   saveSession();
   $$(".screen").forEach(function(s){s.classList.toggle("active",s.id==="s-"+name)});
   $$(".byu-nav-item").forEach(function(b){ if(b.dataset.go===name) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current")});
   document.body.classList.toggle("signed-out",!user);
+  if(name==="signin") $("#si-email").focus();
   render(); window.scrollTo(0,0); updateChips();
 }
 
@@ -1032,10 +1079,6 @@ document.addEventListener("click",function(e){
 });
 
 /* ---------- Welcome / Auth ---------- */
-$("#choose-signin").addEventListener("click",function(){
-  var f=$("#signin-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#si-net").focus();
-});
-
 $("#signin-form").addEventListener("submit", async function(e) {
   e.preventDefault();
 
@@ -1235,6 +1278,7 @@ $("#setup-form").addEventListener("submit", async function(e) {
     status.textContent = result.data.session
       ? t("signup_complete", "Signup completed. Sign in to finish setting up your profile.")
       : t("signup_received", "Signup request received. Check your email for a confirmation link. If you already have an account, sign in.");
+    clearSignupForm(true);
 
   } catch (error) {
     err.textContent =
@@ -1250,6 +1294,7 @@ $("#setup-form").addEventListener("submit", async function(e) {
 /* Dropdown Loader from Supabase */
 async function loadMajorOptions() {
   var select = document.getElementById("f-major");
+  var requestSelect = document.getElementById("chg-major");
   var status = document.getElementById("setup-db-status");
   if (!select || !supabaseClient) return;
   if(status) status.dataset.state="loading";
@@ -1261,21 +1306,26 @@ async function loadMajorOptions() {
 
     if (majors.length === 0) {
       select.innerHTML = '<option value="" data-state="empty">'+esc(t("no_majors","No majors found in database"))+'</option>';
+      if(requestSelect) requestSelect.innerHTML = '<option value="" data-state="empty">'+esc(t("no_majors","No majors found in database"))+'</option>';
       if (status){status.dataset.state="empty";updateMajorStatus();}
       return;
     }
 
     var html = '<option value="" data-state="prompt">'+esc(t("major_prompt","Select a major..."))+'</option>';
+    var requestHtml = '<option value="" data-state="prompt">'+esc(t("major_prompt","Select a major..."))+'</option>';
     majors.forEach(function(m) {
       var id = m.majorid !== undefined ? m.majorid : m.major_id;
       var name = m.majorname || m.major_name || m.name;
       html += '<option value="' + id + '" data-major-name="' + esc(name) + '">' + esc(localizeMajorName(name)) + '</option>';
+      requestHtml += '<option value="' + esc(name) + '">' + esc(localizeMajorName(name)) + '</option>';
     });
 
     select.innerHTML = html;
+    if(requestSelect) requestSelect.innerHTML = requestHtml;
     if (status){status.dataset.state="connected";status.dataset.count=majors.length;updateMajorStatus();}
   } catch (err) {
     select.innerHTML = '<option value="" data-state="error">'+esc(t("major_load_error","Error loading majors"))+'</option>';
+    if(requestSelect) requestSelect.innerHTML = '<option value="" data-state="error">'+esc(t("major_load_error","Error loading majors"))+'</option>';
     if (status){status.dataset.state="error";status.dataset.errorMessage=err.message||"";updateMajorStatus();}
   }
 }
@@ -1285,6 +1335,8 @@ $("#signout").addEventListener("click", async function() {
   button.disabled = true;
 
   try {
+    if (pendingStageSave) await pendingStageSave;
+
     var result = await supabaseClient.auth.signOut();
     if (result.error) throw result.error;
 
@@ -1292,7 +1344,7 @@ $("#signout").addEventListener("click", async function() {
     stage = 0;
 
     localStorage.removeItem(SESSION_KEY);
-    $("#setup-form").reset();
+    clearSignupForm();
     $("#signin-form").reset();
 
     go("welcome");
@@ -1358,14 +1410,46 @@ function renderJourney(){
   }).join("");
 }
 
-document.addEventListener("click",function(e){
+document.addEventListener("click",async function(e){
   var s=e.target.closest("[data-stage]");
   if(s){var i=+s.dataset.stage; openStage=openStage===i?null:i; renderJourney(); return;}
   var m=e.target.closest("[data-setstage]");
-  if(m){stage=+m.dataset.setstage; renderJourney(); toast(t("stage_updated", "Current stage updated."));}
+  if(m){
+    if(pendingStageSave) return;
+    var nextStage=Number(m.dataset.setstage);
+    var buttons=$$("#timeline [data-setstage]");
+    buttons.forEach(function(button){button.disabled=true;});
+
+    var savePromise=(async function(){
+      if(!supabaseClient) throw new Error("Supabase is unavailable.");
+      if(!user||!user.auth_user_id) throw new Error("Your sign-in has expired. Sign in again and retry.");
+
+      var result=await supabaseClient.from(TABLES.student)
+        .update({current_stage:nextStage})
+        .eq("auth_user_id",user.auth_user_id)
+        .select("current_stage")
+        .maybeSingle();
+      if(result.error) throw result.error;
+      if(!result.data) throw new Error("No student profile was updated. Check the student table update permissions.");
+
+      stage=Number(result.data.current_stage)||0;
+      renderJourney();
+      toast(t("stage_updated", "Current stage updated."));
+    })();
+    pendingStageSave=savePromise;
+    try{
+      await savePromise;
+    }catch(error){
+      buttons.forEach(function(button){button.disabled=false;});
+      toast("Could not save your current stage: "+(error.message||"Please try again."));
+    }finally{
+      if(pendingStageSave===savePromise) pendingStageSave=null;
+    }
+  }
 });
 
 async function renderProfile() {
+  loadChangeRequests();
   var list = $("#courses");
   var totalDisplay = $("#registered-credits");
   totalDisplay.textContent = "Registered credits (Demo Term): loading…";
@@ -1568,12 +1652,142 @@ totalDisplay.textContent =
   }
 }
 
-$("#open-change").addEventListener("click",function(){
-  var f=$("#change-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#chg-text").focus();
+async function loadChangeRequests(){
+  var list=$("#change-request-list");
+  var message=$("#change-requests-message");
+  var netId=user&&user.net;
+  list.textContent="";
+  message.textContent="Loading your requests…";
+  if(!supabaseClient||!netId){
+    message.textContent="Sign in to view your requests.";
+    return;
+  }
+
+  function sameAccount(){return user&&user.net===netId;}
+
+  try{
+    var result=await supabaseClient.from(TABLES.majorRequest)
+      .select("id,requested_major,submitted_at,status")
+      .eq(MAJOR_REQUEST_COLS.studentNetId,netId)
+      .order(MAJOR_REQUEST_COLS.submittedAt,{ascending:false});
+    if(result.error) throw result.error;
+    if(!sameAccount()) return;
+
+    var requests=result.data||[];
+    if(!requests.length){
+      message.textContent="You have not submitted any change requests yet.";
+      return;
+    }
+
+    message.textContent="";
+    requests.forEach(function(request){
+      var item=document.createElement("li");
+      item.classList.add("change-request-item");
+      var content=document.createElement("div");
+      content.className="change-request-content";
+      var heading=document.createElement("strong");
+      heading.textContent="Major change request";
+      var details=document.createElement("p");
+      details.className="change-request-details";
+      details.textContent="Requested major: "+(request[MAJOR_REQUEST_COLS.requestedMajor]||"Not specified");
+      var meta=document.createElement("span");
+      meta.className="change-request-meta";
+      var submitted=request[MAJOR_REQUEST_COLS.submittedAt]
+        ?new Date(request[MAJOR_REQUEST_COLS.submittedAt]).toLocaleDateString()
+        :"Date unavailable";
+      var status=String(request[MAJOR_REQUEST_COLS.status]||"pending").replace(/_/g," ");
+      meta.textContent="Submitted "+submitted+" · "+status;
+      content.appendChild(heading);
+      content.appendChild(details);
+      content.appendChild(meta);
+      item.appendChild(content);
+
+      if(request[MAJOR_REQUEST_COLS.status]==="pending"){
+        var cancel=document.createElement("button");
+        cancel.type="button";
+        cancel.className="btn ghost small";
+        cancel.dataset.cancelChangeRequest=request[MAJOR_REQUEST_COLS.id];
+        cancel.textContent=t("cancel","Cancel");
+        cancel.setAttribute("aria-label","Cancel major change request");
+        item.appendChild(cancel);
+      }
+      list.appendChild(item);
+    });
+  }catch(error){
+    if(!sameAccount()) return;
+    message.textContent="Could not load your change requests: "+(error.message||"Please try again.");
+  }
+}
+
+$("#change-request-list").addEventListener("click",async function(e){
+  var button=e.target.closest("[data-cancel-change-request]");
+  if(!button||!user||!user.net) return;
+  if(!window.confirm("Cancel this pending change request?")) return;
+
+  var netId=user.net;
+  var requestId=button.dataset.cancelChangeRequest;
+  button.disabled=true;
+  try{
+    var result=await supabaseClient.from(TABLES.majorRequest)
+      .delete()
+      .eq(MAJOR_REQUEST_COLS.id,requestId)
+      .eq(MAJOR_REQUEST_COLS.studentNetId,netId)
+      .eq(MAJOR_REQUEST_COLS.status,"pending")
+      .select(MAJOR_REQUEST_COLS.id)
+      .maybeSingle();
+    if(result.error) throw result.error;
+    if(!result.data) throw new Error("This request is no longer pending and could not be cancelled.");
+    if(user&&user.net===netId){
+      await loadChangeRequests();
+      toast("Change request cancelled.");
+    }
+  }catch(error){
+    if(user&&user.net===netId){
+      button.disabled=false;
+      $("#change-requests-message").textContent="Could not cancel this request: "+(error.message||"Please try again.");
+    }
+  }
 });
-$("#change-form").addEventListener("submit",function(e){
-  e.preventDefault(); $("#change-form").classList.remove("open"); $("#chg-text").value="";
-  toast(t("request_sent", "Request sent (prototype). An advisor would review it."));
+
+$("#open-change").addEventListener("click",function(){
+  var f=$("#change-form"); f.classList.toggle("open"); if(f.classList.contains("open")) $("#chg-major").focus();
+});
+$("#change-form").addEventListener("submit",async function(e){
+  e.preventDefault();
+  var feedback=$("#change-request-feedback");
+  var button=$("#change-form button[type=submit]");
+  var requestedMajor=$("#chg-major").value;
+  feedback.textContent="";
+  if(!requestedMajor){feedback.textContent="Select the major you are requesting.";return;}
+  if(!supabaseClient||!user||!user.auth_user_id||!user.net){feedback.textContent="Sign in again to submit a change request.";return;}
+
+  var authUserId=user.auth_user_id;
+  var netId=user.net;
+  button.disabled=true;
+  button.textContent="Sending…";
+  try{
+    var result=await supabaseClient.from(TABLES.majorRequest)
+      .insert({
+        [MAJOR_REQUEST_COLS.studentNetId]:netId,
+        [MAJOR_REQUEST_COLS.requestedMajor]:requestedMajor,
+        [MAJOR_REQUEST_COLS.status]:"pending"
+      })
+      .select(MAJOR_REQUEST_COLS.id)
+      .single();
+    if(result.error) throw result.error;
+    feedback.textContent="Your change request was submitted.";
+    $("#change-form").reset();
+    $("#change-form").classList.remove("open");
+    if(user&&user.auth_user_id===authUserId&&user.net===netId){
+      await loadChangeRequests();
+      toast("Change request submitted.");
+    }
+  }catch(error){
+    feedback.textContent="Your request could not be saved: "+(error.message||"Please try again.");
+  }finally{
+    button.disabled=false;
+    button.textContent=t("send_request","Send request");
+  }
 });
 
 /* Mind Map Hub */
@@ -1681,8 +1895,24 @@ $("#chat-close").addEventListener("click",function(){chat(false);$("#chat-fab").
 
 /* Appointment Scheduler */
 $("#schedule-appointment-btn").addEventListener("click", function() {
-  $("#appointment-form-container").hidden = false;
-  $("#schedule-appointment-btn").hidden = true;
+  var button=$("#schedule-appointment-btn");
+  var container=$("#appointment-form-container");
+  var summary=$("#appointment-summary");
+  var isBooked=button.dataset.booked==="true";
+  container.hidden=false;
+  button.hidden=true;
+  $("#appointment-form-heading").textContent=isBooked?"Update your appointment":"Choose your appointment details";
+  $("#appointment-form button[type=submit]").textContent=isBooked?"Save changes":"Save appointment";
+  $("#cancel-appointment-form-btn").textContent=isBooked?"Keep current appointment":t("cancel","Cancel");
+  $("#appointment-form-error").textContent="";
+  if(isBooked){
+    var advisor=$("#appointment-advisor");
+    advisor.value=summary.dataset.advisor;
+    advisor.dispatchEvent(new Event("change"));
+    $("#appointment-slot").value=summary.dataset.slot;
+    $("#appointment-topic").value=summary.dataset.topic;
+  }
+  $("#appointment-advisor").focus();
 });
 $("#cancel-appointment-form-btn").addEventListener("click", function() {
   $("#appointment-form-container").hidden = true;
