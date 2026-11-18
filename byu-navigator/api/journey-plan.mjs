@@ -236,7 +236,18 @@ export default {
         const status = geminiResponse.status;
 
         // Log only the status, never credentials or student data.
-        console.error("Gemini request failed:", status);
+        const details = await geminiResponse.json().catch(() => ({}));
+
+        const safeMessage = String(details.error?.message || "")
+        .replaceAll(process.env.GEMINI_API_KEY, "[REDACTED]")
+        .slice(0, 300);
+
+        console.error(
+        "Gemini request failed:",
+        status,
+        details.error?.status || "",
+        safeMessage
+        );
 
         return reply(status === 429 ? 429 : 502, {
             error: status === 429
