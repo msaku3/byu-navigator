@@ -118,6 +118,8 @@ export default {
       });
     }
 
+    let requestStep = "Supabase authentication";
+
     try {
       const headers = {
         apikey: key,
@@ -155,6 +157,8 @@ export default {
       );
       profileUrl.searchParams.set("limit", "2");
 
+      requestStep = "Supabase profile";
+
       const profileResponse = await fetch(profileUrl, {
         headers,
         signal: AbortSignal.timeout(10000)
@@ -190,6 +194,9 @@ export default {
 
       const guidance = JOURNEY_STAGES[stage];
         const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+
+      requestStep = "Gemini generation";
+    console.info("Journey Gemini model:", model);
 
         const geminiResponse = await fetchGeminiWithRetry(
         "https://generativelanguage.googleapis.com/v1beta/models/" +
@@ -320,11 +327,12 @@ export default {
         });
 
    } catch (error) {
-  console.error(
+    console.error(
     "Journey request exception:",
+    requestStep,
     error.name,
     error.cause?.code || "no connection code"
-  );
+    );
 
   var timedOut =
     error.name === "TimeoutError" ||
