@@ -361,6 +361,26 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
   color: #002e5d;
   font-size: 1.15rem;
 }
+h3.major-course-heading {
+  margin-top: 2.5rem;
+}
+h3.course-section-title {
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #002e5d;
+  margin-bottom: 1rem;
+}
+
+h3.course-section-title span {
+  font: inherit;
+  color: inherit;
+}
+
+h3.course-section-title.major-course-heading {
+  margin-top: 2.5rem;
+}
 </style>
 </head>
 <body class="signed-out">
@@ -688,8 +708,20 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
         <ul id="change-request-list" class="course-list"></ul>
       </section>
       <section class="card">
-        <h2><span data-i18n="sample_courses">Sample courses for</span> <span class="js-major"></span></h2>
+        <h2>Your course selections</h2>
         <p id="registered-credits" role="status" aria-live="polite"></p>
+        <h3 class="course-section-title">
+          Your registered courses — Demo Term
+        </h3>
+        <p class="hint">
+          All your saved demo selections, including courses from a previous major.
+        </p>
+        <ul class="course-list" id="registered-courses"></ul>
+
+        <h3 class="course-section-title major-course-heading">
+          <span data-i18n="sample_courses">Sample courses for</span>
+          <span class="js-major"></span>
+        </h3>
         <ul class="course-list" id="courses"></ul>
         <p class="hint" style="margin-top:.8rem" data-i18n="course_note">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
         <div class="callout">
@@ -1571,8 +1603,12 @@ function confirmCourseAction(title, message, buttonLabel, isDestructive) {
 async function renderProfile() {
   loadChangeRequests();
   var list = $("#courses");
+  var registeredList = $("#registered-courses");
+  registeredList.textContent = "Loading registered courses…";
   var totalDisplay = $("#registered-credits");
-  totalDisplay.textContent = "Registered credits (Demo Term): loading…";
+  totalDisplay.textContent =
+  "Your registered credits across all majors (Demo Term): loading…";
+  
 
   function showMessage(text) {
     list.textContent = "";
@@ -1607,7 +1643,7 @@ async function renderProfile() {
 
       supabaseClient
         .from("enrollment")
-        .select("courseid,course:courseid(credits)")
+        .select("courseid,course:courseid(id,course_code,course_name,credits)")
         .eq("studentid", studentId)
         .eq("term", term)
     ]);
@@ -1650,7 +1686,8 @@ var countedCourses = new Set();
 });
 
 totalDisplay.textContent =
-  "Registered credits (Demo Term): " + totalCredits;  
+  "Your registered credits across all majors (Demo Term): " +
+  totalCredits;  
 
     var registered = new Set(
       (results[1].data || []).map(function(row) {
@@ -1659,7 +1696,113 @@ totalDisplay.textContent =
     );
 
     list.textContent = "";
+    registeredList.textContent = "";
 
+var savedCourses = [];
+var seenRegistered = new Set();
+
+(results[1].data || []).forEach(function(row) {
+  var id = String(row.courseid);
+
+  if (row.course && !seenRegistered.has(id)) {
+    seenRegistered.add(id);
+    savedCourses.push(row.course);
+  }
+});
+
+savedCourses.sort(function(a, b) {
+  return a.course_code.localeCompare(b.course_code);
+});
+
+if (!savedCourses.length) {
+  var emptyRegistered = document.createElement("li");
+  emptyRegistered.textContent =
+    "You have no registered courses for Demo Term.";
+  registeredList.appendChild(emptyRegistered);
+}
+
+savedCourses.forEach(function(course) {
+  var item = document.createElement("li");
+  item.style.flexWrap = "wrap";
+  item.style.gap = ".75rem";
+
+  var description = document.createElement("div");
+  description.textContent =
+    course.course_code + " — " + course.course_name;
+
+  var credits = document.createElement("span");
+  credits.textContent =
+    course.credits +
+    (Number(course.credits) === 1 ? " credit" : " credits");
+
+  var dropButton = document.createElement("button");
+  dropButton.type = "button";
+  dropButton.className = "btn ghost small course-drop";
+  dropButton.textContent = "Drop course (simulation)";
+
+  var feedback = document.createElement("p");
+  feedback.className = "hint";
+  feedback.setAttribute("role", "status");
+  feedback.style.flexBasis = "100%";
+  feedback.style.margin = "0";
+
+  dropButton.addEventListener("click", async function() {
+    if (!sameStudent()) return;
+
+    var confirmed = await confirmCourseAction(
+      "Confirm drop",
+      "Drop " + course.course_code + " — " +
+        course.course_name + " from Demo Term?",
+      "Drop course",
+      true
+    );
+
+    if (!confirmed || !sameStudent()) return;
+
+    dropButton.disabled = true;
+    dropButton.textContent = "Dropping…";
+    feedback.textContent = "";
+
+    try {
+      var removed = await supabaseClient
+        .from("enrollment")
+        .delete()
+        .eq("studentid", studentId)
+        .eq("courseid", course.id)
+        .eq("term", term)
+        .select("enrollmentid");
+
+      if (removed.error) throw removed.error;
+
+      if (!removed.data || !removed.data.length) {
+        throw new Error(
+          "No registration was removed. Refresh to check its status."
+        );
+      }
+
+      if (!sameStudent()) return;
+
+      await renderProfile();
+      if (sameStudent()) {
+        toast("Course dropped from Demo Term.");
+      }
+    } catch (error) {
+      if (!sameStudent()) return;
+
+      dropButton.disabled = false;
+      dropButton.textContent = "Drop course (simulation)";
+      feedback.textContent =
+        "Could not drop course: " +
+        (error.message || "Please try again.");
+    }
+  });
+
+  item.appendChild(description);
+  item.appendChild(credits);
+  item.appendChild(dropButton);
+  item.appendChild(feedback);
+  registeredList.appendChild(item);
+});
     if (!courses.length) {
       showMessage(t("no_courses", "No sample courses are available for this major yet."));
       return;
@@ -1953,6 +2096,11 @@ if (!confirmed || !sameStudent()) return;
 
   } catch (error) {
     if (!sameStudent()) return;
+
+    registeredList.textContent =
+    "Could not load registered courses. Please try again.";
+    totalDisplay.textContent =
+      "Registered credits unavailable. Please try again.";
 
     showMessage(
       t("error_course_load", "Could not load courses: ") +
