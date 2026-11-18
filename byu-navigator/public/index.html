@@ -1054,19 +1054,19 @@ Object.keys(SAMPLE_MAJOR_LABELS).forEach(function(code){ MAJOR_LABELS[code]["Inf
 
 var STAGES=[
  {k:"s0",en:"Apply to BYU",steps:["Review admission requirements for international students","Gather transcripts and test scores","Submit your application before the deadline"],links:[["Admissions","https://admissions.byu.edu"]]},
- {k:"s1",en:"Find housing",steps:["Compare on-campus and off-campus options","Check contract dates and costs","Ask about housing for incoming international students"],links:[["BYU Housing","https://housing.byu.edu"]]},
+ {k:"s1",en:"Find housing",steps:["Compare on-campus and off-campus options","Check contract dates and costs","Ask about housing for incoming international students"],links:[["BYU Residence Life","https://reslife.byu.edu/"]]},
  {k:"s2",en:"Register for classes",steps:["See which classes your major requires","Meet with an academic advisor","Register, add, or drop classes in MyMap"],links:[["MyMap","https://mymap.byu.edu"],["Registrar","https://registrar.byu.edu"]]},
- {k:"s3",en:"Understand taxes",steps:["Learn which tax forms international students may receive","Find tax information and workshops","Ask the right office before you file"],links:[["International Services","https://internationalservices.byu.edu"]]},
- {k:"s4",en:"Find employment resources",steps:["Learn the rules for working on and off campus","Build your resume with Career Services","Search for jobs and internships"],links:[["Career Services","https://careers.byu.edu"],["International Services","https://internationalservices.byu.edu"]]},
+ {k:"s3",en:"Understand taxes",steps:["Learn which tax forms international students may receive","Find tax information and workshops","Ask the right office before you file"],links:[["International Services","https://iss.byu.edu/"]]},
+ {k:"s4",en:"Find employment resources",steps:["Learn the rules for working on and off campus","Build your resume with Career Services","Search for jobs and internships"],links:[["Career Services","https://careers.byu.edu"],["International Services","https://iss.byu.edu/"]]},
  {k:"s5",en:"Complete graduation requirements",steps:["Check your degree progress with your advisor","Apply to graduate by the deadline","Ask about what comes after graduation"],links:[["Graduation (Registrar)","https://registrar.byu.edu"]]}
 ];
 
 var HUB=[
- {k:"c_housing",en:"Housing",from:1,blurb:"Find a place to live and understand contracts.",links:[["BYU Housing","https://housing.byu.edu","Official site"]]},
+ {k:"c_housing",en:"Housing",from:1,blurb:"Find a place to live and understand contracts.",links:[["BYU Housing","https://reslife.byu.edu/","Official site"]]},
  {k:"c_reg",en:"Registration",from:2,blurb:"Register for classes and see your degree requirements.",links:[["MyMap","https://mymap.byu.edu","Plan and register"],["Registrar","https://registrar.byu.edu","Records and deadlines"]]},
- {k:"c_tax",en:"Taxes",from:3,blurb:"Learn what international students need to know about U.S. taxes.",links:[["International Services","https://internationalservices.byu.edu","Tax information"]]},
- {k:"c_emp",en:"Employment",from:4,blurb:"Job search help and work-authorization questions.",links:[["Career Services","https://careers.byu.edu","Jobs and internships"],["International Services","https://internationalservices.byu.edu","Work rules"]]},
- {k:"c_imm",en:"Immigration support",from:null,blurb:"For visa, status, and immigration questions, talk to the official office. This website cannot give immigration advice.",links:[["International Services","https://internationalservices.byu.edu","Contact details on site"]]},
+ {k:"c_tax",en:"Taxes",from:3,blurb:"Learn what international students need to know about U.S. taxes.",links:[["International Services","https://iss.byu.edu/tax-information","Tax information"]]},
+ {k:"c_emp",en:"Employment",from:4,blurb:"Job search help and work-authorization questions.",links:[["Career Services","https://careers.byu.edu","Jobs and internships"],["International Services","https://iss.byu.edu/","Work rules"]]},
+ {k:"c_imm",en:"Immigration support",from:null,blurb:"For visa, status, and immigration questions, talk to the official office. This website cannot give immigration advice.",links:[["International Services","https://iss.byu.edu/","Contact details on site"]]},
  {k:"c_off",en:"BYU offices",from:null,blurb:"Key offices that help students every day.",links:[["Admissions","https://admissions.byu.edu","Application questions"],["Financial Aid","https://financialaid.byu.edu","Costs and aid"],["Registrar","https://registrar.byu.edu","Records"]]},
  {k:"c_svc",en:"Other services",from:null,blurb:"Health, counseling, and student life support.",links:[["Health Center","https://healthcenter.byu.edu","Medical care"],["Counseling and Psychological Services","https://caps.byu.edu","Emotional support"]]}
 ];
@@ -2461,7 +2461,7 @@ function bot(text,link){
 function me(text){var m=document.createElement("div");m.className="msg me";m.textContent=text;$("#msgs").appendChild(m);$("#msgs").scrollTop=1e6}
 function answer(q){
   var s=q.toLowerCase();
-  if(/visa|immigra|i-20|sevis|status|비자|이민|签证|移民|在留|visto|imigra|wisa|วีซ่า|imigrasyon|visum|виза|иммигр|تأشيرة|هجرة/.test(s)) return [t("chat_visa","I can't give legal or immigration advice. International Services is the official office for these questions."),{l:t("chat_visa_link","Open International Services"),url:"https://internationalservices.byu.edu"}];
+  if(/visa|immigra|i-20|sevis|status|비자|이민|签证|移民|在留|visto|imigra|wisa|วีซ่า|imigrasyon|visum|виза|иммигр|تأشيرة|هجرة/.test(s)) return [t("chat_visa","I can't give legal or immigration advice. International Services is the official office for these questions."),{l:t("chat_visa_link","Open International Services"),url:"https://iss.byu.edu/"}];
   if(/housing|apartment|live|dorm|주거|숙소|住房|住处|moradia|logement|tirahan|unterkunft|жиль|السكن/.test(s)) return [t("chat_housing","Housing is step 2 on your journey."),{l:t("chat_housing_link","Open Housing branch"),go:"hub",hub:"c_housing"}];
   if(/regist|class|course|mymap|수업|课程|选课|授業|cours|aula|klase|kurs|занят|мymap|مقرر/.test(s)) return [t("chat_register","Register, add, or drop classes in MyMap."),{l:t("chat_register_link","Open MyMap"),url:"https://mymap.byu.edu"}];
   return [t("chat_general","For a reliable answer, try the main BYU website or contact the relevant BYU office."),{l:t("chat_general_link","Open byu.edu"),url:"https://www.byu.edu"}];

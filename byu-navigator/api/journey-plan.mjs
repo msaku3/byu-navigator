@@ -18,7 +18,7 @@ const JOURNEY_STAGES = [
       "Ask about housing for incoming international students"
     ],
     links: [
-      ["BYU Housing", "https://housing.byu.edu"]
+      ["BYU Residence Life", "https://reslife.byu.edu/"]
     ]
   },
   {
@@ -41,7 +41,7 @@ const JOURNEY_STAGES = [
       "Ask the appropriate office or a qualified tax professional for help"
     ],
     links: [
-      ["International Services", "https://internationalservices.byu.edu"]
+      ["International Services", "https://iss.byu.edu/"]
     ]
   },
   {
@@ -53,7 +53,7 @@ const JOURNEY_STAGES = [
     ],
     links: [
       ["Career Services", "https://careers.byu.edu"],
-      ["International Services", "https://internationalservices.byu.edu"]
+      ["International Services", "https://iss.byu.edu/"]
     ]
   },
   {
