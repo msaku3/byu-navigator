@@ -381,6 +381,35 @@ h3.course-section-title span {
 h3.course-section-title.major-course-heading {
   margin-top: 2.5rem;
 }
+
+/* Stack home alerts on smaller screens */
+@media (max-width: 600px) {
+  .alert {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .75rem;
+  }
+
+  .alert .grow {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .alert .tag {
+    align-self: flex-start;
+  }
+
+  .alert .btn {
+    width: 100%;
+  }
+
+  .chat-fab {
+    right: .75rem;
+    padding: .65rem .9rem;
+    font-size: .875rem;
+    gap: .35rem;
+  }
+}
 </style>
 </head>
 <body class="signed-out">
@@ -676,6 +705,32 @@ h3.course-section-title.major-course-heading {
   <h1 id="j-h" data-i18n="journey_h">Your journey</h1>
   <p data-i18n="journey_intro">Six areas, from before you apply through graduation. Everyone moves at a different pace, so use this as a guide to find your place and your next step. Select any area to see what to do and where to get help.</p>
   <ol class="timeline" id="timeline"></ol>
+  <section class="card" aria-labelledby="journey-plan-heading"
+         style="margin-top: 2rem;">
+  <h2 id="journey-plan-heading">Plan your next steps</h2>
+
+  <p>
+    Generate three suggested actions based on your saved current stage.
+  </p>
+
+  <button type="button" class="btn" id="generate-journey-plan">
+    Generate my next steps
+  </button>
+
+  <p id="journey-plan-status" role="status" aria-live="polite"></p>
+
+  <div id="journey-plan-result" hidden>
+    <h3 id="journey-plan-title"></h3>
+    <ol id="journey-plan-actions"></ol>
+    <div id="journey-plan-links" class="acts"></div>
+  </div>
+
+  <p class="hint">
+    AI-generated suggestions may be incomplete. Confirm requirements
+    with the relevant BYU office. This tool does not provide legal,
+    immigration, or tax advice.
+  </p>
+</section>
 </section>
 
 <!-- SCREEN 5 -->
@@ -1028,19 +1083,19 @@ Object.keys(SAMPLE_MAJOR_LABELS).forEach(function(code){ MAJOR_LABELS[code]["Inf
 
 var STAGES=[
  {k:"s0",en:"Apply to BYU",steps:["Review admission requirements for international students","Gather transcripts and test scores","Submit your application before the deadline"],links:[["Admissions","https://admissions.byu.edu"]]},
- {k:"s1",en:"Find housing",steps:["Compare on-campus and off-campus options","Check contract dates and costs","Ask about housing for incoming international students"],links:[["BYU Housing","https://housing.byu.edu"]]},
+ {k:"s1",en:"Find housing",steps:["Compare on-campus and off-campus options","Check contract dates and costs","Ask about housing for incoming international students"],links:[["BYU Residence Life","https://reslife.byu.edu/"]]},
  {k:"s2",en:"Register for classes",steps:["See which classes your major requires","Meet with an academic advisor","Register, add, or drop classes in MyMap"],links:[["MyMap","https://mymap.byu.edu"],["Registrar","https://registrar.byu.edu"]]},
- {k:"s3",en:"Understand taxes",steps:["Learn which tax forms international students may receive","Find tax information and workshops","Ask the right office before you file"],links:[["International Services","https://internationalservices.byu.edu"]]},
- {k:"s4",en:"Find employment resources",steps:["Learn the rules for working on and off campus","Build your resume with Career Services","Search for jobs and internships"],links:[["Career Services","https://careers.byu.edu"],["International Services","https://internationalservices.byu.edu"]]},
+ {k:"s3",en:"Understand taxes",steps:["Learn which tax forms international students may receive","Find tax information and workshops","Ask the right office before you file"],links:[["International Services","https://iss.byu.edu/"]]},
+ {k:"s4",en:"Find employment resources",steps:["Learn the rules for working on and off campus","Build your resume with Career Services","Search for jobs and internships"],links:[["Career Services","https://careers.byu.edu"],["International Services","https://iss.byu.edu/"]]},
  {k:"s5",en:"Complete graduation requirements",steps:["Check your degree progress with your advisor","Apply to graduate by the deadline","Ask about what comes after graduation"],links:[["Graduation (Registrar)","https://registrar.byu.edu"]]}
 ];
 
 var HUB=[
- {k:"c_housing",en:"Housing",from:1,blurb:"Find a place to live and understand contracts.",links:[["BYU Housing","https://housing.byu.edu","Official site"]]},
+ {k:"c_housing",en:"Housing",from:1,blurb:"Find a place to live and understand contracts.",links:[["BYU Housing","https://reslife.byu.edu/","Official site"]]},
  {k:"c_reg",en:"Registration",from:2,blurb:"Register for classes and see your degree requirements.",links:[["MyMap","https://mymap.byu.edu","Plan and register"],["Registrar","https://registrar.byu.edu","Records and deadlines"]]},
- {k:"c_tax",en:"Taxes",from:3,blurb:"Learn what international students need to know about U.S. taxes.",links:[["International Services","https://internationalservices.byu.edu","Tax information"]]},
- {k:"c_emp",en:"Employment",from:4,blurb:"Job search help and work-authorization questions.",links:[["Career Services","https://careers.byu.edu","Jobs and internships"],["International Services","https://internationalservices.byu.edu","Work rules"]]},
- {k:"c_imm",en:"Immigration support",from:null,blurb:"For visa, status, and immigration questions, talk to the official office. This website cannot give immigration advice.",links:[["International Services","https://internationalservices.byu.edu","Contact details on site"]]},
+ {k:"c_tax",en:"Taxes",from:3,blurb:"Learn what international students need to know about U.S. taxes.",links:[["International Services","https://iss.byu.edu/tax-information","Tax information"]]},
+ {k:"c_emp",en:"Employment",from:4,blurb:"Job search help and work-authorization questions.",links:[["Career Services","https://careers.byu.edu","Jobs and internships"],["International Services","https://iss.byu.edu/","Work rules"]]},
+ {k:"c_imm",en:"Immigration support",from:null,blurb:"For visa, status, and immigration questions, talk to the official office. This website cannot give immigration advice.",links:[["International Services","https://iss.byu.edu/","Contact details on site"]]},
  {k:"c_off",en:"BYU offices",from:null,blurb:"Key offices that help students every day.",links:[["Admissions","https://admissions.byu.edu","Application questions"],["Financial Aid","https://financialaid.byu.edu","Costs and aid"],["Registrar","https://registrar.byu.edu","Records"]]},
  {k:"c_svc",en:"Other services",from:null,blurb:"Health, counseling, and student life support.",links:[["Health Center","https://healthcenter.byu.edu","Medical care"],["Counseling and Psychological Services","https://caps.byu.edu","Emotional support"]]}
 ];
@@ -1468,6 +1523,8 @@ $("#signout").addEventListener("click", async function() {
     var result = await supabaseClient.auth.signOut();
     if (result.error) throw result.error;
 
+    clearJourneyPlan();
+
     user = null;
     stage = 0;
 
@@ -1524,6 +1581,122 @@ document.addEventListener("click",function(e){
   var h=e.target.closest("[data-hub]"); if(!h) return; e.preventDefault(); selHub=h.dataset.hub; go("hub");
 });
 
+$("#generate-journey-plan").addEventListener("click", async function() {
+  var button = $("#generate-journey-plan");
+  var status = $("#journey-plan-status");
+  var studentAuthId = user && user.auth_user_id;
+
+  var requestVersion = journeyPlanVersion;
+
+  if (button.disabled) return;
+
+  if (!studentAuthId) {
+    status.textContent = "Please sign in first.";
+    return;
+  }
+
+  button.disabled = true;
+  status.textContent = "Generating your next steps…";
+  $("#journey-plan-result").hidden = true;
+
+  try {
+    if (typeof pendingStageSave !== "undefined" && pendingStageSave) {
+      await pendingStageSave;
+    }
+
+    var sessionResult = await supabaseClient.auth.getSession();
+
+    if (sessionResult.error) throw sessionResult.error;
+
+    var session = sessionResult.data.session;
+
+    if (!session || session.user.id !== studentAuthId) {
+      throw new Error("Please sign in again.");
+    }
+
+    var response = await fetch("/api/journey-plan", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + session.access_token
+      },
+      signal: AbortSignal.timeout(60000)
+    });
+
+    var result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not load your stage.");
+    }
+
+    if (
+  requestVersion !== journeyPlanVersion ||
+  !user ||
+  user.auth_user_id !== studentAuthId
+) return;
+
+    if (Number(stage) !== result.stage) {
+  status.textContent =
+    "Your stage changed. Generate a new plan for your current stage.";
+  return;
+}
+
+$("#journey-plan-title").textContent = result.title;
+
+var actionList = $("#journey-plan-actions");
+actionList.textContent = "";
+
+result.actions.forEach(function(action) {
+  var item = document.createElement("li");
+  item.textContent = action;
+  item.style.marginBottom = ".75rem";
+  actionList.appendChild(item);
+});
+
+var links = $("#journey-plan-links");
+links.textContent = "";
+
+result.links.forEach(function(resource) {
+  var link = document.createElement("a");
+  link.className = "btn small";
+  link.textContent = resource[0];
+  link.href = resource[1];
+  link.target = "_blank";
+  link.rel = "noopener";
+  links.appendChild(link);
+});
+
+$("#journey-plan-result").hidden = false;
+status.textContent =
+  "Your AI-generated suggestions are ready. Review them before acting.";
+  } catch (error) {
+    if (
+  requestVersion !== journeyPlanVersion ||
+  !user ||
+  user.auth_user_id !== studentAuthId
+) return;
+
+    status.textContent =
+      error.message || "Could not connect. Please try again.";
+  } finally {
+  if (requestVersion === journeyPlanVersion) {
+    button.disabled = false;
+  }
+}
+});
+
+var journeyPlanVersion = 0;
+
+function clearJourneyPlan() {
+  journeyPlanVersion++;
+
+  $("#journey-plan-result").hidden = true;
+  $("#journey-plan-title").textContent = "";
+  $("#journey-plan-actions").textContent = "";
+  $("#journey-plan-links").textContent = "";
+  $("#journey-plan-status").textContent = "";
+  $("#generate-journey-plan").disabled = false;
+}
+
 function renderJourney(){
   $("#timeline").innerHTML=STAGES.map(function(s,i){
     var st=i<stage?"done":i===stage?"current":"ahead";
@@ -1560,7 +1733,15 @@ document.addEventListener("click",async function(e){
       if(result.error) throw result.error;
       if(!result.data) throw new Error("No student profile was updated. Check the student table update permissions.");
 
-      stage=Number(result.data.current_stage)||0;
+      stage = Number(result.data.current_stage) || 0;
+
+      $("#journey-plan-result").hidden = true;
+      $("#journey-plan-title").textContent = "";
+      $("#journey-plan-actions").textContent = "";
+      $("#journey-plan-links").textContent = "";
+      $("#journey-plan-status").textContent =
+        "Your stage changed. Generate new suggestions for this stage.";
+
       renderJourney();
       toast(t("stage_updated", "Current stage updated."));
     })();
@@ -2336,7 +2517,7 @@ function bot(text,link){
 function me(text){var m=document.createElement("div");m.className="msg me";m.textContent=text;$("#msgs").appendChild(m);$("#msgs").scrollTop=1e6}
 function answer(q){
   var s=q.toLowerCase();
-  if(/visa|immigra|i-20|sevis|status|비자|이민|签证|移民|在留|visto|imigra|wisa|วีซ่า|imigrasyon|visum|виза|иммигр|تأشيرة|هجرة/.test(s)) return [t("chat_visa","I can't give legal or immigration advice. International Services is the official office for these questions."),{l:t("chat_visa_link","Open International Services"),url:"https://internationalservices.byu.edu"}];
+  if(/visa|immigra|i-20|sevis|status|비자|이민|签证|移民|在留|visto|imigra|wisa|วีซ่า|imigrasyon|visum|виза|иммигр|تأشيرة|هجرة/.test(s)) return [t("chat_visa","I can't give legal or immigration advice. International Services is the official office for these questions."),{l:t("chat_visa_link","Open International Services"),url:"https://iss.byu.edu/"}];
   if(/housing|apartment|live|dorm|주거|숙소|住房|住处|moradia|logement|tirahan|unterkunft|жиль|السكن/.test(s)) return [t("chat_housing","Housing is step 2 on your journey."),{l:t("chat_housing_link","Open Housing branch"),go:"hub",hub:"c_housing"}];
   if(/regist|class|course|mymap|수업|课程|选课|授業|cours|aula|klase|kurs|занят|мymap|مقرر/.test(s)) return [t("chat_register","Register, add, or drop classes in MyMap."),{l:t("chat_register_link","Open MyMap"),url:"https://mymap.byu.edu"}];
   return [t("chat_general","For a reliable answer, try the main BYU website or contact the relevant BYU office."),{l:t("chat_general_link","Open byu.edu"),url:"https://www.byu.edu"}];
