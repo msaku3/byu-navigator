@@ -69,6 +69,24 @@ const JOURNEY_STAGES = [
   }
 ];
 
+async function fetchGeminiWithRetry(url, options) {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const response = await fetch(url, {
+      ...options,
+      signal: AbortSignal.timeout(15000)
+    });
+
+    if (response.status !== 503 || attempt === 1) {
+      return response;
+    }
+
+    // Release the first response before retrying once.
+    await response.body?.cancel();
+
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
+}
+
 function reply(status, data) {
   return Response.json(data, {
     status,
@@ -173,7 +191,7 @@ export default {
       const guidance = JOURNEY_STAGES[stage];
         const model = process.env.GEMINI_MODEL || "gemini-3.8-flash";
 
-        const geminiResponse = await fetch(
+        const geminiResponse = await fetchGeminiWithRetry(
         "https://generativelanguage.googleapis.com/v1beta/models/" +
             encodeURIComponent(model) + ":generateContent",
         {
