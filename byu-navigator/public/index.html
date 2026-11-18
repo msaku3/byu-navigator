@@ -576,6 +576,7 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
     <div class="stack">
       <section class="card">
         <h2><span data-i18n="sample_courses">Sample courses for</span> <span class="js-major"></span></h2>
+        <p id="registered-credits" role="status" aria-live="polite"></p>
         <ul class="course-list" id="courses"></ul>
         <p class="hint" style="margin-top:.8rem" data-i18n="course_note">Sample list for this prototype. Confirm current requirements with your academic advisor and in MyMap.</p>
         <div class="callout">
@@ -1366,6 +1367,8 @@ document.addEventListener("click",function(e){
 
 async function renderProfile() {
   var list = $("#courses");
+  var totalDisplay = $("#registered-credits");
+  totalDisplay.textContent = "Registered credits (Demo Term): loading…";
 
   function showMessage(text) {
     list.textContent = "";
@@ -1400,7 +1403,7 @@ async function renderProfile() {
 
       supabaseClient
         .from("enrollment")
-        .select("courseid")
+        .select("courseid,course:courseid(credits)")
         .eq("studentid", studentId)
         .eq("term", term)
     ]);
@@ -1415,6 +1418,35 @@ async function renderProfile() {
       .sort(function(a, b) {
         return a.course_code.localeCompare(b.course_code);
       });
+
+    var totalCredits = 0;
+var countedCourses = new Set();
+
+(results[1].data || []).forEach(function(row) {
+  var courseId = String(row.courseid);
+
+  if (countedCourses.has(courseId)) return;
+
+  if (
+    !row.course ||
+    row.course.credits === null ||
+    row.course.credits === ""
+  ) {
+    throw new Error("Credit information is missing for a registered course.");
+  }
+
+  var credits = Number(row.course.credits);
+
+  if (!Number.isFinite(credits) || credits < 0) {
+    throw new Error("A registered course has invalid credits.");
+  }
+
+  countedCourses.add(courseId);
+  totalCredits += credits;
+});
+
+totalDisplay.textContent =
+  "Registered credits (Demo Term): " + totalCredits;  
 
     var registered = new Set(
       (results[1].data || []).map(function(row) {
@@ -1504,6 +1536,7 @@ async function renderProfile() {
 
           registered.add(String(course.id));
           markRegistered();
+          await renderProfile();
           feedback.textContent =
             t("saved_demo", "Saved for Demo Term. This is not official BYU registration.");
 
