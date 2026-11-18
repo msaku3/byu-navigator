@@ -1668,6 +1668,15 @@ totalDisplay.textContent =
     var isInformationSystems =
   String(user.major).trim().toLowerCase() === "information systems";
 
+  var electiveCodes = [
+  "IS 413", "IS 415", "IS 515", "IS 520",
+  "IS 531", "IS 537", "IS 542", "IS 543",
+  "IS 551", "IS 554", "IS 555", "IS 556",
+  "IS 560", "IS 562", "IS 565", "IS 566",
+  "IS 567", "IS 571", "IS 581", "IS 582",
+  "IS 590R"
+];
+
 function courseGroup(course) {
   if (!isInformationSystems) return "";
 
@@ -1694,7 +1703,15 @@ function courseGroup(course) {
   ].includes(code)) {
     return "Information Systems core — seven courses";
   }
-
+  if ([
+  "GSCM 201", "GSCM 211", "HRM 391",
+  "PSE 390", "STRAT 392"
+  ].includes(code)) {
+    return "Business core — five courses";
+  }
+  if (electiveCodes.includes(code)) {
+  return "Sample electives — choose two different courses";
+}
   return "Other sample courses";
 }
 
@@ -1703,6 +1720,8 @@ var groupOrder = [
   "Programming prerequisite — choose one",
   "Supporting courses — six courses",
   "Information Systems core — seven courses",
+  "Sample electives — choose two different courses",
+  "Business core — five courses",
   "Other sample courses"
 ];
 
@@ -1836,6 +1855,27 @@ if (
       "Choose one programming prerequisite. You already selected " +
       otherChoice.course_code +
       ". Drop that course first if you want to change your selection.";
+    return;
+  }
+}
+if (
+  isInformationSystems &&
+  electiveCodes.includes(course.course_code)
+) {
+  var selectedElectives = courses.filter(function(candidate) {
+    return (
+      electiveCodes.includes(candidate.course_code) &&
+      registered.has(String(candidate.id))
+    );
+  });
+
+  if (selectedElectives.length >= 2) {
+    feedback.textContent =
+      "Choose two different electives. You already selected " +
+      selectedElectives.map(function(selected) {
+        return selected.course_code;
+      }).join(" and ") +
+      ". Drop one first if you want to change your selection.";
     return;
   }
 }
