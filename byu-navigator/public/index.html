@@ -1494,6 +1494,8 @@ $("#signout").addEventListener("click", async function() {
     var result = await supabaseClient.auth.signOut();
     if (result.error) throw result.error;
 
+    clearJourneyPlan();
+
     user = null;
     stage = 0;
 
@@ -1555,6 +1557,8 @@ $("#generate-journey-plan").addEventListener("click", async function() {
   var status = $("#journey-plan-status");
   var studentAuthId = user && user.auth_user_id;
 
+  var requestVersion = journeyPlanVersion;
+
   if (button.disabled) return;
 
   if (!studentAuthId) {
@@ -1595,7 +1599,11 @@ $("#generate-journey-plan").addEventListener("click", async function() {
       throw new Error(result.error || "Could not load your stage.");
     }
 
-    if (!user || user.auth_user_id !== studentAuthId) return;
+    if (
+  requestVersion !== journeyPlanVersion ||
+  !user ||
+  user.auth_user_id !== studentAuthId
+) return;
 
     if (Number(stage) !== result.stage) {
   status.textContent =
@@ -1632,14 +1640,33 @@ $("#journey-plan-result").hidden = false;
 status.textContent =
   "Your AI-generated suggestions are ready. Review them before acting.";
   } catch (error) {
-    if (!user || user.auth_user_id !== studentAuthId) return;
+    if (
+  requestVersion !== journeyPlanVersion ||
+  !user ||
+  user.auth_user_id !== studentAuthId
+) return;
 
     status.textContent =
       error.message || "Could not connect. Please try again.";
   } finally {
+  if (requestVersion === journeyPlanVersion) {
     button.disabled = false;
   }
+}
 });
+
+var journeyPlanVersion = 0;
+
+function clearJourneyPlan() {
+  journeyPlanVersion++;
+
+  $("#journey-plan-result").hidden = true;
+  $("#journey-plan-title").textContent = "";
+  $("#journey-plan-actions").textContent = "";
+  $("#journey-plan-links").textContent = "";
+  $("#journey-plan-status").textContent = "";
+  $("#generate-journey-plan").disabled = false;
+}
 
 function renderJourney(){
   $("#timeline").innerHTML=STAGES.map(function(s,i){
