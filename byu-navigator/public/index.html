@@ -7,6 +7,29 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<dialog id="course-confirm-dialog" class="course-confirm-dialog"
+        aria-labelledby="course-confirm-title"
+        aria-describedby="course-confirm-message">
+  <form method="dialog">
+    <h2 id="course-confirm-title">Confirm registration</h2>
+
+    <p id="course-confirm-message"></p>
+
+    <p class="hint">
+      This is a simulation, not official BYU registration.
+    </p>
+
+    <div class="course-confirm-actions">
+      <button class="btn ghost" type="submit" value="cancel" autofocus>
+        Cancel
+      </button>
+      <button class="btn" type="submit" value="confirm"
+              id="course-confirm-submit">
+        Register course
+      </button>
+    </div>
+  </form>
+</dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -265,6 +288,68 @@ body.signed-out .account-only, body.signed-out .byu-navigation { display:none; }
 .course-list .btn{white-space:normal}
 :root[dir="rtl"] .timeline{direction:rtl}
 :root[dir="rtl"] .facts dd{text-align:start}
+.course-confirm-dialog {
+  width: min(90vw, 460px);
+  max-height: 85vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin: auto;
+  padding: 1.5rem;
+  border: 1px solid #d8dee6;
+  border-radius: 20px;
+  background: white;
+  color: #17212b;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, .25);
+}
+
+.course-confirm-dialog::backdrop {
+  background: rgba(0, 20, 40, .55);
+}
+
+.course-confirm-dialog h2 {
+  margin-top: 0;
+  color: #002e5d;
+}
+
+.course-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: 1.5rem;
+}
+.btn.course-drop {
+  color: #b42318;
+  border-color: #b42318;
+  background: white;
+}
+
+.btn.course-drop:hover:not(:disabled) {
+  color: #912018;
+  border-color: #912018;
+  background: #fff1f0;
+}
+
+.btn.course-drop:focus-visible {
+  outline: 3px solid #b42318;
+  outline-offset: 3px;
+}
+.btn.course-danger {
+  background: #b42318;
+  border-color: #b42318;
+  color: white;
+}
+
+.btn.course-danger:hover:not(:disabled) {
+  background: #912018;
+  border-color: #912018;
+  color: white;
+}
+
+.btn.course-danger:focus-visible {
+  outline: 3px solid #b42318;
+  outline-offset: 3px;
+}
 </style>
 </head>
 <body class="signed-out">
@@ -1448,6 +1533,30 @@ document.addEventListener("click",async function(e){
   }
 });
 
+function confirmCourseAction(title, message, buttonLabel, isDestructive) {
+  var dialog = $("#course-confirm-dialog");
+
+  // Prevent a second request while the card is already open.
+  if (dialog.open) return Promise.resolve(false);
+
+  $("#course-confirm-title").textContent = title;
+  $("#course-confirm-message").textContent = message;
+  $("#course-confirm-submit").textContent = buttonLabel;
+  $("#course-confirm-submit").classList.toggle(
+      "course-danger",
+      Boolean(isDestructive)
+    );
+  dialog.returnValue = "cancel";
+
+  return new Promise(function(resolve) {
+    dialog.addEventListener("close", function() {
+      resolve(dialog.returnValue === "confirm");
+    }, { once: true });
+
+    dialog.showModal();
+  });
+}
+
 async function renderProfile() {
   loadChangeRequests();
   var list = $("#courses");
@@ -1564,8 +1673,9 @@ totalDisplay.textContent =
       button.className = "btn small";
 
       function markRegistered() {
-        button.disabled = true;
-        button.textContent = t("registered_demo", "Registered — demo");
+        button.disabled = false;
+        button.className = "btn ghost small course-drop";
+        button.textContent = "Drop course (simulation)";
       }
 
       if (registered.has(String(course.id))) {
@@ -1583,7 +1693,67 @@ totalDisplay.textContent =
       button.addEventListener("click", async function() {
         if (!sameStudent()) return;
 
-        button.disabled = true;
+        if (registered.has(String(course.id))) {
+          var confirmDrop = await confirmCourseAction(
+            "Confirm drop",
+            "Drop " + course.course_code + " — " +
+              course.course_name + " from Demo Term?",
+            "Drop course",
+            true
+          );
+
+          if (!confirmDrop || !sameStudent()) return;
+
+          button.disabled = true;
+          button.textContent = "Dropping…";
+          feedback.textContent = "";
+
+          try {
+            var removed = await supabaseClient
+              .from("enrollment")
+              .delete()
+              .eq("studentid", studentId)
+              .eq("courseid", course.id)
+              .eq("term", term)
+              .select("enrollmentid");
+
+            if (removed.error) throw removed.error;
+
+            if (!removed.data || removed.data.length === 0) {
+              throw new Error(
+                "No registration was removed. Refresh to check its status."
+              );
+            }
+
+            if (!sameStudent()) return;
+
+            await renderProfile();
+            toast("Course dropped from Demo Term.");
+          } catch (error) {
+            if (!sameStudent()) return;
+
+            markRegistered();
+            feedback.textContent =
+              "Could not drop course: " +
+              (error.message || "Please try again.");
+          }
+
+          return;
+        }
+
+        var confirmed = await confirmCourseAction(
+          "Confirm registration",
+          "Register for " +
+            course.course_code + " — " + course.course_name +
+            " (" + course.credits +
+            (Number(course.credits) === 1 ? " credit" : " credits") +
+            ") for Demo Term?",
+          "Register course"
+        );
+
+if (!confirmed || !sameStudent()) return;
+
+  button.disabled = true;
         button.textContent = t("saving", "Saving…");
         feedback.textContent = "";
 
