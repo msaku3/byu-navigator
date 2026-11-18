@@ -1677,7 +1677,15 @@ document.addEventListener("click",async function(e){
       if(result.error) throw result.error;
       if(!result.data) throw new Error("No student profile was updated. Check the student table update permissions.");
 
-      stage=Number(result.data.current_stage)||0;
+      stage = Number(result.data.current_stage) || 0;
+
+      $("#journey-plan-result").hidden = true;
+      $("#journey-plan-title").textContent = "";
+      $("#journey-plan-actions").textContent = "";
+      $("#journey-plan-links").textContent = "";
+      $("#journey-plan-status").textContent =
+        "Your stage changed. Generate new suggestions for this stage.";
+
       renderJourney();
       toast(t("stage_updated", "Current stage updated."));
     })();
