@@ -676,6 +676,32 @@ h3.course-section-title.major-course-heading {
   <h1 id="j-h" data-i18n="journey_h">Your journey</h1>
   <p data-i18n="journey_intro">Six areas, from before you apply through graduation. Everyone moves at a different pace, so use this as a guide to find your place and your next step. Select any area to see what to do and where to get help.</p>
   <ol class="timeline" id="timeline"></ol>
+  <section class="card" aria-labelledby="journey-plan-heading"
+         style="margin-top: 2rem;">
+  <h2 id="journey-plan-heading">Plan your next steps</h2>
+
+  <p>
+    Generate three suggested actions based on your saved current stage.
+  </p>
+
+  <button type="button" class="btn" id="generate-journey-plan">
+    Generate my next steps
+  </button>
+
+  <p id="journey-plan-status" role="status" aria-live="polite"></p>
+
+  <div id="journey-plan-result" hidden>
+    <h3 id="journey-plan-title"></h3>
+    <ol id="journey-plan-actions"></ol>
+    <div id="journey-plan-links" class="acts"></div>
+  </div>
+
+  <p class="hint">
+    AI-generated suggestions may be incomplete. Confirm requirements
+    with the relevant BYU office. This tool does not provide legal,
+    immigration, or tax advice.
+  </p>
+</section>
 </section>
 
 <!-- SCREEN 5 -->
