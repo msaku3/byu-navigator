@@ -289,10 +289,23 @@ export default {
         actions: plan.actions.map(action => action.trim()),
         links: guidance.links
         });
-    } catch {
-      return reply(503, {
-        error: "The journey service could not connect. Please try again."
-      });
-    }
+
+   } catch (error) {
+  console.error(
+    "Journey request exception:",
+    error.name,
+    error.cause?.code || "no connection code"
+  );
+
+  var timedOut =
+    error.name === "TimeoutError" ||
+    error.name === "AbortError";
+
+  return reply(timedOut ? 504 : 503, {
+    error: timedOut
+      ? "Generating your plan took too long. Please try again."
+      : "The journey service could not connect. Please try again."
+  });
+}
   }
 };
