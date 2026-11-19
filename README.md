@@ -8,6 +8,10 @@ Newly admitted international students at BYU have to piece together information 
 
 ![ERD](Module%205%20ERD.png)
 
+### Level 1 — Student Profile and AI Journey Workflow
+
+![Level 1 student profile and AI journey workflow](images/journey-workflow-level1.png)
+
 ## Tech Stack
 
 | Layer | Technology |
