@@ -21,13 +21,13 @@ Newly admitted international students at BYU have to piece together information 
 | Authentication | Supabase Auth |
 | AI service | Google Gemini API |
 | Database | PostgreSQL, hosted by Supabase |
-| Hosting | Vercel — [Live website](https://byu-navigator.vercel.app/) |
+| Hosting | Vercel |
 
 **Why we chose this:** We chose Supabase because it gives us a real PostgreSQL database without having to manage our own database server. Its Table Editor lets everyone on the team see and edit our tables directly, which made it easy to check that our button was actually saving data. It also has a free tier and a JavaScript library that connects straight from our frontend, which kept setup simple for a team with mixed experience.
 
 ## How to Get It Running
 
-Install Node.js 22 or later and Git before starting. To try the deployed app, visit [BYU Navigator](https://byu-navigator.vercel.app/).
+Install Node.js 22 or later and Git before starting.
 
 1. Clone the repository and enter the application folder:
 ```
