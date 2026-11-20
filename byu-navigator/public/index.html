@@ -530,6 +530,15 @@ h3.course-section-title.major-course-heading {
 
 
 .course-list > [hidden]{display:none!important}
+/* Admin maintenance follows the existing card and button styling. */
+[hidden]{display:none!important}
+.admin-toolbar{display:flex;align-items:center;flex-wrap:wrap;gap:.75rem;margin:1rem 0}
+.admin-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}
+.admin-fields label{display:grid;gap:.4rem}
+.admin-fields input,.admin-fields select{width:100%;min-width:0;padding:.7rem;font:inherit;border:1px solid #64748b;border-radius:.5rem}
+.admin-users{list-style:none;padding:0;display:grid;gap:1rem}.admin-users p{overflow-wrap:anywhere}
+.admin-delete{border-color:#b42318!important;color:#b42318!important}
+@media(max-width:640px){.admin-fields{grid-template-columns:1fr}.admin-toolbar .btn{max-width:100%;white-space:normal}}
 </style>
 </head>
 <body class="signed-out">
@@ -1491,7 +1500,7 @@ var JOURNEY_STAGE_UI={
 
 function journeyProgress(done,total){return journeyUi("progress").replace("{done}",done).replace("{total}",total);}
 function journeyStorageKey(){var id=user&&(user.studentid||user.auth_user_id||user.net);return "byu-navigator-journey-v1:"+String(id||"guest");}
-function readJourneyData(){
+function readLegacyJourneyData(){
  try{
   var value=JSON.parse(localStorage.getItem(journeyStorageKey())||"{}");
   if(!value||typeof value!=="object"||Array.isArray(value)) return {actions:{},customStages:[],completedStages:{},activeStageId:null};
@@ -1501,7 +1510,7 @@ function readJourneyData(){
   return {actions:migrated,customStages:[],completedStages:{},activeStageId:null};
  }catch(_){return {actions:{},customStages:[],completedStages:{},activeStageId:null};}
 }
-function saveJourneyData(data){localStorage.setItem(journeyStorageKey(),JSON.stringify(data));}
+
 function getJourneyStages(){
  var data=readJourneyData(), custom=data.customStages.filter(function(item){return item&&typeof item.id==="string"&&typeof item.title==="string"&&typeof item.afterId==="string";});
  var stages=[], added={};
@@ -1715,6 +1724,7 @@ function go(name){
     $("#signin-err").textContent="";
     $("#signin-err").classList.remove("show");
   }
+  if(name==="admin"&&(!adminAccess||adminIdentity!==user.auth_user_id)) name="home";
   current=name;
   saveSession();
   $$(".screen").forEach(function(s){s.classList.toggle("active",s.id==="s-"+name)});
@@ -1725,6 +1735,8 @@ function go(name){
     $("#si-email").focus();
   }
   render(); window.scrollTo(0,0); updateChips();
+  if(typeof refreshAdminAccess==="function") refreshAdminAccess();
+  if(typeof refreshJourneyData==="function") refreshJourneyData();
 }
 
 document.addEventListener("click",function(e){
@@ -2008,6 +2020,7 @@ $("#signout").addEventListener("click", async function() {
 
   try {
     if (pendingStageSave) await pendingStageSave;
+    if (journeySync.pending) await journeySync.pending;
 
     var result = await supabaseClient.auth.signOut();
     if (result.error) throw result.error;
@@ -2208,9 +2221,9 @@ function clearJourneyPlan() {
   $("#generate-journey-plan").disabled = false;
 }
 
-function renderJourney(){
+function renderJourneyContent(){
   var journeyStages=getJourneyStages(), journeyData=readJourneyData(), activeId=activeJourneyStage(journeyStages,journeyData);
-  if(journeyData.activeStageId!==activeId){journeyData.activeStageId=activeId;saveJourneyData(journeyData);}
+  journeyData.activeStageId=activeId;
   updateJourneyStageEditor();
   $("#timeline").innerHTML=journeyStages.map(function(s,i){
     var stageDone=!!journeyData.completedStages[s.id], st=s.id===activeId?"current":stageDone?"done":"ahead";
@@ -2324,7 +2337,7 @@ document.addEventListener("click",async function(e){
       stage=Number(result.data.current_stage)||0;
       clearJourneyPlan();
       $("#journey-plan-status").textContent="Your stage changed. Generate new suggestions for this stage.";
-      var journeyData=readJourneyData();journeyData.activeStageId="stage-"+stage;saveJourneyData(journeyData);openStage=journeyData.activeStageId;
+      openStage="stage-"+stage;
       renderJourney();
       toast(t("stage_updated", "Current stage updated."));
     })();
@@ -3316,6 +3329,181 @@ $("#about-feedback-form").addEventListener("submit",async function(e){
   }catch(_){status.textContent=t("feedback_error","Feedback could not be sent. Please try again later.");}
   finally{button.disabled=false;button.textContent=t("feedback_send","Send feedback");}
 });
+
+/* ---------- Administrator user maintenance ---------- */
+// Hiding controls is only a UI convenience; the API independently checks access.
+var adminAccess=false,adminIdentity=null,adminVersion=0,adminRows=[],adminPage=1,adminBusy=false;
+var adminNav=document.createElement('button');
+adminNav.className='byu-nav-item';adminNav.textContent='Maintain Users';adminNav.hidden=true;
+adminNav.addEventListener('click',function(){if(adminAccess&&user){go('admin');loadAdminUsers();}});
+$('.nav-row').appendChild(adminNav);
+var adminScreen=document.createElement('section');
+adminScreen.className='screen';adminScreen.id='s-admin';adminScreen.setAttribute('aria-labelledby','admin-heading');
+adminScreen.innerHTML='<h1 id="admin-heading">Maintain Users</h1><p>Administrator tools for student accounts. Admin accounts are protected.</p>'
+ +'<p id="admin-status" role="status" aria-live="polite"></p><div class="admin-toolbar"><button type="button" class="btn" id="admin-add">Add student</button><button type="button" class="btn ghost" id="admin-refresh">Refresh</button></div>'
+ +'<form id="admin-form" class="card" hidden><h2 id="admin-form-heading">Add student</h2><input type="hidden" name="id"><div class="admin-fields">'
+ +'<label>Email<input name="email" type="email" maxlength="254" autocomplete="off" required></label>'
+ +'<label id="admin-password-label">Temporary password<input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password"></label>'
+ +'<label>NetID<input name="netid" pattern="[A-Za-z0-9]{4,12}" maxlength="12" required></label>'
+ +'<label>First name<input name="firstname" maxlength="120" required></label><label>Last name<input name="lastname" maxlength="120" required></label>'
+ +'<label>Nationality<input name="nationality" maxlength="120" required></label><label>Major<select name="majorid" required></select></label>'
+ +'<label>Current stage<select name="current_stage">'+STAGES.map(function(s,i){return '<option value="'+i+'">'+esc(s.en)+'</option>';}).join('')+'</select></label></div>'
+ +'<p class="hint">Admin-created test accounts can sign in immediately without email verification. Share temporary passwords privately. Email and NetID stay unchanged when editing.</p>'
+ +'<div class="admin-toolbar"><button class="btn" type="submit">Save student</button><button class="btn ghost" id="admin-cancel" type="button">Cancel</button></div></form>'
+ +'<ul id="admin-users" class="admin-users"></ul><div class="admin-toolbar"><button class="btn ghost" id="admin-prev" type="button">Previous</button><span id="admin-page"></span><button class="btn ghost" id="admin-next" type="button">Next</button></div>';
+$('#main').appendChild(adminScreen);
+async function refreshAdminAccess(){
+  var identity=user&&user.auth_user_id;
+  if(identity===adminIdentity)return;
+  adminIdentity=identity||null;adminBusy=false;adminPage=1;adminAccess=false;adminNav.hidden=true;adminRows=[];$('#admin-users').replaceChildren();$('#admin-form').reset();$('#admin-form').hidden=true;$('#admin-status').textContent='';
+  var version=++adminVersion;
+  if(!identity||!supabaseClient)return;
+  try{
+    var result=await supabaseClient.from('admin_users').select('auth_user_id').eq('auth_user_id',identity).maybeSingle();
+    if(version!==adminVersion||!user||user.auth_user_id!==identity)return;
+    adminAccess=!result.error&&!!result.data;adminNav.hidden=!adminAccess;
+  }catch(_){}
+}
+async function adminRequest(method,data,page){
+  var session=await supabaseClient.auth.getSession();
+  var token=session.data&&session.data.session&&session.data.session.access_token;
+  if(!token)throw new Error('Sign in again.');
+  var response=await fetch('/api/admin-users'+(method==='GET'?'?page='+(page||1):''),{method:method,headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:data?JSON.stringify(data):undefined,signal:AbortSignal.timeout(30000)});
+  var result=await response.json().catch(function(){return {};});
+  if(!response.ok)throw new Error(result.error||'The administrator request failed.');
+  return result;
+}
+function adminSetBusy(busy){adminBusy=busy;adminScreen.querySelectorAll('button').forEach(function(b){b.disabled=busy;});}
+async function loadAdminUsers(){
+  if(!adminAccess||adminBusy)return;
+  var version=adminVersion;adminSetBusy(true);$('#admin-status').textContent='Loading students…';
+  try{
+    var result=await adminRequest('GET',null,adminPage);
+    if(version!==adminVersion)return;
+    adminRows=result.users;var list=$('#admin-users');list.replaceChildren();
+    result.users.forEach(function(row){
+      var item=document.createElement('li');item.className='card';
+      var details=document.createElement('div'),title=document.createElement('strong'),description=document.createElement('p');
+      title.textContent=row.profile?((row.profile.firstname||'')+' '+(row.profile.lastname||'')):row.email;
+      description.textContent=row.email+' · '+(row.profile?row.profile.netid||'No NetID':'No student profile')+(row.protected?' · Protected admin':'');
+      details.append(title,description);item.appendChild(details);
+      if(!row.protected){var actions=document.createElement('div');actions.className='admin-toolbar';
+        var edit=document.createElement('button');edit.type='button';edit.className='btn ghost small';edit.textContent='Edit';edit.disabled=!row.profile;edit.addEventListener('click',function(){openAdminForm(row);});
+        var remove=document.createElement('button');remove.type='button';remove.className='btn ghost small admin-delete';remove.textContent='Delete';remove.addEventListener('click',function(){deleteAdminUser(row);});actions.append(edit,remove);item.appendChild(actions);
+      }list.appendChild(item);
+    });
+    var options=$('#admin-form').elements.majorid;options.replaceChildren();
+    result.majors.forEach(function(m){var option=document.createElement('option');option.value=String(m.majorid);option.textContent=m.majorname;options.appendChild(option);});
+    $('#admin-page').textContent='Page '+adminPage;
+    $('#admin-status').textContent=result.users.length?'Student accounts loaded.':'No accounts on this page.';
+    adminSetBusy(false);$('#admin-prev').disabled=adminPage===1;$('#admin-next').disabled=!result.hasMore;
+  }catch(error){if(version===adminVersion){$('#admin-status').textContent=error.message;adminSetBusy(false);}}
+}
+function openAdminForm(row){
+  if(adminBusy)return;var form=$('#admin-form');form.reset();var editing=!!row;
+  form.elements.id.value=editing?row.id:'';
+  form.elements.email.value=editing?row.email:'';form.elements.email.readOnly=editing;
+  form.elements.netid.readOnly=editing;
+  form.elements.password.required=!editing;$('#admin-password-label').hidden=editing;
+  if(editing){['netid','firstname','lastname','nationality','majorid','current_stage'].forEach(function(field){form.elements[field].value=row.profile[field]??'';});}
+  $('#admin-form-heading').textContent=editing?'Edit student':'Add student';form.hidden=false;form.scrollIntoView({behavior:'smooth',block:'start'});form.elements[editing?'firstname':'email'].focus();
+}
+async function deleteAdminUser(row){
+  if(adminBusy)return;
+  var confirmation=window.prompt('Delete '+row.email+'? This permanently removes the login, student profile, registered courses, and linked appointment records. Type DELETE to continue.');
+  if(confirmation!=='DELETE')return;
+  var version=adminVersion;adminSetBusy(true);
+  try{var result=await adminRequest('DELETE',{id:row.id,confirm:confirmation});if(version!==adminVersion)return;$('#admin-status').textContent=result.message;adminSetBusy(false);await loadAdminUsers();}
+  catch(error){if(version===adminVersion){$('#admin-status').textContent=error.message;adminSetBusy(false);}}
+}
+$('#admin-add').addEventListener('click',function(){openAdminForm(null);});
+$('#admin-refresh').addEventListener('click',loadAdminUsers);
+$('#admin-cancel').addEventListener('click',function(){$('#admin-form').reset();$('#admin-form').hidden=true;});
+$('#admin-prev').addEventListener('click',function(){if(adminPage>1){adminPage--;loadAdminUsers();}});
+$('#admin-next').addEventListener('click',function(){adminPage++;loadAdminUsers();});
+$('#admin-form').addEventListener('submit',async function(event){
+  event.preventDefault();if(adminBusy)return;
+  var form=event.currentTarget,data=Object.fromEntries(new FormData(form));data.current_stage=Number(data.current_stage);
+  if(data.id){delete data.email;delete data.password;delete data.netid;}
+  var version=adminVersion;adminSetBusy(true);$('#admin-status').textContent='Saving student…';
+  try{await adminRequest(data.id?'PATCH':'POST',data);if(version!==adminVersion)return;form.reset();form.hidden=true;adminSetBusy(false);await loadAdminUsers();toast('Student saved.');}
+  catch(error){if(version===adminVersion){$('#admin-status').textContent=error.message;adminSetBusy(false);}}
+});
+
+/* ---------- Database-backed personal journey records ---------- */
+var journeySync={identity:null,version:0,ready:false,cache:null,revision:0,pending:null,message:''};
+var recordsNav=document.createElement('button');recordsNav.className='byu-nav-item';recordsNav.textContent='Maintain Records';recordsNav.hidden=true;
+recordsNav.addEventListener('click',function(){go('journey');});$('.nav-row').appendChild(recordsNav);
+var journeySaveStatus=document.createElement('p');journeySaveStatus.id='journey-save-status';journeySaveStatus.setAttribute('role','status');journeySaveStatus.setAttribute('aria-live','polite');
+var journeyReload=document.createElement('button');journeyReload.type='button';journeyReload.className='btn ghost small';journeyReload.textContent='Reload saved journey';journeyReload.hidden=true;
+journeyReload.addEventListener('click',function(){if(!journeySync.pending){journeySync.identity=null;refreshJourneyData();}});
+$('#timeline').before(journeySaveStatus,journeyReload);
+function emptyJourneyData(){return {actions:{},customStages:[],completedStages:{},activeStageId:null};}
+function copyJourneyData(data){return JSON.parse(JSON.stringify(data));}
+function readJourneyData(){return copyJourneyData(journeySync.cache||emptyJourneyData());}
+function setJourneyControls(){
+  var busy=!journeySync.ready||!!journeySync.pending;
+  $('#s-journey').querySelectorAll('#timeline input,#timeline button,#journey-stage-add-form input,#journey-stage-add-form select,#journey-stage-add-form button').forEach(function(item){item.disabled=busy;});
+  journeySaveStatus.textContent=journeySync.message;
+  journeyReload.hidden=!journeySync.message.includes('could not')&&!journeySync.message.includes('not saved');
+  journeyReload.disabled=!!journeySync.pending;
+}
+function renderJourney(){
+  if(!journeySync.ready){$('#timeline').replaceChildren();setJourneyControls();return;}
+  renderJourneyContent();setJourneyControls();
+}
+async function refreshJourneyData(){
+  var identity=user&&user.auth_user_id;recordsNav.hidden=!identity;
+  if(identity===journeySync.identity)return;
+  journeySync.identity=identity||null;var version=++journeySync.version;
+  journeySync.ready=false;journeySync.cache=null;journeySync.pending=null;journeySync.revision=0;
+  journeySync.message=identity?'Loading your saved journey…':'';openStage=null;editingJourneyAction=null;
+  if(current==='journey')renderJourney();
+  if(!identity)return;
+  // Capture this account's legacy browser data before starting asynchronous work.
+  var legacy=readLegacyJourneyData();
+  try{
+    var result=await supabaseClient.rpc('load_my_journey');if(result.error)throw result.error;
+    if(version!==journeySync.version)return;
+    var saved=result.data;
+    if(!saved){
+      // Import the existing browser checklist once, only when no cloud copy exists.
+      var initial=legacy||emptyJourneyData();
+      STAGES.forEach(function(s,i){if(!Array.isArray(initial.actions['stage-'+i]))initial.actions['stage-'+i]=s.steps.map(function(text,j){return {id:'default-'+j,text:text,done:false,defaultIndex:j};});});
+      result=await supabaseClient.rpc('save_my_journey',{p_document:initial,p_expected_revision:0});
+      if(result.error)throw result.error;saved=result.data;
+    }
+    if(version!==journeySync.version)return;
+    journeySync.cache=saved.document;journeySync.revision=Number(saved.revision);journeySync.ready=true;journeySync.message='Journey records saved in your account.';
+    if(current==='journey')renderJourney();if(current==='home')renderHome();
+  }catch(error){
+    if(version!==journeySync.version)return;
+    journeySync.message='Journey records could not load. Check your connection and migration 03, then reload the saved journey.';
+    if(current==='journey')renderJourney();
+  }
+}
+function saveJourneyData(data){
+  if(!journeySync.ready||journeySync.pending||!user||user.auth_user_id!==journeySync.identity){toast('Wait for your saved journey to finish loading or saving.');return;}
+  var version=journeySync.version,previous=copyJourneyData(journeySync.cache),snapshot=copyJourneyData(data);
+  journeySync.cache=snapshot;journeySync.message='Saving journey records…';
+  // A single pending write prevents local edits from racing one another.
+  journeySync.pending=(async function(){
+    try{
+      var result=await supabaseClient.rpc('save_my_journey',{p_document:snapshot,p_expected_revision:journeySync.revision});
+      if(result.error)throw result.error;if(version!==journeySync.version)return;
+      journeySync.cache=result.data.document;journeySync.revision=Number(result.data.revision);journeySync.message='Journey records saved in your account.';
+    }catch(error){
+      if(version!==journeySync.version)return;
+      journeySync.cache=previous;
+      journeySync.message=error.code==='40001'?'Change not saved: this journey changed on another device. Reload the saved journey before editing.':'Change not saved. Your previous saved records are shown. Check your connection and try again.';
+      toast(journeySync.message);
+    }finally{
+      if(version===journeySync.version){journeySync.pending=null;if(current==='journey')renderJourney();}
+    }
+  })();
+  setJourneyControls();
+}
+window.addEventListener('beforeunload',function(event){if(journeySync.pending){event.preventDefault();event.returnValue='';}});
 
 applyLang();
 updateChips();
