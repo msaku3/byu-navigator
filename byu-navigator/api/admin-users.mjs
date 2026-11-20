@@ -28,7 +28,8 @@ export function createHandler({env = process.env, fetcher = fetch} = {}) {
         }
         return data;
       }
-      // Verify the live identity, then check the protected role using that user's JWT.
+      
+      //Verify the user's identity and admin membership before allowing account management.
       const identity = await upstream('/auth/v1/user');
       if (!identity?.id) throw new Problem(401,'Sign in again.');
       const membership = await upstream('/rest/v1/admin_users?select=auth_user_id&auth_user_id=eq.'+encodeURIComponent(identity.id));

@@ -47,6 +47,7 @@ async function body(req) {
   try { return JSON.parse(data); }
   catch { throw Object.assign(new Error('Send valid JSON.'), {status:400}); }
 }
+// Run the same API handlers locally that Vercel runs after deployment
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
