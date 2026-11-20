@@ -1613,7 +1613,7 @@ function saveSession(){
   if(!user){ localStorage.removeItem(SESSION_KEY); return; }
   localStorage.setItem(SESSION_KEY, JSON.stringify({user:user,stage:stage,current:current}));
 }
-
+// Verify the saved sign-in and load the student's profile after a refresh
 async function restoreSession() {
   // Stop using the old local profile as proof of sign-in.
   localStorage.removeItem(SESSION_KEY);
@@ -2209,7 +2209,7 @@ status.textContent =
 });
 
 var journeyPlanVersion = 0;
-
+// Clear old AI suggestions
 function clearJourneyPlan() {
   journeyPlanVersion++;
 
@@ -2220,7 +2220,7 @@ function clearJourneyPlan() {
   $("#journey-plan-status").textContent = "";
   $("#generate-journey-plan").disabled = false;
 }
-
+// Build the journey stages, action checkboxes, and editing controls
 function renderJourneyContent(){
   var journeyStages=getJourneyStages(), journeyData=readJourneyData(), activeId=activeJourneyStage(journeyStages,journeyData);
   journeyData.activeStageId=activeId;
@@ -2252,7 +2252,7 @@ function renderJourneyContent(){
      +'</div></div></li>';
   }).join("");
 }
-
+// Save journey changes and restore the previous records if the save fails
 document.addEventListener("change",function(e){
   var stageCheckbox=e.target.closest("[data-check-stage]");
   if(stageCheckbox){
@@ -3352,6 +3352,7 @@ adminScreen.innerHTML='<h1 id="admin-heading">Maintain Users</h1><p>Administrato
  +'<div class="admin-toolbar"><button class="btn" type="submit">Save student</button><button class="btn ghost" id="admin-cancel" type="button">Cancel</button></div></form>'
  +'<ul id="admin-users" class="admin-users"></ul><div class="admin-toolbar"><button class="btn ghost" id="admin-prev" type="button">Previous</button><span id="admin-page"></span><button class="btn ghost" id="admin-next" type="button">Next</button></div>';
 $('#main').appendChild(adminScreen);
+//Show admin tools only when the signed-in account has an admin role.
 async function refreshAdminAccess(){
   var identity=user&&user.auth_user_id;
   if(identity===adminIdentity)return;
@@ -3374,6 +3375,7 @@ async function adminRequest(method,data,page){
   return result;
 }
 function adminSetBusy(busy){adminBusy=busy;adminScreen.querySelectorAll('button').forEach(function(b){b.disabled=busy;});}
+// Request student accounts from the protected backend and display them
 async function loadAdminUsers(){
   if(!adminAccess||adminBusy)return;
   var version=adminVersion;adminSetBusy(true);$('#admin-status').textContent='Loading students…';
@@ -3399,6 +3401,7 @@ async function loadAdminUsers(){
     adminSetBusy(false);$('#admin-prev').disabled=adminPage===1;$('#admin-next').disabled=!result.hasMore;
   }catch(error){if(version===adminVersion){$('#admin-status').textContent=error.message;adminSetBusy(false);}}
 }
+// Open an empty form for adding a student or fill it for editing
 function openAdminForm(row){
   if(adminBusy)return;var form=$('#admin-form');form.reset();var editing=!!row;
   form.elements.id.value=editing?row.id:'';
@@ -3408,6 +3411,7 @@ function openAdminForm(row){
   if(editing){['netid','firstname','lastname','nationality','majorid','current_stage'].forEach(function(field){form.elements[field].value=row.profile[field]??'';});}
   $('#admin-form-heading').textContent=editing?'Edit student':'Add student';form.hidden=false;form.scrollIntoView({behavior:'smooth',block:'start'});form.elements[editing?'firstname':'email'].focus();
 }
+// Require confirmation before permanently deleting a student account
 async function deleteAdminUser(row){
   if(adminBusy)return;
   var confirmation=window.prompt('Delete '+row.email+'? This permanently removes the login, student profile, registered courses, and linked appointment records. Type DELETE to continue.');
@@ -3452,6 +3456,7 @@ function renderJourney(){
   if(!journeySync.ready){$('#timeline').replaceChildren();setJourneyControls();return;}
   renderJourneyContent();setJourneyControls();
 }
+//Load this student's saved journey
 async function refreshJourneyData(){
   var identity=user&&user.auth_user_id;recordsNav.hidden=!identity;
   if(identity===journeySync.identity)return;

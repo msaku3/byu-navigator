@@ -177,7 +177,7 @@ export default {
           error: "A linked student profile is required."
         });
       }
-
+      //Use the student's database-saved stage to personalize the suggestions
       const savedStage = profiles[0].current_stage;
       const stage = Number(savedStage);
 
@@ -197,7 +197,7 @@ export default {
 
       requestStep = "Gemini generation";
     console.info("Journey Gemini model:", model);
-
+      //send the current stage and approved guidance to Gemini for three suggestions
         const geminiResponse = await fetchGeminiWithRetry(
         "https://generativelanguage.googleapis.com/v1beta/models/" +
             encodeURIComponent(model) + ":generateContent",
