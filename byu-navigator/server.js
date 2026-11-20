@@ -50,6 +50,18 @@ async function body(req) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://localhost');
+    // Adapt Web Request/Response handlers for local Node, matching Vercel routes.
+    if (['/api/admin-users','/api/journey-plan'].includes(url.pathname)) {
+      const route = url.pathname === '/api/admin-users' ? './api/admin-users.mjs' : './api/journey-plan.mjs';
+      const handler = (await import(route)).default;
+      const chunks=[]; let bytes=0;
+      for await (const chunk of req) { bytes+=chunk.length; if(bytes>8192)return json(res,413,{error:'Request is too large.'}); chunks.push(chunk); }
+      const origin='http://' + req.headers.host;
+      const webRequest=new Request(new URL(req.url,origin),{method:req.method,headers:req.headers,body:['GET','HEAD'].includes(req.method)?undefined:Buffer.concat(chunks)});
+      const response=await handler.fetch(webRequest);
+      res.writeHead(response.status,Object.fromEntries(response.headers));
+      return res.end(Buffer.from(await response.arrayBuffer()));
+    }
     if (req.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
       const html = await fs.readFile(path.join(__dirname, 'public/index.html'));
       res.writeHead(200, {'Content-Type':'text/html; charset=utf-8', 'Cache-Control':'no-cache, must-revalidate', 'X-Content-Type-Options':'nosniff'});
